@@ -256,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSocialBtn(Function onTap, String logo) {
+  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -273,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
           image: DecorationImage(
-            image: NetworkImage(logo),
+            image: logo,
           ),
         ),
       ),
@@ -288,12 +288,12 @@ class _LoginScreenState extends State<LoginScreen> {
         children: <Widget>[
           _buildSocialBtn(
             () => print('Login with Facebook'),
-            "https://lh3.googleusercontent.com/proxy/X-VKcyiBTR_eenf-VTPhFbAoTkfyBFd26Km10McXc6NH-vuspwagb8oxfK25qVH9_ybhYQX5WzJqz1sLjHHU0EKnekmG_-PsiQnM8LSZUdJSGaNu8WS_3g",
-          ),
+            AssetImage('assets/logos/facebook.jpg')
+            ),
           _buildSocialBtn(
             () => print('Login with Google'),
-            "https://images.theconversation.com/files/93616/original/image-20150902-6700-t2axrz.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1000&fit=clip",
-          ),
+            AssetImage('assets/logos/google.jpg')
+            ),
         ],
       ),
     );

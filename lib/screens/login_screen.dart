@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
-import 'package:MTR_flutter/views/home_screen.dart';
+import 'package:MTR_flutter/screens/home_screen.dart';
+import 'package:MTR_flutter/screens/signup_screen.dart';
 import 'package:MTR_flutter/controllers/login_controller.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,6 +12,12 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
+  bool emailValid = true;
+  bool passwordValid = true;
+  int loginAttempts = 0;
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   FocusNode _focus = new FocusNode();
   @override
@@ -23,13 +30,56 @@ class _LoginScreenState extends State<LoginScreen> {
     debugPrint("*******************Focus: "+_focus.hasFocus.toString());
   }
 
+
+  void isValid(bool email, bool password){
+
+    setState(() {
+      
+
+      if(!email){
+        this.emailValid = false;
+      }else {
+        this.emailValid = true;
+      }
+
+
+      if(!password){
+        this.passwordValid = false;
+      }else {
+        this.passwordValid = true;
+      }  
+
+      if(!email || !password){
+        this.loginAttempts++;
+        print("Login attempts: $loginAttempts");
+      }
+
+    });
+
+    
+
+
+    //set state
+    
+  }
+
   Widget _buildEmailTF() {
+
+    TextStyle textStyle = kLabelStyle; 
+    String text = "Email";
+    //Logic here
+    if(!emailValid){
+      textStyle  = kLabelStyleRed;
+      text = "Invalid Email";
+    }
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Email',
-          style: kLabelStyle,
+          text,
+          style: textStyle,
         ),
         SizedBox(height: 10.0),
         Container(
@@ -37,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: new TextField(
+            controller: emailController,
             focusNode: _focus,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
@@ -60,12 +111,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordTF() {
+
+    TextStyle textStyle = kLabelStyle; 
+    String text = "Password";
+    //Logic here
+    if(!passwordValid){
+      textStyle  = kLabelStyleRed;
+      text = "Invalid Password";
+    }
+
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          'Password',
-          style: kLabelStyle,
+          text,
+          style: textStyle,
         ),
         SizedBox(height: 10.0),
         Container(
@@ -73,6 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
           decoration: kBoxDecorationStyle,
           height: 60.0,
           child: TextField(
+            controller: passwordController,
             obscureText: true,
             style: TextStyle(
               color: Colors.white,
@@ -145,8 +207,15 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           print('Login Button Pressed');
 
-          LoginController loginController = new LoginController.buildContext(context);
-          loginController.login("sanliston@outlook.com", "blahh");
+          //get email from form
+          String emailInput = emailController.text;
+
+          //get password from form
+          String passwordInput = passwordController.text;
+
+          Widget screen = HomeScreen();
+          LoginController loginController = new LoginController.buildContext(context, screen);
+          loginController.login(emailInput, passwordInput, isValid);
           
         },
         padding: EdgeInsets.all(15.0),
@@ -187,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSocialBtn(Function onTap, AssetImage logo) {
+  Widget _buildSocialBtn(Function onTap, String logo) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -204,7 +273,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ],
           image: DecorationImage(
-            image: logo,
+            image: NetworkImage(logo),
           ),
         ),
       ),
@@ -219,15 +288,11 @@ class _LoginScreenState extends State<LoginScreen> {
         children: <Widget>[
           _buildSocialBtn(
             () => print('Login with Facebook'),
-            AssetImage(
-              'assets/logos/facebook.jpg',
-            ),
+            "https://lh3.googleusercontent.com/proxy/X-VKcyiBTR_eenf-VTPhFbAoTkfyBFd26Km10McXc6NH-vuspwagb8oxfK25qVH9_ybhYQX5WzJqz1sLjHHU0EKnekmG_-PsiQnM8LSZUdJSGaNu8WS_3g",
           ),
           _buildSocialBtn(
             () => print('Login with Google'),
-            AssetImage(
-              'assets/logos/google.jpg',
-            ),
+            "https://images.theconversation.com/files/93616/original/image-20150902-6700-t2axrz.jpg?ixlib=rb-1.1.0&q=45&auto=format&w=1000&fit=clip",
           ),
         ],
       ),
@@ -236,7 +301,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Widget _buildSignupBtn() {
     return GestureDetector(
-      onTap: () => print('Sign Up Button Pressed'),
+      onTap: () {
+        print('Sign Up Button Pressed');
+
+        Widget screen = SignUpScreen();
+        LoginController loginController = new LoginController.buildContext(context, screen);
+        loginController.signup();
+      },
       child: RichText(
         text: TextSpan(
           children: [
@@ -272,66 +343,63 @@ class _LoginScreenState extends State<LoginScreen> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Stack(
             children: <Widget>[
-              
-              Expanded(
-                child: Container(
-                  padding: new EdgeInsets.all(30.0),
-                  color: login_bg_color,
-                  child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                'Sign In',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'OpenSans',
-                                  fontSize: 30.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                              ],
-                            ),
+              Container(
+                padding: new EdgeInsets.all(30.0),
+                color: login_bg_color,
+                child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 5,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                              'Sign In',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'OpenSans',
+                                fontSize: 30.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                            ],
                           ),
-                          Expanded(
-                            flex: 5,
-                            child: _buildEmailTF()
-                            ),
-                          Expanded(
-                            flex: 5,
-                            child: _buildPasswordTF()
-                            ),
-                          Expanded(
-                            flex: 1,
-                            child: _buildForgotPasswordBtn()
-                            ),
-                          Expanded(
-                            flex: 2,
-                            child: _buildRememberMeCheckbox()
-                            ),
-                          Expanded(
-                            flex: 5,
-                            child: _buildLoginBtn(context)
-                            ),
-                          Expanded(
-                            flex: 3,
-                            child: _buildSignInWithText()
-                            ),
-                          Expanded(
-                            flex: 4,
-                            child: _buildSocialBtnRow()
-                            ),
-                          Expanded(
-                            flex: 1,
-                            child: _buildSignupBtn()
-                            ),
-                        ],
-                      ),
-                ),
+                        ),
+                        Expanded(
+                          flex: 5,
+                          child: _buildEmailTF()
+                          ),
+                        Expanded(
+                          flex: 5,
+                          child: _buildPasswordTF()
+                          ),
+                        Expanded(
+                          flex: 1,
+                          child: _buildForgotPasswordBtn()
+                          ),
+                        Expanded(
+                          flex: 2,
+                          child: _buildRememberMeCheckbox()
+                          ),
+                        Expanded(
+                          flex: 5,
+                          child: _buildLoginBtn(context)
+                          ),
+                        Expanded(
+                          flex: 3,
+                          child: _buildSignInWithText()
+                          ),
+                        Expanded(
+                          flex: 4,
+                          child: _buildSocialBtnRow()
+                          ),
+                        Expanded(
+                          flex: 1,
+                          child: _buildSignupBtn()
+                          ),
+                      ],
+                    ),
               )
             ],
           ),

@@ -1,35 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
-import 'package:MTR_flutter/views/home_screen.dart';
+import 'package:MTR_flutter/screens/home_screen.dart';
+import 'package:MTR_flutter/screens/login_screen.dart';
 
-/*This seems to work */
 
 class LoginController {
 
   BuildContext context;
   String email;
   String password;
+  final screen;
   
 
-  LoginController.buildContext(this.context); //constructor that defines context
+  LoginController.buildContext(this.context, this.screen); //constructor that defines context
 
-  bool login(String email, String password){
+  void login(String email, String password, Function callback){
 
-    var loggedIn = checkDetails(email, password);
+    bool emailValid = checkEmailExists(email);
+    bool passwordValid = checkPassword(email, password);
 
-    if(loggedIn){
-      switchScreen(this.context);
-      return true; 
+    if(!emailValid || !passwordValid){
+      callback(emailValid, passwordValid);
+
     }else{
-      return false;
+      switchScreen(context, this.screen);
     }
+    
   }
 
 
-  Route _createRoute(){
+  bool signup(){
+    switchScreen(this.context, this.screen);
+    return true;
+  }
+
+
+  Route _createRoute(screen){
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => HomeScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) => screen,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return child;
       },
@@ -37,7 +46,15 @@ class LoginController {
     );
   }
 
-  bool checkDetails(String email, String password){
+  bool checkEmailExists(String email){
+
+    /*
+      logic for logging in will go here 
+
+      This will be where you will call model, which wil make calls to API etc for loggin in. 
+
+    
+    */
 
     if(email == "sanliston@outlook.com"){
       return true;
@@ -46,7 +63,24 @@ class LoginController {
     }
   }
 
-  void switchScreen(context){
-    Navigator.of(context).push(_createRoute());
+   bool checkPassword(String email, String password){
+
+    /*
+      logic for logging in will go here 
+
+      This will be where you will call model, which wil make calls to API etc for loggin in. 
+
+    
+    */
+
+    if(email == "sanliston@outlook.com" && password == "catman"){
+      return true;
+    }else{
+      return false; 
+    }
+  }
+
+  void switchScreen(context, screen){
+    Navigator.of(context).push(_createRoute(screen));
   }
 }

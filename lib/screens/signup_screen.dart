@@ -336,7 +336,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       padding: EdgeInsets.symmetric(vertical: 15.0),
       width: double.infinity,
       child: RaisedButton(
-        elevation: 5.0,
+        elevation: 0.0,
         onPressed: () {
           print('Register Button Pressed');
 

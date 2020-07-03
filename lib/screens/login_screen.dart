@@ -203,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
-        elevation: 5.0,
+        elevation: 0.0,
         onPressed: () {
           print('Login Button Pressed');
 
@@ -267,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.black26,
+              color: Colors.transparent,
               offset: Offset(0, 2),
               blurRadius: 6.0,
             ),

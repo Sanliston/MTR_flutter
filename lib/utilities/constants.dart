@@ -23,12 +23,12 @@ final kLabelStyleRed = TextStyle(
 
 final kBoxDecorationStyle = BoxDecoration(
   color: Color(0xFF6CA8F1),
-  borderRadius: BorderRadius.circular(10.0),
+  borderRadius: BorderRadius.circular(30.0),
   boxShadow: [
     BoxShadow(
-      color: Colors.black12,
-      blurRadius: 6.0,
-      offset: Offset(0, 2),
+      color: Colors.transparent,
+      blurRadius: 0.0,
+      offset: Offset(0, 0),
     ),
   ],
 );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
-import 'package:MTR_flutter/screens/home_screen.dart';
+import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/signup_screen.dart';
 import 'package:MTR_flutter/controllers/login_controller.dart';
 
@@ -213,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
           //get password from form
           String passwordInput = passwordController.text;
 
-          Widget screen = HomeScreen();
+          Widget screen = MainScreen();
           LoginController loginController = new LoginController.buildContext(context, screen);
           loginController.login(emailInput, passwordInput, isValid);
           

@@ -3,7 +3,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
-import 'package:MTR_flutter/screens/home_screen.dart';
+import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/login_screen.dart';
 import 'package:MTR_flutter/controllers/signup_controller.dart';
 
@@ -360,7 +360,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
            dataMap['passwordConfirmed'] = passwordConfirmController.text;
 
 
-          Widget screen = HomeScreen();
+          Widget screen = MainScreen();
           SignupController signupController = new SignupController.buildContext(context, screen);
           signupController.register(dataMap, isValid);
           

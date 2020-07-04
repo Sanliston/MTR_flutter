@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
+import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
 
 /*This screen will be made of tabs: Home, Inbox, and Personal 
   link: https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html 
@@ -24,11 +25,8 @@ class _MainScreenState extends State<MainScreen> {
     fontWeight: FontWeight.bold
   );
   
-  static const List<Widget> _widgetOptions = <Widget> [
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
+  static List<Widget> _widgetOptions = <Widget> [
+    HomeTabScreen(),
     Text(
       'Index 1: Inbox',
       style: optionStyle,

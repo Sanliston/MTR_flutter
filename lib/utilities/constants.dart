@@ -21,6 +21,12 @@ final kLabelStyleRed = TextStyle(
   fontFamily: 'OpenSans',
 );
 
+final tabTextStyle = TextStyle(
+  color: Colors.grey,
+  fontWeight: FontWeight.bold,
+  fontFamily: 'OpenSans',
+);
+
 final kBoxDecorationStyle = BoxDecoration(
   color: Color(0xFF6CA8F1),
   borderRadius: BorderRadius.circular(30.0),

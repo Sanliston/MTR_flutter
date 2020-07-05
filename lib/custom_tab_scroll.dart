@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 /*Used this to make the fade easier with sliver
 https://gist.github.com/smkhalsa/ec33ec61993f29865a52a40fff4b81a2 */
 
-class FadeOnScroll extends StatefulWidget {
+class CustomTabScroll extends StatefulWidget {
   final ScrollController scrollController;
   final double zeroOpacityOffset;
   final double fullOpacityOffset;
   final Widget child;
 
-  FadeOnScroll(
+  CustomTabScroll(
       {Key key,
       @required this.scrollController,
       @required this.child,
@@ -18,10 +18,13 @@ class FadeOnScroll extends StatefulWidget {
       this.fullOpacityOffset = 0});
 
   @override
-  _FadeOnScrollState createState() => _FadeOnScrollState();
+  _CustomTabScrollState createState() => _CustomTabScrollState();
 }
 
-class _FadeOnScrollState extends State<FadeOnScroll> {
+class _CustomTabScrollState extends State<CustomTabScroll> {
+
+  /*
+     */
   double _offset;
 
   @override
@@ -47,6 +50,7 @@ class _FadeOnScrollState extends State<FadeOnScroll> {
 
     var zero = widget.zeroOpacityOffset;
     var full = widget.fullOpacityOffset;
+
     if (widget.fullOpacityOffset == widget.zeroOpacityOffset)
       return 1;
     else if (widget.fullOpacityOffset > widget.zeroOpacityOffset) {
@@ -77,9 +81,48 @@ class _FadeOnScrollState extends State<FadeOnScroll> {
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: _calculateOpacity(),
-      child: widget.child,
+
+    double calculatedOpacity = _calculateOpacity();
+    double barOpacity = 1 - calculatedOpacity;
+    double rotateAngle = 220.0 >= _offset ? (1 - (_offset/220))/4 : 0;
+    double tolerance = 241.0 >= _offset ? (1 - (_offset/241))/4 : 0;
+    double bottomOffset =tolerance*350;
+
+    print("offset: $_offset , angle: $rotateAngle");
+    print("bottomOffset: $bottomOffset");
+
+    return Stack(
+      overflow: Overflow.clip,
+      children: <Widget>[
+        Positioned(
+          bottom: 50.0 + bottomOffset,
+          child: Opacity(
+            opacity: barOpacity,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 300.0,
+                maxWidth: MediaQuery.of(context).size.width, 
+              ),
+              child: Transform(
+                alignment: Alignment.topRight,
+                transform: Matrix4.skewY(rotateAngle),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100.0,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned.fill(
+          child: Opacity(
+            
+            opacity: calculatedOpacity,
+            child: widget.child,
+          ),
+        ),
+      ],
     );
   }
 }

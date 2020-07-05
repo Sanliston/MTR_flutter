@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
+import 'package:MTR_flutter/custom_tab_scroll.dart';
 
 /*This screen will have several tabs:
   Home
@@ -60,15 +61,21 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
             snap: false,
             floating: false,
             expandedHeight: homeHeaderHeight,
+            backgroundColor: Colors.white,
             actionsIconTheme: IconThemeData(opacity: 0.0),
             flexibleSpace: Stack(
               children: <Widget> [
                 Positioned.fill(
-                  child: Image.asset(
-                    "assets/images/home_background.jpg",
-                    height: homeHeaderHeight,
-                    width: screenWidth,
-                    fit: BoxFit.cover,
+                  child: CustomTabScroll(
+                    scrollController: scrollController,
+                    zeroOpacityOffset: homeHeaderHeight*0.6,
+                    fullOpacityOffset: 0,
+                    child: Image.asset(
+                      "assets/images/home_background.jpg",
+                      height: homeHeaderHeight,
+                      width: screenWidth,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
                 FlexibleSpaceBar(
@@ -90,8 +97,92 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
                                     Expanded(
                                       child: Column(
                                         children: <Widget> [
-                                          Expanded(child: Placeholder()),
-                                          Expanded(child: Placeholder())
+                                          Expanded(
+                                            flex: 2,
+                                            child: Text(
+                                              "More than Rubies",
+                                              style: TextStyle(
+                                                color: Color(0xFF527DAA),
+                                                letterSpacing: 1.5,
+                                                fontSize: 18.0,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'OpenSans',
+                                              ),
+                                            )
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  flex: 3,
+                                                  child: Stack( 
+                                                    children: <Widget>[
+                                                      Positioned(
+                                                        left: 0.0,
+                                                        top: 12.0,
+                                                        child: Container(
+                                                          width: 25,
+                                                          height: 25,
+                                                          decoration: new BoxDecoration(
+                                                            shape: BoxShape.circle,
+                                                            image: new DecorationImage(
+                                                              fit: BoxFit.fill,
+                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
+                                                            )
+                                                          )
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: 20.0,
+                                                        top: 12.0,
+                                                        child: Container(
+                                                          width: 25,
+                                                          height: 25,
+                                                          decoration: new BoxDecoration(
+                                                            shape: BoxShape.circle,
+                                                            image: new DecorationImage(
+                                                              fit: BoxFit.fill,
+                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
+                                                            )
+                                                          )
+                                                        ),
+                                                      ),
+                                                      Positioned(
+                                                        left: 40.0,
+                                                        top: 12.0,
+                                                        child: Container(
+                                                          width: 25,
+                                                          height: 25,
+                                                          decoration: new BoxDecoration(
+                                                            shape: BoxShape.circle,
+                                                            image: new DecorationImage(
+                                                              fit: BoxFit.fill,
+                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
+                                                            )
+                                                          )
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 4,
+                                                  child: Text(
+                                                    "87 Members",
+                                                    style: TextStyle(
+                                                      color: Color(0xFF527DAA),
+                                                      letterSpacing: 1.5,
+                                                      fontSize: 13.0,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontFamily: 'OpenSans',
+                                                    ),
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
                                         ]
                                       ),
                                     ),
@@ -152,6 +243,9 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
                 Tab(text: 'Content'),
               ],
               controller: controller,
+              labelColor: Colors.red,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.red,
             )
           ),   
           SliverFillRemaining(

@@ -56,13 +56,38 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
         controller: scrollController,
         slivers: <Widget> [
           SliverAppBar(
-            title: Text("More Than Rubies"),
+            title: FadeOnScroll(
+              scrollController: scrollController,
+              fullOpacityOffset: homeHeaderHeight*0.3,
+              zeroOpacityOffset: 0,
+              child: Text("More Than Rubies")
+            ),
             pinned: true,
             snap: false,
             floating: false,
             expandedHeight: homeHeaderHeight,
             backgroundColor: Colors.white,
-            actionsIconTheme: IconThemeData(opacity: 0.0),
+            actionsIconTheme: IconThemeData(opacity: 1.0),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(
+                  Icons.notifications,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // do something
+                },
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // do something
+                },
+              )
+            ],
             flexibleSpace: Stack(
               children: <Widget> [
                 Positioned.fill(
@@ -70,11 +95,35 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
                     scrollController: scrollController,
                     zeroOpacityOffset: homeHeaderHeight*0.6,
                     fullOpacityOffset: 0,
-                    child: Image.asset(
-                      "assets/images/home_background.jpg",
-                      height: homeHeaderHeight,
-                      width: screenWidth,
-                      fit: BoxFit.cover,
+                    child: Stack(
+                      children: <Widget>[
+
+                        Image.asset(
+                          "assets/images/home_background.jpg",
+                          height: homeHeaderHeight*1.1,
+                          width: screenWidth,
+                          fit: BoxFit.cover,
+                        ),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.black38,
+                                Colors.transparent,
+                              ],
+                              begin: Alignment.topRight,
+                              end: Alignment.bottomRight,
+                              stops: [
+                                0.0, 
+                                0.4
+                              ],
+                              tileMode: TileMode.clamp,
+                            )
+                          ),
+          
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -85,7 +134,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
                       zeroOpacityOffset: 50,
                       fullOpacityOffset: 0,
                       child: Padding(
-                      padding: const EdgeInsets.only(top: 90.0, left: 10.0, right: 10.0, bottom: 30.0),
+                      padding: const EdgeInsets.only(top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
                       child: SizedBox(
                         child: Center(
                           child: Column(
@@ -93,128 +142,175 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
                               Expanded(
                                 flex: 3,
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: <Widget> [
                                     Expanded(
-                                      child: Column(
-                                        children: <Widget> [
-                                          Expanded(
-                                            flex: 2,
-                                            child: Text(
-                                              "More than Rubies",
-                                              style: TextStyle(
-                                                color: Color(0xFF527DAA),
-                                                letterSpacing: 1.5,
-                                                fontSize: 18.0,
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'OpenSans',
-                                              ),
-                                            )
-                                          ),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: <Widget>[
-                                                Expanded(
-                                                  flex: 3,
-                                                  child: Stack( 
-                                                    children: <Widget>[
-                                                      Positioned(
-                                                        left: 0.0,
-                                                        top: 12.0,
-                                                        child: Container(
-                                                          width: 25,
-                                                          height: 25,
-                                                          decoration: new BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            image: new DecorationImage(
-                                                              fit: BoxFit.fill,
-                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
-                                                            )
-                                                          )
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        left: 20.0,
-                                                        top: 12.0,
-                                                        child: Container(
-                                                          width: 25,
-                                                          height: 25,
-                                                          decoration: new BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            image: new DecorationImage(
-                                                              fit: BoxFit.fill,
-                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
-                                                            )
-                                                          )
-                                                        ),
-                                                      ),
-                                                      Positioned(
-                                                        left: 40.0,
-                                                        top: 12.0,
-                                                        child: Container(
-                                                          width: 25,
-                                                          height: 25,
-                                                          decoration: new BoxDecoration(
-                                                            shape: BoxShape.circle,
-                                                            image: new DecorationImage(
-                                                              fit: BoxFit.fill,
-                                                              image: NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
-                                                            )
-                                                          )
-                                                        ),
-                                                      )
-                                                    ],
-                                                  ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 25.0),
+                                        child: Column(
+                                          children: <Widget> [
+                                            Flexible(
+                                              flex: 20,
+                                              child: Text(
+                                                "More than Rubies",
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  letterSpacing: 1.5,
+                                                  fontSize: 28.0,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'OpenSans',
                                                 ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Text(
-                                                    "87 Members",
-                                                    style: TextStyle(
-                                                      color: Color(0xFF527DAA),
-                                                      letterSpacing: 1.5,
-                                                      fontSize: 13.0,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontFamily: 'OpenSans',
+                                              )
+                                            ),
+                                            Spacer(
+                                              flex: 1,
+                                            ),
+                                            Expanded(
+                                              flex: 10,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    flex: 3,
+                                                    child: Stack(
+                                                      children: <Widget>[
+                                                        Positioned(
+                                                          left: 0.0,
+                                                          top: 5.0,
+                                                          child: Container(
+                                                            width: 25,
+                                                            height: 25,
+                                                            decoration: new BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              image: new DecorationImage(
+                                                                fit: BoxFit.fill,
+                                                                image: NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
+                                                              )
+                                                            )
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          left: 20.0,
+                                                          top: 5.0,
+                                                          child: Container(
+                                                            width: 25,
+                                                            height: 25,
+                                                            decoration: new BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              image: new DecorationImage(
+                                                                fit: BoxFit.fill,
+                                                                image: NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
+                                                              )
+                                                            )
+                                                          ),
+                                                        ),
+                                                        Positioned(
+                                                          left: 40.0,
+                                                          top: 5.0,
+                                                          child: Container(
+                                                            width: 25,
+                                                            height: 25,
+                                                            decoration: new BoxDecoration(
+                                                              shape: BoxShape.circle,
+                                                              image: new DecorationImage(
+                                                                fit: BoxFit.fill,
+                                                                image: NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
+                                                              )
+                                                            )
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        ]
+                                                  Expanded(
+                                                    flex: 5,
+                                                    child: Text(
+                                                      "87 Members",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        letterSpacing: 1.5,
+                                                        fontSize: 12.0,
+                                                        fontWeight: FontWeight.normal,
+                                                        fontFamily: 'OpenSans',
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            )
+                                          ]
+                                        ),
                                       ),
                                     ),
 
                                     Expanded(
-                                      child: Placeholder(),
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+                                        child: Row(
+                                          children: <Widget>[
+                                            Spacer(),
+                                            Expanded(
+                                              child: Container(
+                                                decoration: new BoxDecoration(
+                                                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                                                  image: new DecorationImage(
+                                                    fit: BoxFit.cover,
+                                                    image: NetworkImage("https://randomuser.me/api/portraits/women/69.jpg"),
+                                                  )
+                                                )
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     )
                                   ],
                                 ),
                               ),
+                  
                               Expanded(
                                 flex: 2,
-                                child: Center(
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
                                   child: RaisedButton(
+
                                     elevation: 0.0,
                                     onPressed: () {
                                       print('invite Button Pressed');
                                       
                                     },
-                                    padding: EdgeInsets.all(15.0),
+                                    padding: EdgeInsets.only(top: 4.0, left: 50.0, right: 50.0, bottom: 4.0),
                                     shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                        color: Colors.red,
+                                        width: 2.2,
+                                      ),
                                       borderRadius: BorderRadius.circular(30.0),
                                     ),
                                     color: Colors.white,
-                                    child: Text(
-                                      'Invite',
-                                      style: TextStyle(
-                                        color: Color(0xFF527DAA),
-                                        letterSpacing: 1.5,
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'OpenSans',
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxHeight: 15,
+                                        maxWidth: 70, 
+                                      ),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.add,
+                                            color: Colors.red,
+                                            size: 14.0,
+                                          ),
+                                          Text(
+                                            'Invite',
+                                            style: TextStyle(
+                                              color: Colors.red,
+                                              letterSpacing: 1.5,
+                                              fontSize: 14.0,
+                                              fontWeight: FontWeight.bold,
+                                              fontFamily: 'OpenSans',
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
@@ -244,7 +340,7 @@ class _HomeTabScreenState extends State<HomeTabScreen> with SingleTickerProvider
               ],
               controller: controller,
               labelColor: Colors.red,
-              unselectedLabelColor: Colors.grey,
+              unselectedLabelColor: Colors.black54,
               indicatorColor: Colors.red,
             )
           ),   

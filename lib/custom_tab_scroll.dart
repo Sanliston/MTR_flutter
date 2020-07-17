@@ -88,8 +88,8 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     double tolerance = 241.0 >= _offset ? (1 - (_offset/241))/4 : 0;
     double bottomOffset =tolerance*350;
 
-    print("offset: $_offset , angle: $rotateAngle");
-    print("bottomOffset: $bottomOffset");
+    // print("offset: $_offset , angle: $rotateAngle");
+    // print("bottomOffset: $bottomOffset");
 
     return Stack(
       overflow: Overflow.clip,

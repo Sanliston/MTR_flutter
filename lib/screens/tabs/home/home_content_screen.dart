@@ -8,24 +8,15 @@ import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
   */
 
 class HomeContentScreen extends StatefulWidget {
- 
-  final Function scrollCallback;
-  final ScrollController passedController;
-  HomeContentScreen({Key key, this.scrollCallback, this.passedController}) : super(key:key);
+
+  HomeContentScreen({Key key}) : super(key:key);
 
   @override
-  _HomeContentScreenState createState() => _HomeContentScreenState(scrollCallback: scrollCallback, scrollController: passedController);
+  _HomeContentScreenState createState() => _HomeContentScreenState();
   
 }
 
 class _HomeContentScreenState extends State<HomeContentScreen> {
-
-  final Function scrollCallback;
-  final ScrollController scrollController;
-
-  
-
-  _HomeContentScreenState({this.scrollCallback, this.scrollController});
 
   @override
   Widget build(BuildContext context){
@@ -34,87 +25,50 @@ class _HomeContentScreenState extends State<HomeContentScreen> {
         children: <Widget> [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: new NotificationListener(
-              child: new ListView(
-                // padding: EdgeInsets.all(15.0),
-                // physics: const NeverScrollableScrollPhysics(), //only up until tab bar is shrunk
-                controller: scrollController,
-                children: <Widget>[
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+            child: ListView(
+              padding: EdgeInsets.all(15.0),
+              children: <Widget>[
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
+                SizedBox(
+                  height: 150.0,
+                  child: Placeholder()
+                ),
+              ],
 
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
-
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
-
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
-
-                  SizedBox(
-                    height: 150.0,
-                    child: Placeholder()
-                  ),
-                ],
-
-              ),
-
-              onNotification: (scrollNotification){
-
-                if(scrollNotification is OverscrollNotification){
-                  scrollCallback(scrollNotification);
-                }
-                
-                
-              },
             ),
           ),
 

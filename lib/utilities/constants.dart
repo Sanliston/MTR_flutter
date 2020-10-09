@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
+//global parameters and styles - these can all be changed via settings by the user
+
+//login screen parameters and styles
 
 const login_bg_color = const Color(0xFF2d82fe);
 
@@ -14,7 +18,6 @@ final kLabelStyle = TextStyle(
   fontFamily: 'OpenSans',
 );
 
-
 final kLabelStyleRed = TextStyle(
   color: Colors.red,
   fontWeight: FontWeight.bold,
@@ -26,6 +29,39 @@ final tabTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontFamily: 'OpenSans',
 );
+
+//home screen parameters and styles
+final double avatarWidth = 40.0;
+final double avatarHeight = 40.0;
+final double avatarRadius = 60.0;
+
+final homeSubtitleTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87));
+
+final homeLinkTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.redAccent));
+
+final homeSubtitleTextStyleAccent = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.redAccent));
+
+final homeTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.black87));
+
+final homeTextStyleBold = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87));
+
+final homeTextStyleBoldWhite = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white));
+
+final homeSubTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
 
 final kBoxDecorationStyle = BoxDecoration(
   color: Color(0xFF6CA8F1),

@@ -3,6 +3,9 @@ import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 //global parameters and styles - these can all be changed via settings by the user
 
+const double sidePadding = 15.0;
+const Color iconColor = Colors.redAccent;
+
 //login screen parameters and styles
 
 const login_bg_color = const Color(0xFF2d82fe);
@@ -74,3 +77,12 @@ final kBoxDecorationStyle = BoxDecoration(
     ),
   ],
 );
+
+//Forum tab styles
+final forumTextStyleBold = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black87));
+
+final forumInteractionsStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));

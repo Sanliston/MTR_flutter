@@ -86,3 +86,16 @@ final forumTextStyleBold = GoogleFonts.heebo(
 final forumInteractionsStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
+
+//group tab values
+final double memberAvatarWidth = 20.0;
+final double memberAvatarHeight = 20.0;
+final double memberAvatarRadius = 10.0;
+
+final groupsSubTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
+
+final groupsSubTextStyleBold = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black54));

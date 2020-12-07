@@ -58,7 +58,8 @@ List<Map> membersShortlist = [
 ];
 
 //build the home widget Map
-List<Widget> buildHomeTab() {
+List<Widget> buildHomeTab(
+    Function setState, BuildContext context, Map sharedStateManagement) {
   /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */

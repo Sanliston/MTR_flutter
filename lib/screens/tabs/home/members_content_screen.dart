@@ -167,7 +167,8 @@ Widget buildMemberInfo(int index) {
   return widget;
 }
 
-List<Widget> buildMembersTab() {
+List<Widget> buildMembersTab(
+    Function setState, BuildContext context, Map sharedStateManagement) {
   /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */

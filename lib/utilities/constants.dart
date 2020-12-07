@@ -88,6 +88,8 @@ final forumInteractionsStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
 
+final _forumPostKey = GlobalKey<AnimatedListState>();
+
 //group tab values
 final double memberAvatarWidth = 20.0;
 final double memberAvatarHeight = 20.0;

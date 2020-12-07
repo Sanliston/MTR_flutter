@@ -39,11 +39,35 @@ class HomeTabScreen extends StatefulWidget {
 }
 
 class _HomeTabScreenState extends State<HomeTabScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   TabController controller;
   final ScrollController scrollController = ScrollController();
 
   final List<String> listItems = [];
+
+  //State management: Forum
+  GlobalKey<AnimatedListState> forumPostKey;
+  AnimationController forumAnimationController;
+  Animation forumInsertAnimation;
+
+  Map sharedStateManagement;
+  Map forumStateManagement;
+
+  void _onNewPost() {
+    print("adding new post");
+    Map newPost = {
+      'user': 'New Post yooo',
+      'title': 'Flocka Bitches',
+      'date': '5 months ago',
+      'body':
+          'Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc manLorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man',
+      'likes': 10,
+      'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
+    };
+    setState(() {
+      forumPosts.add(newPost);
+    });
+  }
 
   final List<String> _tabs = <String>[
     "Home",
@@ -56,18 +80,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     "Content"
   ];
 
-  Map<String, List> _tab_widgets = {
-    "Home": buildHomeTab(),
-    "Forum": buildForumTab(),
-    "Groups": buildGroupsTab(),
-    "Members": buildMembersTab(),
-    "Events": buildEventsTab(),
-    "Services": buildServicesTab(),
-    "Pricing": buildPricingTab(),
-    "Content": buildContentTab()
+  Map<String, Function> _tab_widgets = {
+    "Home": buildHomeTab,
+    "Forum": buildForumTab,
+    "Groups": buildGroupsTab,
+    "Members": buildMembersTab,
+    "Events": buildEventsTab,
+    "Services": buildServicesTab,
+    "Pricing": buildPricingTab,
+    "Content": buildContentTab
   };
 
-  static List<Widget> buildEventsTab() {
+  static List<Widget> buildEventsTab(
+      Function setState, BuildContext context, Map sharedStateManagement) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -84,7 +109,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildServicesTab() {
+  static List<Widget> buildServicesTab(
+      Function setState, BuildContext context) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -101,7 +127,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildPricingTab() {
+  static List<Widget> buildPricingTab(
+      Function setState, BuildContext context, Map sharedStateManagement) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -118,7 +145,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildContentTab() {
+  static List<Widget> buildContentTab(
+      Function setState, BuildContext context, Map sharedStateManagement) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -142,6 +170,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       length: 8,
       vsync: this,
     );
+
+    forumPostKey = GlobalKey<AnimatedListState>();
+
+    sharedStateManagement = {
+      "forum_post_key": forumPostKey,
+    };
   }
 
   @override
@@ -521,13 +555,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                   tab index is decided by: name 
                                   So we create a map containing the arrays and the views for the relevant tab
                                   And then we index that map using the value of the name variable*/
-                                  return _tab_widgets[name][index];
+                                  return _tab_widgets[name](setState, context,
+                                      sharedStateManagement)[index];
                                 },
                                 // The childCount of the SliverChildBuilderDelegate
                                 // specifies how many children this inner list
                                 // has. In this example, each tab has a list of
                                 // exactly 30 items, but this is arbitrary.
-                                childCount: _tab_widgets[name].length,
+                                childCount: _tab_widgets[name](setState,
+                                        context, sharedStateManagement)
+                                    .length,
                               ),
                             ),
                           ),

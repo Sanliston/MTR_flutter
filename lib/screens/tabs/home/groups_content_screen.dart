@@ -236,7 +236,8 @@ Widget _buildGroupRecents(int index) {
   return widget;
 }
 
-List<Widget> buildGroupsTab() {
+List<Widget> buildGroupsTab(
+    Function setState, BuildContext context, Map sharedStateManagement) {
   /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */

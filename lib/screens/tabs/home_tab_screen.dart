@@ -172,9 +172,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     );
 
     forumPostKey = GlobalKey<AnimatedListState>();
+    forumAnimationController = AnimationController(vsync: this);
 
     sharedStateManagement = {
       "forum_post_key": forumPostKey,
+      "forum_animation_controller": forumAnimationController
     };
   }
 

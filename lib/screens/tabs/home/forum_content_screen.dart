@@ -165,163 +165,178 @@ List<Widget> buildForumTab(
 
             print("Dividerthickness: $dividerColor");
             return SizeTransition(
-              sizeFactor: animation,
-              child: SlideTransition(
-                position: animation.drive(Tween<Offset>(
-                  begin: const Offset(0.0, -1.0),
-                  end: const Offset(0.0, 0.0),
-                )),
-                child: Container(
-                  color: Colors.white,
-                  child: Column(
-                    children: [
-                      Divider(
-                        color: dividerColor,
-                        thickness: 2.0,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 10.0, bottom: 20.0, left: 20.0, right: 20.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                        width: avatarWidth,
-                                        height: avatarHeight,
-                                        margin: const EdgeInsets.only(
-                                            right: 15, bottom: 5),
-                                        decoration: new BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(avatarRadius)),
-                                            image: new DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(
-                                                  "https://randomuser.me/api/portraits/women/69.jpg"),
-                                            ))),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(forumPosts[index]['user'],
-                                            textAlign: TextAlign.left,
-                                            overflow: TextOverflow.ellipsis,
-                                            style:
-                                                forumTextStyleBold), //set a global style to be shared
-                                        SizedBox(
-                                            height:
-                                                5), //sized box to create space between
-                                        Text(forumPosts[index]['date'],
-                                            textAlign: TextAlign.left,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: homeSubTextStyle),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                IconButton(
-                                  padding: EdgeInsets.all(0),
-                                  icon: Icon(
-                                    Icons.more_horiz,
-                                    color: iconColor,
-                                  ),
-                                  onPressed: () {
-                                    // do something
-                                  },
-                                )
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 0.0, top: 5.0, right: 0.0, bottom: 0.0),
-                              child: new Text(forumPosts[index]['title'],
-                                  textAlign: TextAlign.left,
-                                  overflow: TextOverflow.visible,
-                                  style: homeSubtitleTextStyle),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 0.0, top: 5.0, right: 0.0, bottom: 5.0),
-                              child: new Text(forumPosts[index]['body'],
-                                  textAlign: TextAlign.left,
-                                  overflow: TextOverflow.visible,
-                                  style: homeTextStyle),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          padding: EdgeInsets.all(0),
-                                          icon: Icon(
-                                            Icons.favorite_border,
-                                            color: Colors.black26,
-                                          ),
-                                          onPressed: () {
-                                            // do something
-                                          },
-                                        ),
-                                        new Text(
-                                            forumPosts[index]['likes']
-                                                .toString(),
-                                            textAlign: TextAlign.left,
-                                            overflow: TextOverflow.visible,
-                                            style: forumInteractionsStyle)
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        IconButton(
-                                          padding: EdgeInsets.all(0),
-                                          icon: Icon(
-                                            Icons.chat_bubble_outline,
-                                            color: Colors.black26,
-                                          ),
-                                          onPressed: () {
-                                            // do something
-                                          },
-                                        ),
-                                        new Text(
-                                            forumPosts[index]['comments']
-                                                .length
-                                                .toString(),
-                                            textAlign: TextAlign.left,
-                                            overflow: TextOverflow.visible,
-                                            style: forumInteractionsStyle)
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                IconButton(
-                                  padding: EdgeInsets.all(0),
-                                  icon: Icon(
-                                    Icons.share,
-                                    color: Colors.black26,
-                                  ),
-                                  onPressed: () {
-                                    // do something
-                                  },
-                                )
-                              ],
-                            ),
-                          ],
+              sizeFactor: animation.drive(
+                  CurveTween(curve: Interval(0.0, 0.7, curve: Curves.easeIn))),
+              child: FadeTransition(
+                opacity: animation.drive(
+                    CurveTween(curve: Interval(0.7, 1.0, curve: Curves.ease))),
+                child: SlideTransition(
+                  position: animation.drive(Tween<Offset>(
+                    begin: const Offset(-1.0, 0.0),
+                    end: const Offset(0.0, 0.0),
+                  )),
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        Divider(
+                          color: dividerColor,
+                          thickness: 2.0,
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 10.0, bottom: 20.0, left: 20.0, right: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                          width: avatarWidth,
+                                          height: avatarHeight,
+                                          margin: const EdgeInsets.only(
+                                              right: 15, bottom: 5),
+                                          decoration: new BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      avatarRadius)),
+                                              image: new DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                    "https://randomuser.me/api/portraits/women/69.jpg"),
+                                              ))),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(forumPosts[index]['user'],
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.ellipsis,
+                                              style:
+                                                  forumTextStyleBold), //set a global style to be shared
+                                          SizedBox(
+                                              height:
+                                                  5), //sized box to create space between
+                                          Text(forumPosts[index]['date'],
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: homeSubTextStyle),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    icon: Icon(
+                                      Icons.more_horiz,
+                                      color: iconColor,
+                                    ),
+                                    onPressed: () {
+                                      // do something
+                                    },
+                                  )
+                                ],
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 0.0,
+                                    top: 5.0,
+                                    right: 0.0,
+                                    bottom: 0.0),
+                                child: new Text(forumPosts[index]['title'],
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.visible,
+                                    style: homeSubtitleTextStyle),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 0.0,
+                                    top: 5.0,
+                                    right: 0.0,
+                                    bottom: 5.0),
+                                child: new Text(forumPosts[index]['body'],
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.visible,
+                                    style: homeTextStyle),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            padding: EdgeInsets.all(0),
+                                            icon: Icon(
+                                              Icons.favorite_border,
+                                              color: Colors.black26,
+                                            ),
+                                            onPressed: () {
+                                              // do something
+                                            },
+                                          ),
+                                          new Text(
+                                              forumPosts[index]['likes']
+                                                  .toString(),
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.visible,
+                                              style: forumInteractionsStyle)
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            padding: EdgeInsets.all(0),
+                                            icon: Icon(
+                                              Icons.chat_bubble_outline,
+                                              color: Colors.black26,
+                                            ),
+                                            onPressed: () {
+                                              // do something
+                                            },
+                                          ),
+                                          new Text(
+                                              forumPosts[index]['comments']
+                                                  .length
+                                                  .toString(),
+                                              textAlign: TextAlign.left,
+                                              overflow: TextOverflow.visible,
+                                              style: forumInteractionsStyle)
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  IconButton(
+                                    padding: EdgeInsets.all(0),
+                                    icon: Icon(
+                                      Icons.share,
+                                      color: Colors.black26,
+                                    ),
+                                    onPressed: () {
+                                      // do something
+                                    },
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

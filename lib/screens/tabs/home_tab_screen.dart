@@ -163,6 +163,104 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
+  void displayNavigationDrawer(Map params) {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+              constraints: BoxConstraints(
+                  minWidth: 150.0, maxHeight: params['maxHeight']),
+              margin: const EdgeInsets.only(
+                  top: 0.0,
+                  left: sidePadding,
+                  right: sidePadding,
+                  bottom: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Center(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                        height: 5.0,
+                        width: 45.0,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10),
+                              bottomLeft: Radius.circular(10),
+                              bottomRight: Radius.circular(10)),
+                        )),
+                  )),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        top: 10.0,
+                        bottom: 10.0,
+                        left: sidePadding,
+                        right: sidePadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          params['title'],
+                          style: homeTextStyleBold,
+                          overflow: TextOverflow.visible,
+                        ),
+                        Text(
+                          params['description'],
+                          style: homeSubTextStyle,
+                          overflow: TextOverflow.visible,
+                        )
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    thickness: 1.0,
+                  ),
+                  ListView.builder(
+                      itemCount: params['options'].length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        Function onPressed =
+                            params['options'][index]['onPressed'];
+                        IconData icon = params['options'][index]['iconData'];
+                        String optionTitle = params['options'][index]['title'];
+
+                        return FlatButton(
+                          onPressed:
+                              onPressed, //passing function definition onPressed and not invoking onPressed().
+                          child: Row(
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: Icon(
+                                  icon,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Text(optionTitle,
+                                  style: homeTextStyleBold,
+                                  overflow: TextOverflow.visible)
+                            ],
+                          ),
+                        );
+                      })
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(10),
+                    topRight: Radius.circular(10),
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10)),
+              ));
+        });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -176,7 +274,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     sharedStateManagement = {
       "forum_post_key": forumPostKey,
-      "forum_animation_controller": forumAnimationController
+      "forum_animation_controller": forumAnimationController,
+      "display_navigation_drawer": displayNavigationDrawer
     };
   }
 
@@ -436,7 +535,45 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                           child: RaisedButton(
                                             elevation: 0.0,
                                             onPressed: () {
-                                              print('invite Button Pressed');
+                                              List options = [
+                                                {
+                                                  "iconData":
+                                                      Icons.chat_bubble_outline,
+                                                  "title": "Send an SMS",
+                                                  "onPressed": () {
+                                                    print(
+                                                        "****************callback function1 called");
+                                                  }
+                                                },
+                                                {
+                                                  "iconData": Icons.share,
+                                                  "title":
+                                                      "Share via social and more",
+                                                  "onPressed": () {
+                                                    print(
+                                                        "****************callback function2 called");
+                                                  }
+                                                },
+                                                {
+                                                  "iconData": Icons.link,
+                                                  "title": "Copy link",
+                                                  "onPressed": () {
+                                                    print(
+                                                        "****************callback function3 called");
+                                                  }
+                                                }
+                                              ];
+
+                                              Map params = {
+                                                "context": context,
+                                                "title": "Invite Members",
+                                                "description":
+                                                    "Invite people to join your space on the app",
+                                                "maxHeight": 250.0,
+                                                "options": options
+                                              };
+
+                                              displayNavigationDrawer(params);
                                             },
                                             padding: EdgeInsets.only(
                                                 top: 4.0,

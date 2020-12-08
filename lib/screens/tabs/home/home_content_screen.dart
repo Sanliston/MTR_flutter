@@ -277,7 +277,40 @@ List<Widget> buildHomeTab(
                 RaisedButton(
                   elevation: 0.0,
                   onPressed: () {
-                    print('invite Button Pressed');
+                    List options = [
+                      {
+                        "iconData": Icons.chat_bubble_outline,
+                        "title": "Send an SMS",
+                        "onPressed": () {
+                          print("****************callback function1 called");
+                        }
+                      },
+                      {
+                        "iconData": Icons.share,
+                        "title": "Share via social and more",
+                        "onPressed": () {
+                          print("****************callback function2 called");
+                        }
+                      },
+                      {
+                        "iconData": Icons.link,
+                        "title": "Copy link",
+                        "onPressed": () {
+                          print("****************callback function3 called");
+                        }
+                      }
+                    ];
+
+                    Map params = {
+                      "context": context,
+                      "title": "Invite Members",
+                      "description":
+                          "Invite people to join your space on the app",
+                      "maxHeight": 250.0,
+                      "options": options
+                    };
+
+                    sharedStateManagement['display_navigation_drawer'](params);
                   },
                   padding: EdgeInsets.only(
                       top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),

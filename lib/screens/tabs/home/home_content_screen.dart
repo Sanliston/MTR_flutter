@@ -306,7 +306,6 @@ List<Widget> buildHomeTab(
                       "title": "Invite Members",
                       "description":
                           "Invite people to join your space on the app",
-                      "maxHeight": 250.0,
                       "options": options
                     };
 

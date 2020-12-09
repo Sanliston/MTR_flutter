@@ -238,6 +238,66 @@ List<Widget> buildForumTab(
                                       color: iconColor,
                                     ),
                                     onPressed: () {
+                                      List options = [
+                                        {
+                                          "title": "Share",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function1 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Unfollow",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function2 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Copy Text",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function3 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Edit Post",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function2 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Pin",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function3 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Close Comments",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function2 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Delete",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function3 called");
+                                          }
+                                        }
+                                      ];
+
+                                      Map params = {
+                                        "context": context,
+                                        "title": "Post Options",
+                                        "options": options
+                                      };
+
+                                      sharedStateManagement[
+                                          'display_navigation_drawer'](params);
                                       // do something
                                     },
                                   )
@@ -327,6 +387,57 @@ List<Widget> buildForumTab(
                                       color: Colors.black26,
                                     ),
                                     onPressed: () {
+                                      List options = [
+                                        {
+                                          "title": "Share to read on the app",
+                                          "type": "subtitle",
+                                        },
+                                        {
+                                          "iconData": Icons.chat_bubble_outline,
+                                          "title": "Send an SMS",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function1 called");
+                                          }
+                                        },
+                                        {
+                                          "iconData": Icons.share,
+                                          "title": "Share via social and more",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function2 called");
+                                          }
+                                        },
+                                        {
+                                          "iconData": Icons.link,
+                                          "title": "Copy link",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function3 called");
+                                          }
+                                        },
+                                        {
+                                          "title": "Share web URL",
+                                          "type": "subtitle"
+                                        },
+                                        {
+                                          "iconData": Icons.linear_scale,
+                                          "title": "Share post URL",
+                                          "onPressed": () {
+                                            print(
+                                                "****************callback function2 called");
+                                          }
+                                        },
+                                      ];
+
+                                      Map params = {
+                                        "context": context,
+                                        "description": "Share This Post",
+                                        "options": options
+                                      };
+
+                                      sharedStateManagement[
+                                          'display_navigation_drawer'](params);
                                       // do something
                                     },
                                   )

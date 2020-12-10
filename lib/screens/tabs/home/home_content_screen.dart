@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
+import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
 
 /*This screen will be made of tabs: Home, Inbox, and Personal 
   link: https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html 
@@ -189,11 +190,20 @@ List<Widget> buildHomeTab(
                   overflow: TextOverflow.ellipsis,
                   style: homeSubtitleTextStyle,
                 ),
-                Text(
-                  'See All',
-                  textAlign: TextAlign.start,
-                  overflow: TextOverflow.ellipsis,
-                  style: homeLinkTextStyle,
+                FlatButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => MemberSearchScreen()));
+                  },
+                  child: Text(
+                    'See All',
+                    textAlign: TextAlign.start,
+                    overflow: TextOverflow.ellipsis,
+                    style: homeLinkTextStyle,
+                  ),
                 )
               ],
             ),
@@ -203,18 +213,57 @@ List<Widget> buildHomeTab(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: avatarHeight + 4,
-                  child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
-                      itemBuilder: (BuildContext context, int index) {
-                        if (4 == index) {
-                          //return container with overlay
-                          return Stack(children: [
-                            Container(
+                FlatButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => MemberSearchScreen()));
+                  },
+                  child: Container(
+                    height: avatarHeight + 4,
+                    child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: 5,
+                        itemBuilder: (BuildContext context, int index) {
+                          if (4 == index) {
+                            //return container with overlay
+                            return Stack(children: [
+                              Container(
+                                  width: avatarWidth,
+                                  height: avatarHeight,
+                                  margin: const EdgeInsets.only(
+                                      right: 10, bottom: 5),
+                                  decoration: new BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(avatarRadius)),
+                                      image: new DecorationImage(
+                                        fit: BoxFit.cover,
+                                        image: NetworkImage(
+                                            membersShortlist[index]
+                                                ["profile_image"]),
+                                      ))),
+                              Container(
+                                  width: avatarWidth,
+                                  height: avatarHeight,
+                                  margin: const EdgeInsets.only(
+                                      right: 10, bottom: 5),
+                                  decoration: new BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(avatarRadius)),
+                                      color:
+                                          new Color.fromRGBO(255, 0, 0, 0.5)),
+                                  child: Center(
+                                      child: Text(
+                                    "+86",
+                                    style: homeTextStyleBoldWhite,
+                                  ))),
+                            ]);
+                          } else {
+                            return Container(
                                 width: avatarWidth,
                                 height: avatarHeight,
                                 margin:
@@ -227,38 +276,10 @@ List<Widget> buildHomeTab(
                                       image: NetworkImage(
                                           membersShortlist[index]
                                               ["profile_image"]),
-                                    ))),
-                            Container(
-                                width: avatarWidth,
-                                height: avatarHeight,
-                                margin:
-                                    const EdgeInsets.only(right: 10, bottom: 5),
-                                decoration: new BoxDecoration(
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(avatarRadius)),
-                                    color: new Color.fromRGBO(255, 0, 0, 0.5)),
-                                child: Center(
-                                    child: Text(
-                                  "+86",
-                                  style: homeTextStyleBoldWhite,
-                                ))),
-                          ]);
-                        } else {
-                          return Container(
-                              width: avatarWidth,
-                              height: avatarHeight,
-                              margin:
-                                  const EdgeInsets.only(right: 10, bottom: 5),
-                              decoration: new BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                      Radius.circular(avatarRadius)),
-                                  image: new DecorationImage(
-                                    fit: BoxFit.cover,
-                                    image: NetworkImage(membersShortlist[index]
-                                        ["profile_image"]),
-                                  )));
-                        }
-                      }),
+                                    )));
+                          }
+                        }),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(

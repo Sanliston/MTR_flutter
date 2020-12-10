@@ -8,6 +8,7 @@ import 'package:MTR_flutter/screens/tabs/home/home_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/forum_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/groups_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/members_content_screen.dart';
+import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
 import "dart:math";
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
@@ -49,9 +50,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   GlobalKey<AnimatedListState> forumPostKey;
   AnimationController forumAnimationController;
   Animation forumInsertAnimation;
-
-  Map sharedStateManagement;
-  Map forumStateManagement;
 
   void _onNewPost() {
     print("adding new post");
@@ -335,11 +333,20 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     forumPostKey = GlobalKey<AnimatedListState>();
     forumAnimationController = AnimationController(vsync: this);
 
-    sharedStateManagement = {
-      "forum_post_key": forumPostKey,
-      "forum_animation_controller": forumAnimationController,
-      "display_navigation_drawer": displayNavigationDrawer
-    };
+    // sharedStateManagement = {
+    //   "forum_post_key": forumPostKey,
+    //   "forum_animation_controller": forumAnimationController,
+    //   "display_navigation_drawer": displayNavigationDrawer
+    // };
+
+    //decided to make the sharedStateManagement Map a global variable
+    sharedStateManagement['forum_post_key'] = forumPostKey;
+    sharedStateManagement['forum_animation_controller'] =
+        forumAnimationController;
+    sharedStateManagement['display_navigation_drawer'] =
+        displayNavigationDrawer;
+
+    sharedStateManagement['homeTabScreen_setState'] = setState;
   }
 
   @override
@@ -480,82 +487,96 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                                   ),
                                                   Expanded(
                                                     flex: 10,
-                                                    child: Row(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: <Widget>[
-                                                        Expanded(
-                                                          flex: 3,
-                                                          child: Stack(
-                                                            children: <Widget>[
-                                                              Positioned(
-                                                                left: 0.0,
-                                                                top: 5.0,
-                                                                child: Container(
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                    decoration: new BoxDecoration(
-                                                                        shape: BoxShape.circle,
-                                                                        image: new DecorationImage(
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                          image:
-                                                                              NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
-                                                                        ))),
-                                                              ),
-                                                              Positioned(
-                                                                left: 20.0,
-                                                                top: 5.0,
-                                                                child: Container(
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                    decoration: new BoxDecoration(
-                                                                        shape: BoxShape.circle,
-                                                                        image: new DecorationImage(
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                          image:
-                                                                              NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
-                                                                        ))),
-                                                              ),
-                                                              Positioned(
-                                                                left: 40.0,
-                                                                top: 5.0,
-                                                                child: Container(
-                                                                    width: 25,
-                                                                    height: 25,
-                                                                    decoration: new BoxDecoration(
-                                                                        shape: BoxShape.circle,
-                                                                        image: new DecorationImage(
-                                                                          fit: BoxFit
-                                                                              .fill,
-                                                                          image:
-                                                                              NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
-                                                                        ))),
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          flex: 5,
-                                                          child: Text(
-                                                            "87 Members",
-                                                            style: TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              letterSpacing:
-                                                                  1.5,
-                                                              fontSize: 12.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .normal,
-                                                              fontFamily:
-                                                                  'OpenSans',
+                                                    child: FlatButton(
+                                                      onPressed: () {
+                                                        Navigator.push(
+                                                            context,
+                                                            new MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        MemberSearchScreen()));
+                                                      },
+                                                      padding:
+                                                          EdgeInsets.all(0),
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: <Widget>[
+                                                          Expanded(
+                                                            flex: 3,
+                                                            child: Stack(
+                                                              children: <
+                                                                  Widget>[
+                                                                //use a function to dynamically build this list
+                                                                Positioned(
+                                                                  left: 0.0,
+                                                                  top: 5.0,
+                                                                  child: Container(
+                                                                      width: 25,
+                                                                      height: 25,
+                                                                      decoration: new BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          image: new DecorationImage(
+                                                                            fit:
+                                                                                BoxFit.fill,
+                                                                            image:
+                                                                                NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
+                                                                          ))),
+                                                                ),
+                                                                Positioned(
+                                                                  left: 20.0,
+                                                                  top: 5.0,
+                                                                  child: Container(
+                                                                      width: 25,
+                                                                      height: 25,
+                                                                      decoration: new BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          image: new DecorationImage(
+                                                                            fit:
+                                                                                BoxFit.fill,
+                                                                            image:
+                                                                                NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
+                                                                          ))),
+                                                                ),
+                                                                Positioned(
+                                                                  left: 40.0,
+                                                                  top: 5.0,
+                                                                  child: Container(
+                                                                      width: 25,
+                                                                      height: 25,
+                                                                      decoration: new BoxDecoration(
+                                                                          shape: BoxShape.circle,
+                                                                          image: new DecorationImage(
+                                                                            fit:
+                                                                                BoxFit.fill,
+                                                                            image:
+                                                                                NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
+                                                                          ))),
+                                                                )
+                                                              ],
                                                             ),
                                                           ),
-                                                        )
-                                                      ],
+                                                          Expanded(
+                                                            flex: 5,
+                                                            child: Text(
+                                                              "87 Members",
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black,
+                                                                letterSpacing:
+                                                                    1.5,
+                                                                fontSize: 12.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .normal,
+                                                                fontFamily:
+                                                                    'OpenSans',
+                                                              ),
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
                                                     ),
                                                   )
                                                 ]),

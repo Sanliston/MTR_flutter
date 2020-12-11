@@ -9,6 +9,7 @@ import 'package:MTR_flutter/screens/tabs/home/forum_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/groups_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/members_content_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
+import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
 import "dart:math";
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
@@ -455,7 +456,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               "type": "subtitle",
                             },
                             {
-                              "iconData": Icons.chat_bubble_outline,
+                              "iconData": Icons.dashboard,
                               "title": "Dashboard",
                               "onPressed": () {
                                 //takes them to dashboard page, with analytics etc
@@ -464,7 +465,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               }
                             },
                             {
-                              "iconData": Icons.share,
+                              "iconData": Icons.brush,
                               "title": "Customize",
                               "onPressed": () {
                                 print(
@@ -473,7 +474,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             },
                             {"title": "More Actions", "type": "subtitle"},
                             {
-                              "iconData": Icons.linear_scale,
+                              "iconData": Icons.person_add,
                               "title": "Invite Members",
                               "onPressed": () {
                                 //close this menu
@@ -484,16 +485,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               }
                             },
                             {
-                              "iconData": Icons.link,
-                              "title": "Copy link",
+                              "iconData": Icons.notifications,
+                              "title": "Manage Notifications",
                               "onPressed": () {
                                 print(
                                     "****************callback function3 called");
                               }
                             },
                             {
-                              "iconData": Icons.link,
-                              "title": "Copy link",
+                              "iconData": Icons.add_to_home_screen,
+                              "title": "Add to Home Screen",
                               "onPressed": () {
                                 print(
                                     "****************callback function3 called");
@@ -751,20 +752,31 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                                   children: <Widget>[
                                                     Spacer(),
                                                     Expanded(
-                                                      child: Container(
-                                                          decoration:
-                                                              new BoxDecoration(
-                                                                  borderRadius:
-                                                                      BorderRadius.all(
-                                                                          Radius.circular(
-                                                                              8.0)),
-                                                                  image:
-                                                                      new DecorationImage(
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    image: NetworkImage(
-                                                                        "https://randomuser.me/api/portraits/women/69.jpg"),
-                                                                  ))),
+                                                      child: FlatButton(
+                                                        padding:
+                                                            EdgeInsets.zero,
+                                                        child: Container(
+                                                            decoration:
+                                                                new BoxDecoration(
+                                                                    borderRadius:
+                                                                        BorderRadius.all(Radius.circular(
+                                                                            8.0)),
+                                                                    image:
+                                                                        new DecorationImage(
+                                                                      fit: BoxFit
+                                                                          .cover,
+                                                                      image: NetworkImage(
+                                                                          "https://randomuser.me/api/portraits/women/69.jpg"),
+                                                                    ))),
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                              context,
+                                                              new MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          HomeCustomizeScreen()));
+                                                        },
+                                                      ),
                                                     ),
                                                   ],
                                                 ),

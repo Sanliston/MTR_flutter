@@ -46,8 +46,7 @@ List<Map> forumPosts = [
 
 //reverse the list
 
-List<Widget> buildForumTab(
-    Function setState, BuildContext context, Map sharedStateManagement) {
+List<Widget> buildForumTab(BuildContext context) {
   /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -99,7 +98,7 @@ List<Widget> buildForumTab(
                       'likes': 10,
                       'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
                     };
-                    setState(() {
+                    sharedStateManagement['hometabscreen_setstate'](() {
                       forumPosts.insert(0, newPost);
                     });
 

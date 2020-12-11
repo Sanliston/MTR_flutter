@@ -89,8 +89,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     "Content": buildContentTab
   };
 
-  static List<Widget> buildEventsTab(
-      Function setState, BuildContext context, Map sharedStateManagement) {
+  static List<Widget> buildEventsTab(BuildContext context) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -107,8 +106,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildServicesTab(
-      Function setState, BuildContext context) {
+  static List<Widget> buildServicesTab(BuildContext context) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -125,8 +123,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildPricingTab(
-      Function setState, BuildContext context, Map sharedStateManagement) {
+  static List<Widget> buildPricingTab(BuildContext context) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -143,8 +140,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widgets;
   }
 
-  static List<Widget> buildContentTab(
-      Function setState, BuildContext context, Map sharedStateManagement) {
+  static List<Widget> buildContentTab(BuildContext context) {
     /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -167,11 +163,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     Color dividerColor = Colors.grey[200];
 
     //dart returns null if key doesnt exist in map -- unlike JS which returns 'undefined', ya'll be easy now
-    if (null == params['title'] && null == params['description']) {
+    if (null == params['title'] &&
+        null == params['description'] &&
+        null == params["custom_header"]) {
       dividerColor = Colors.white;
     }
 
-    if (null != params['title'] && null == params['description']) {
+    if (null != params['title'] &&
+        null == params['description'] &&
+        null == params["custom_header"]) {
       header = Padding(
         padding: const EdgeInsets.only(
             top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
@@ -183,7 +183,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       );
     }
 
-    if (null == params['title'] && null != params['description']) {
+    if (null == params['title'] &&
+        null != params['description'] &&
+        null == params["custom_header"]) {
       header = Padding(
         padding: const EdgeInsets.only(
             top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
@@ -195,7 +197,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       );
     }
 
-    if (null != params['title'] && null != params['description']) {
+    if (null != params['title'] &&
+        null != params['description'] &&
+        null == params["custom_header"]) {
       header = Padding(
         padding: const EdgeInsets.only(
             top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
@@ -215,6 +219,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           ],
         ),
       );
+    }
+
+    if (null != params['custom_header']) {
+      header = params['custom_header'];
     }
 
     showModalBottomSheet(
@@ -322,6 +330,42 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         });
   }
 
+  //function shared by widget nodes stemming from this widget
+  void displayInviteMenu() {
+    List options = [
+      {
+        "iconData": Icons.chat_bubble_outline,
+        "title": "Send an SMS",
+        "onPressed": () {
+          print("****************callback function1 called");
+        }
+      },
+      {
+        "iconData": Icons.share,
+        "title": "Share via social and more",
+        "onPressed": () {
+          print("****************callback function2 called");
+        }
+      },
+      {
+        "iconData": Icons.link,
+        "title": "Copy link",
+        "onPressed": () {
+          print("****************callback function3 called");
+        }
+      }
+    ];
+
+    Map params = {
+      "context": context,
+      "title": "Invite Members",
+      "description": "Invite people to join your space on the app",
+      "options": options
+    };
+
+    sharedStateManagement['display_navigation_drawer'](params);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -346,7 +390,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     sharedStateManagement['display_navigation_drawer'] =
         displayNavigationDrawer;
 
-    sharedStateManagement['homeTabScreen_setState'] = setState;
+    sharedStateManagement['hometabscreen_setstate'] = setState;
+    sharedStateManagement['display_invite_menu'] = displayInviteMenu;
   }
 
   @override
@@ -404,7 +449,123 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           color: Colors.white,
                         ),
                         onPressed: () {
-                          // do something
+                          List options = [
+                            {
+                              "title": "Admin Actions",
+                              "type": "subtitle",
+                            },
+                            {
+                              "iconData": Icons.chat_bubble_outline,
+                              "title": "Dashboard",
+                              "onPressed": () {
+                                //takes them to dashboard page, with analytics etc
+                                print(
+                                    "****************callback function1 called");
+                              }
+                            },
+                            {
+                              "iconData": Icons.share,
+                              "title": "Customize",
+                              "onPressed": () {
+                                print(
+                                    "****************callback function2 called");
+                              }
+                            },
+                            {"title": "More Actions", "type": "subtitle"},
+                            {
+                              "iconData": Icons.linear_scale,
+                              "title": "Invite Members",
+                              "onPressed": () {
+                                //close this menu
+                                Navigator.pop(context);
+
+                                //open invite menue
+                                sharedStateManagement['display_invite_menu']();
+                              }
+                            },
+                            {
+                              "iconData": Icons.link,
+                              "title": "Copy link",
+                              "onPressed": () {
+                                print(
+                                    "****************callback function3 called");
+                              }
+                            },
+                            {
+                              "iconData": Icons.link,
+                              "title": "Copy link",
+                              "onPressed": () {
+                                print(
+                                    "****************callback function3 called");
+                              }
+                            }
+                          ];
+
+                          Widget customHeader = Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10.0,
+                                bottom: 10.0,
+                                left: sidePadding,
+                                right: sidePadding),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                        width: avatarWidth,
+                                        height: avatarHeight,
+                                        margin: const EdgeInsets.only(
+                                            right: 15, bottom: 5),
+                                        decoration: new BoxDecoration(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(avatarRadius)),
+                                            image: new DecorationImage(
+                                              fit: BoxFit.cover,
+                                              image: NetworkImage(
+                                                  "https://randomuser.me/api/portraits/women/69.jpg"),
+                                            ))),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          "Sanliston",
+                                          style: homeTextStyleBold,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                        Text(
+                                          "Owner",
+                                          style: homeSubTextStyle,
+                                          overflow: TextOverflow.visible,
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+
+                                //button which takes you to user profile
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.keyboard_arrow_right,
+                                    color: Colors.black,
+                                  ),
+                                  onPressed: () {
+                                    // Take user to their profile page
+                                  },
+                                )
+                              ],
+                            ),
+                          );
+                          Map params = {
+                            "context": context,
+                            "custom_header": customHeader,
+                            "options": options
+                          };
+
+                          sharedStateManagement['display_navigation_drawer'](
+                              params);
                         },
                       )
                     ],
@@ -619,44 +780,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                           child: RaisedButton(
                                             elevation: 0.0,
                                             onPressed: () {
-                                              List options = [
-                                                {
-                                                  "iconData":
-                                                      Icons.chat_bubble_outline,
-                                                  "title": "Send an SMS",
-                                                  "onPressed": () {
-                                                    print(
-                                                        "****************callback function1 called");
-                                                  }
-                                                },
-                                                {
-                                                  "iconData": Icons.share,
-                                                  "title":
-                                                      "Share via social and more",
-                                                  "onPressed": () {
-                                                    print(
-                                                        "****************callback function2 called");
-                                                  }
-                                                },
-                                                {
-                                                  "iconData": Icons.link,
-                                                  "title": "Copy link",
-                                                  "onPressed": () {
-                                                    print(
-                                                        "****************callback function3 called");
-                                                  }
-                                                }
-                                              ];
-
-                                              Map params = {
-                                                "context": context,
-                                                "title": "Invite Members",
-                                                "description":
-                                                    "Invite people to join your space on the app",
-                                                "options": options
-                                              };
-
-                                              displayNavigationDrawer(params);
+                                              sharedStateManagement[
+                                                  'display_invite_menu']();
                                             },
                                             padding: EdgeInsets.only(
                                                 top: 4.0,
@@ -777,16 +902,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                   tab index is decided by: name 
                                   So we create a map containing the arrays and the views for the relevant tab
                                   And then we index that map using the value of the name variable*/
-                                  return _tab_widgets[name](setState, context,
-                                      sharedStateManagement)[index];
+                                  return _tab_widgets[name](context)[index];
                                 },
                                 // The childCount of the SliverChildBuilderDelegate
                                 // specifies how many children this inner list
                                 // has. In this example, each tab has a list of
                                 // exactly 30 items, but this is arbitrary.
-                                childCount: _tab_widgets[name](setState,
-                                        context, sharedStateManagement)
-                                    .length,
+                                childCount: _tab_widgets[name](context).length,
                               ),
                             ),
                           ),

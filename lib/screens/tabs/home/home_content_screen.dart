@@ -59,8 +59,7 @@ List<Map> membersShortlist = [
 ];
 
 //build the home widget Map
-List<Widget> buildHomeTab(
-    Function setState, BuildContext context, Map sharedStateManagement) {
+List<Widget> buildHomeTab(BuildContext context) {
   /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
@@ -298,39 +297,7 @@ List<Widget> buildHomeTab(
                 RaisedButton(
                   elevation: 0.0,
                   onPressed: () {
-                    List options = [
-                      {
-                        "iconData": Icons.chat_bubble_outline,
-                        "title": "Send an SMS",
-                        "onPressed": () {
-                          print("****************callback function1 called");
-                        }
-                      },
-                      {
-                        "iconData": Icons.share,
-                        "title": "Share via social and more",
-                        "onPressed": () {
-                          print("****************callback function2 called");
-                        }
-                      },
-                      {
-                        "iconData": Icons.link,
-                        "title": "Copy link",
-                        "onPressed": () {
-                          print("****************callback function3 called");
-                        }
-                      }
-                    ];
-
-                    Map params = {
-                      "context": context,
-                      "title": "Invite Members",
-                      "description":
-                          "Invite people to join your space on the app",
-                      "options": options
-                    };
-
-                    sharedStateManagement['display_navigation_drawer'](params);
+                    sharedStateManagement['display_invite_menu']();
                   },
                   padding: EdgeInsets.only(
                       top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),

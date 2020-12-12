@@ -31,6 +31,9 @@ dependencies:
 
   google_fonts: ^1.1.0
 
+  eva_icons_flutter: ^2.0.1
+  unicons:
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

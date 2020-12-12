@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
+import 'package:unicons/unicons.dart';
 
 /*
 For the animation of the list i used this for reference:
@@ -43,6 +45,52 @@ List<Map> forumPosts = [
     'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
   },
 ];
+
+void displayShareMenu(BuildContext context) {
+  List options = [
+    {
+      "title": "Share to read on the app",
+      "type": "subtitle",
+    },
+    {
+      "iconData": EvaIcons.messageCircleOutline,
+      "title": "Send an SMS",
+      "onPressed": () {
+        print("****************callback function1 called");
+      }
+    },
+    {
+      "iconData": EvaIcons.cloudUploadOutline,
+      "title": "Share via social and more",
+      "onPressed": () {
+        print("****************callback function2 called");
+      }
+    },
+    {
+      "iconData": EvaIcons.linkOutline,
+      "title": "Copy link",
+      "onPressed": () {
+        print("****************callback function3 called");
+      }
+    },
+    {"title": "Share web URL", "type": "subtitle"},
+    {
+      "iconData": EvaIcons.globeOutline,
+      "title": "Share post URL",
+      "onPressed": () {
+        print("****************callback function2 called");
+      }
+    },
+  ];
+
+  Map params = {
+    "context": context,
+    "description": "Share This Post",
+    "options": options
+  };
+
+  sharedStateManagement['display_navigation_drawer'](params);
+}
 
 //reverse the list
 
@@ -113,7 +161,7 @@ List<Widget> buildForumTab(BuildContext context) {
                       Padding(
                         padding: const EdgeInsets.only(right: 10.0),
                         child: Icon(
-                          Icons.add_circle_outline,
+                          EvaIcons.plusCircleOutline,
                           color: iconColor,
                         ),
                       ),
@@ -133,7 +181,7 @@ List<Widget> buildForumTab(BuildContext context) {
                   child: IconButton(
                     padding: EdgeInsets.all(0),
                     icon: Icon(
-                      Icons.search,
+                      EvaIcons.searchOutline,
                       color: iconColor,
                     ),
                     onPressed: () {
@@ -240,13 +288,16 @@ List<Widget> buildForumTab(BuildContext context) {
                                       List options = [
                                         {
                                           "title": "Share",
+                                          "iconData": EvaIcons.shareOutline,
                                           "onPressed": () {
-                                            print(
-                                                "****************callback function1 called");
+                                            Navigator.pop(context);
+                                            displayShareMenu(context);
                                           }
                                         },
                                         {
                                           "title": "Unfollow",
+                                          "iconData":
+                                              EvaIcons.personRemoveOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function2 called");
@@ -254,6 +305,7 @@ List<Widget> buildForumTab(BuildContext context) {
                                         },
                                         {
                                           "title": "Copy Text",
+                                          "iconData": EvaIcons.copyOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function3 called");
@@ -261,6 +313,7 @@ List<Widget> buildForumTab(BuildContext context) {
                                         },
                                         {
                                           "title": "Edit Post",
+                                          "iconData": EvaIcons.editOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function2 called");
@@ -268,6 +321,7 @@ List<Widget> buildForumTab(BuildContext context) {
                                         },
                                         {
                                           "title": "Pin",
+                                          "iconData": EvaIcons.pinOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function3 called");
@@ -275,6 +329,8 @@ List<Widget> buildForumTab(BuildContext context) {
                                         },
                                         {
                                           "title": "Close Comments",
+                                          "iconData":
+                                              EvaIcons.closeCircleOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function2 called");
@@ -282,6 +338,7 @@ List<Widget> buildForumTab(BuildContext context) {
                                         },
                                         {
                                           "title": "Delete",
+                                          "iconData": EvaIcons.trashOutline,
                                           "onPressed": () {
                                             print(
                                                 "****************callback function3 called");
@@ -336,15 +393,18 @@ List<Widget> buildForumTab(BuildContext context) {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          IconButton(
-                                            padding: EdgeInsets.all(0),
-                                            icon: Icon(
-                                              Icons.favorite_border,
-                                              color: Colors.black26,
+                                          Container(
+                                            width: 35.0,
+                                            child: IconButton(
+                                              padding: EdgeInsets.all(0),
+                                              icon: Icon(
+                                                EvaIcons.heartOutline,
+                                                color: Colors.black26,
+                                              ),
+                                              onPressed: () {
+                                                // do something
+                                              },
                                             ),
-                                            onPressed: () {
-                                              // do something
-                                            },
                                           ),
                                           new Text(
                                               forumPosts[index]['likes']
@@ -354,90 +414,46 @@ List<Widget> buildForumTab(BuildContext context) {
                                               style: forumInteractionsStyle)
                                         ],
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          IconButton(
-                                            padding: EdgeInsets.all(0),
-                                            icon: Icon(
-                                              Icons.chat_bubble_outline,
-                                              color: Colors.black26,
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 15.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 35.0,
+                                              child: IconButton(
+                                                padding: EdgeInsets.all(0),
+                                                icon: Icon(
+                                                  UniconsLine.comment,
+                                                  color: Colors.black26,
+                                                ),
+                                                onPressed: () {
+                                                  // do something
+                                                },
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              // do something
-                                            },
-                                          ),
-                                          new Text(
-                                              forumPosts[index]['comments']
-                                                  .length
-                                                  .toString(),
-                                              textAlign: TextAlign.left,
-                                              overflow: TextOverflow.visible,
-                                              style: forumInteractionsStyle)
-                                        ],
+                                            new Text(
+                                                forumPosts[index]['comments']
+                                                    .length
+                                                    .toString(),
+                                                textAlign: TextAlign.left,
+                                                overflow: TextOverflow.visible,
+                                                style: forumInteractionsStyle)
+                                          ],
+                                        ),
                                       )
                                     ],
                                   ),
                                   IconButton(
                                     padding: EdgeInsets.all(0),
                                     icon: Icon(
-                                      Icons.share,
+                                      UniconsLine.upload,
                                       color: Colors.black26,
                                     ),
                                     onPressed: () {
-                                      List options = [
-                                        {
-                                          "title": "Share to read on the app",
-                                          "type": "subtitle",
-                                        },
-                                        {
-                                          "iconData": Icons.chat_bubble_outline,
-                                          "title": "Send an SMS",
-                                          "onPressed": () {
-                                            print(
-                                                "****************callback function1 called");
-                                          }
-                                        },
-                                        {
-                                          "iconData": Icons.share,
-                                          "title": "Share via social and more",
-                                          "onPressed": () {
-                                            print(
-                                                "****************callback function2 called");
-                                          }
-                                        },
-                                        {
-                                          "iconData": Icons.link,
-                                          "title": "Copy link",
-                                          "onPressed": () {
-                                            print(
-                                                "****************callback function3 called");
-                                          }
-                                        },
-                                        {
-                                          "title": "Share web URL",
-                                          "type": "subtitle"
-                                        },
-                                        {
-                                          "iconData": Icons.linear_scale,
-                                          "title": "Share post URL",
-                                          "onPressed": () {
-                                            print(
-                                                "****************callback function2 called");
-                                          }
-                                        },
-                                      ];
-
-                                      Map params = {
-                                        "context": context,
-                                        "description": "Share This Post",
-                                        "options": options
-                                      };
-
-                                      sharedStateManagement[
-                                          'display_navigation_drawer'](params);
-                                      // do something
+                                      displayShareMenu(context);
                                     },
                                   )
                                 ],

@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
@@ -335,21 +336,21 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   void displayInviteMenu() {
     List options = [
       {
-        "iconData": Icons.chat_bubble_outline,
+        "iconData": EvaIcons.messageCircleOutline,
         "title": "Send an SMS",
         "onPressed": () {
           print("****************callback function1 called");
         }
       },
       {
-        "iconData": Icons.share,
+        "iconData": EvaIcons.cloudUploadOutline,
         "title": "Share via social and more",
         "onPressed": () {
           print("****************callback function2 called");
         }
       },
       {
-        "iconData": Icons.link,
+        "iconData": EvaIcons.linkOutline,
         "title": "Copy link",
         "onPressed": () {
           print("****************callback function3 called");
@@ -456,7 +457,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               "type": "subtitle",
                             },
                             {
-                              "iconData": Icons.dashboard,
+                              "iconData": EvaIcons.browserOutline,
                               "title": "Dashboard",
                               "onPressed": () {
                                 //takes them to dashboard page, with analytics etc
@@ -465,7 +466,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               }
                             },
                             {
-                              "iconData": Icons.brush,
+                              "iconData": EvaIcons.brushOutline,
                               "title": "Customize",
                               "onPressed": () {
                                 print(
@@ -474,7 +475,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             },
                             {"title": "More Actions", "type": "subtitle"},
                             {
-                              "iconData": Icons.person_add,
+                              "iconData": EvaIcons.personAddOutline,
                               "title": "Invite Members",
                               "onPressed": () {
                                 //close this menu
@@ -485,7 +486,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               }
                             },
                             {
-                              "iconData": Icons.notifications,
+                              "iconData": EvaIcons.bellOutline,
                               "title": "Manage Notifications",
                               "onPressed": () {
                                 print(
@@ -493,7 +494,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               }
                             },
                             {
-                              "iconData": Icons.add_to_home_screen,
+                              "iconData": EvaIcons.monitorOutline,
                               "title": "Add to Home Screen",
                               "onPressed": () {
                                 print(
@@ -549,7 +550,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 //button which takes you to user profile
                                 IconButton(
                                   icon: Icon(
-                                    Icons.keyboard_arrow_right,
+                                    EvaIcons.chevronRightOutline,
                                     color: Colors.black,
                                   ),
                                   onPressed: () {
@@ -572,277 +573,14 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     ],
                     flexibleSpace: Stack(
                       children: <Widget>[
-                        Positioned.fill(
-                          child: CustomTabScroll(
-                            scrollController: scrollController,
-                            zeroOpacityOffset: homeHeaderHeight * 0.6,
-                            fullOpacityOffset: 0,
-                            child: Stack(
-                              children: <Widget>[
-                                Image.asset(
-                                  "assets/images/home_background.jpg",
-                                  height: homeHeaderHeight * 1.1,
-                                  width: screenWidth,
-                                  fit: BoxFit.cover,
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                    colors: [
-                                      Colors.black38,
-                                      Colors.transparent,
-                                    ],
-                                    begin: Alignment.topRight,
-                                    end: Alignment.bottomRight,
-                                    stops: [0.0, 0.4],
-                                    tileMode: TileMode.clamp,
-                                  )),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        buildHeaderBackground(homeHeaderHeight, screenWidth),
                         FlexibleSpaceBar(
                           collapseMode: CollapseMode.pin,
                           background: FadeOnScroll(
                             scrollController: scrollController,
                             zeroOpacityOffset: 50,
                             fullOpacityOffset: 0,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 90.0,
-                                  left: 20.0,
-                                  right: 20.0,
-                                  bottom: 30.0),
-                              child: SizedBox(
-                                child: Center(
-                                  child: Column(
-                                    children: <Widget>[
-                                      Expanded(
-                                        flex: 3,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Expanded(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 25.0),
-                                                child:
-                                                    Column(children: <Widget>[
-                                                  Flexible(
-                                                      flex: 20,
-                                                      child: Text(
-                                                        "More than Rubies",
-                                                        style: TextStyle(
-                                                          color: Colors.black,
-                                                          letterSpacing: 1.5,
-                                                          fontSize: 28.0,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontFamily:
-                                                              'OpenSans',
-                                                        ),
-                                                      )),
-                                                  Spacer(
-                                                    flex: 1,
-                                                  ),
-                                                  Expanded(
-                                                    flex: 10,
-                                                    child: FlatButton(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                            context,
-                                                            new MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        MemberSearchScreen()));
-                                                      },
-                                                      padding:
-                                                          EdgeInsets.all(0),
-                                                      child: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          Expanded(
-                                                            flex: 3,
-                                                            child: Stack(
-                                                              children: <
-                                                                  Widget>[
-                                                                //use a function to dynamically build this list
-                                                                Positioned(
-                                                                  left: 0.0,
-                                                                  top: 5.0,
-                                                                  child: Container(
-                                                                      width: 25,
-                                                                      height: 25,
-                                                                      decoration: new BoxDecoration(
-                                                                          shape: BoxShape.circle,
-                                                                          image: new DecorationImage(
-                                                                            fit:
-                                                                                BoxFit.fill,
-                                                                            image:
-                                                                                NetworkImage("https://randomuser.me/api/portraits/women/36.jpg"),
-                                                                          ))),
-                                                                ),
-                                                                Positioned(
-                                                                  left: 20.0,
-                                                                  top: 5.0,
-                                                                  child: Container(
-                                                                      width: 25,
-                                                                      height: 25,
-                                                                      decoration: new BoxDecoration(
-                                                                          shape: BoxShape.circle,
-                                                                          image: new DecorationImage(
-                                                                            fit:
-                                                                                BoxFit.fill,
-                                                                            image:
-                                                                                NetworkImage("https://randomuser.me/api/portraits/women/37.jpg"),
-                                                                          ))),
-                                                                ),
-                                                                Positioned(
-                                                                  left: 40.0,
-                                                                  top: 5.0,
-                                                                  child: Container(
-                                                                      width: 25,
-                                                                      height: 25,
-                                                                      decoration: new BoxDecoration(
-                                                                          shape: BoxShape.circle,
-                                                                          image: new DecorationImage(
-                                                                            fit:
-                                                                                BoxFit.fill,
-                                                                            image:
-                                                                                NetworkImage("https://randomuser.me/api/portraits/women/32.jpg"),
-                                                                          ))),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                          Expanded(
-                                                            flex: 5,
-                                                            child: Text(
-                                                              "87 Members",
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .black,
-                                                                letterSpacing:
-                                                                    1.5,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .normal,
-                                                                fontFamily:
-                                                                    'OpenSans',
-                                                              ),
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  )
-                                                ]),
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 25.0, bottom: 20.0),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    Spacer(),
-                                                    Expanded(
-                                                      child: FlatButton(
-                                                        padding:
-                                                            EdgeInsets.zero,
-                                                        child: Container(
-                                                            decoration:
-                                                                new BoxDecoration(
-                                                                    borderRadius:
-                                                                        BorderRadius.all(Radius.circular(
-                                                                            8.0)),
-                                                                    image:
-                                                                        new DecorationImage(
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                      image: NetworkImage(
-                                                                          "https://randomuser.me/api/portraits/women/69.jpg"),
-                                                                    ))),
-                                                        onPressed: () {
-                                                          Navigator.push(
-                                                              context,
-                                                              new MaterialPageRoute(
-                                                                  builder:
-                                                                      (context) =>
-                                                                          HomeCustomizeScreen()));
-                                                        },
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: RaisedButton(
-                                            elevation: 0.0,
-                                            onPressed: () {
-                                              sharedStateManagement[
-                                                  'display_invite_menu']();
-                                            },
-                                            padding: EdgeInsets.only(
-                                                top: 4.0,
-                                                left: 50.0,
-                                                right: 50.0,
-                                                bottom: 4.0),
-                                            shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                color: Colors.red,
-                                                width: 2.2,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(30.0),
-                                            ),
-                                            color: Colors.white,
-                                            child: ConstrainedBox(
-                                              constraints: BoxConstraints(
-                                                maxHeight: 15,
-                                                maxWidth: 70,
-                                              ),
-                                              child: Row(
-                                                children: <Widget>[
-                                                  Icon(
-                                                    Icons.add,
-                                                    color: Colors.red,
-                                                    size: 14.0,
-                                                  ),
-                                                  Text(
-                                                    'Invite',
-                                                    style: TextStyle(
-                                                      color: Colors.red,
-                                                      letterSpacing: 1.5,
-                                                      fontSize: 14.0,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily: 'OpenSans',
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
+                            child: buildHeader(context),
                           ),
                         ),
                       ],
@@ -931,6 +669,243 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 ),
               );
             }).toList(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Positioned buildHeaderBackground(
+      double homeHeaderHeight, double screenWidth) {
+    return Positioned.fill(
+      child: CustomTabScroll(
+        scrollController: scrollController,
+        zeroOpacityOffset: homeHeaderHeight * 0.6,
+        fullOpacityOffset: 0,
+        child: Stack(
+          children: <Widget>[
+            Image.asset(
+              "assets/images/home_background.jpg",
+              height: homeHeaderHeight * 1.1,
+              width: screenWidth,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                colors: [
+                  Colors.black38,
+                  Colors.transparent,
+                ],
+                begin: Alignment.topRight,
+                end: Alignment.bottomRight,
+                stops: [0.0, 0.4],
+                tileMode: TileMode.clamp,
+              )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+          top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
+      child: SizedBox(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 25.0),
+                        child: Column(children: <Widget>[
+                          Flexible(
+                              flex: 20,
+                              child: Text(
+                                "More than Rubies",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  letterSpacing: 1.5,
+                                  fontSize: 28.0,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'OpenSans',
+                                ),
+                              )),
+                          Spacer(
+                            flex: 1,
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) =>
+                                            MemberSearchScreen()));
+                              },
+                              padding: EdgeInsets.all(0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 3,
+                                    child: Stack(
+                                      children: <Widget>[
+                                        //use a function to dynamically build this list
+                                        Positioned(
+                                          left: 0.0,
+                                          top: 5.0,
+                                          child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: new BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: new DecorationImage(
+                                                    fit: BoxFit.fill,
+                                                    image: NetworkImage(
+                                                        "https://randomuser.me/api/portraits/women/36.jpg"),
+                                                  ))),
+                                        ),
+                                        Positioned(
+                                          left: 20.0,
+                                          top: 5.0,
+                                          child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: new BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: new DecorationImage(
+                                                    fit: BoxFit.fill,
+                                                    image: NetworkImage(
+                                                        "https://randomuser.me/api/portraits/women/37.jpg"),
+                                                  ))),
+                                        ),
+                                        Positioned(
+                                          left: 40.0,
+                                          top: 5.0,
+                                          child: Container(
+                                              width: 25,
+                                              height: 25,
+                                              decoration: new BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: new DecorationImage(
+                                                    fit: BoxFit.fill,
+                                                    image: NetworkImage(
+                                                        "https://randomuser.me/api/portraits/women/32.jpg"),
+                                                  ))),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 5,
+                                    child: Text(
+                                      "87 Members",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        letterSpacing: 1.5,
+                                        fontSize: 12.0,
+                                        fontWeight: FontWeight.normal,
+                                        fontFamily: 'OpenSans',
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          )
+                        ]),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+                        child: Row(
+                          children: <Widget>[
+                            Spacer(),
+                            Expanded(
+                              child: FlatButton(
+                                padding: EdgeInsets.zero,
+                                child: Container(
+                                    decoration: new BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(8.0)),
+                                        image: new DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                              "https://randomuser.me/api/portraits/women/69.jpg"),
+                                        ))),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomeCustomizeScreen()));
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              Expanded(
+                flex: 2,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: FlatButton(
+                    onPressed: () {
+                      sharedStateManagement['display_invite_menu']();
+                    },
+                    padding: EdgeInsets.only(
+                        top: 4.0, left: 50.0, right: 50.0, bottom: 4.0),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Colors.red,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(30.0),
+                    ),
+                    color: Colors.white,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxHeight: 15,
+                        maxWidth: 70,
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(
+                            Icons.add,
+                            color: Colors.red,
+                            size: 14.0,
+                          ),
+                          Text(
+                            'Invite',
+                            style: TextStyle(
+                              color: Colors.red,
+                              letterSpacing: 1.5,
+                              fontSize: 14.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'OpenSans',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       ),

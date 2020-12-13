@@ -34,11 +34,3 @@ enum mainScreen { selectedIndex }
 Map mainScreenState = {
   mainScreen.selectedIndex: 0
 }; //states for main_screen.dart
-
-//home tab state
-enum homeTab { headerLayout, bodyLayout }
-
-Map homeTabState = {
-  homeTab.headerLayout: [],
-  homeTab.bodyLayout: ["announcements", "members", "upcoming", "contact_us"]
-};

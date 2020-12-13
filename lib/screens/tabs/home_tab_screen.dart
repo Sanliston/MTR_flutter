@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
@@ -50,22 +51,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   GlobalKey<AnimatedListState> forumPostKey;
   AnimationController forumAnimationController;
   Animation forumInsertAnimation;
-
-  void _onNewPost() {
-    print("adding new post");
-    Map newPost = {
-      'user': 'New Post yooo',
-      'title': 'Flocka Bitches',
-      'date': '5 months ago',
-      'body':
-          'Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc manLorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man',
-      'likes': 10,
-      'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
-    };
-    setState(() {
-      forumPosts.add(newPost);
-    });
-  }
 
   final List<String> _tabs = <String>[
     "Home",
@@ -366,6 +351,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     sharedStateManagement['display_navigation_drawer'](params);
   }
 
+  void onTabTap() {}
+
+  void onTabDrag() {}
+
   @override
   void initState() {
     super.initState();
@@ -373,6 +362,27 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       length: 8,
       vsync: this,
     );
+
+    print("init state called");
+    //persistent tab index stored from last time
+    print("#######selectedHomeTab: $selectedHomeTab");
+    int index = _tabs.indexOf(selectedHomeTab);
+
+    print("########index of tab: $index");
+
+    if (-1 < index) {
+      controller.animateTo(index);
+    }
+
+    //event handlers for when tab is changed via swipe or tap
+    controller.addListener(() {
+      if (controller.indexIsChanging)
+        // Tab Changed tapping on new tab
+        onTabTap();
+      else if (controller.index != controller.previousIndex)
+        // Tab Changed swiping to a new tab
+        onTabDrag();
+    });
 
     forumPostKey = GlobalKey<AnimatedListState>();
     forumAnimationController = AnimationController(vsync: this);
@@ -658,7 +668,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               delegate: SliverChildBuilderDelegate(
                                 (BuildContext context, int index) {
                                   // This builder is called for each child.
-                                  // In this example, we just number each list item.
+
+                                  //set the selectedHomeTab state variable
+                                  selectedHomeTab = name;
+
                                   print(
                                       "build item, index:  $index \n, tab name: $name");
 

@@ -1,7 +1,7 @@
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
-class HomeContactUs extends StatelessWidget {
-  const HomeContactUs({
+class ContactUsSection extends StatelessWidget {
+  const ContactUsSection({
     Key key,
   }) : super(key: key);
 

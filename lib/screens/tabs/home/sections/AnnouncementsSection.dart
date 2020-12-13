@@ -1,9 +1,9 @@
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
-class HomeAnnoucements extends StatelessWidget {
+class AnnoucementsSection extends StatelessWidget {
   final List announcements;
 
-  const HomeAnnoucements({Key key, @required this.announcements})
+  const AnnoucementsSection({Key key, @required this.announcements})
       : super(key: key);
 
   @override

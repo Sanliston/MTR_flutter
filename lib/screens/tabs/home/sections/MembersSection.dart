@@ -1,10 +1,10 @@
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
 
-class HomeMembers extends StatelessWidget {
+class MembersSection extends StatelessWidget {
   final List membersShortlist;
 
-  HomeMembers({Key key, @required this.membersShortlist}) : super(key: key);
+  MembersSection({Key key, @required this.membersShortlist}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

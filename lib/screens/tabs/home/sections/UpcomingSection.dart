@@ -1,7 +1,7 @@
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
-class HomeUpcoming extends StatelessWidget {
-  const HomeUpcoming({
+class UpcomingSection extends StatelessWidget {
+  const UpcomingSection({
     Key key,
   }) : super(key: key);
 

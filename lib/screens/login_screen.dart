@@ -1,9 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/signup_screen.dart';
 import 'package:MTR_flutter/controllers/login_controller.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -24,55 +23,46 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _focus.addListener(_onFocusChange);
+
+    //stateCallback declaration
+    stateCallback['login_screen'] = setState;
   }
 
-  void _onFocusChange(){
-    debugPrint("*******************Focus: "+_focus.hasFocus.toString());
+  void _onFocusChange() {
+    debugPrint("*******************Focus: " + _focus.hasFocus.toString());
   }
 
-
-  void isValid(bool email, bool password){
-
+  void isValid(bool email, bool password) {
     setState(() {
-      
-
-      if(!email){
+      if (!email) {
         this.emailValid = false;
-      }else {
+      } else {
         this.emailValid = true;
       }
 
-
-      if(!password){
+      if (!password) {
         this.passwordValid = false;
-      }else {
+      } else {
         this.passwordValid = true;
-      }  
+      }
 
-      if(!email || !password){
+      if (!email || !password) {
         this.loginAttempts++;
         print("Login attempts: $loginAttempts");
       }
-
     });
 
-    
-
-
     //set state
-    
   }
 
   Widget _buildEmailTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Email";
     //Logic here
-    if(!emailValid){
-      textStyle  = kLabelStyleRed;
+    if (!emailValid) {
+      textStyle = kLabelStyleRed;
       text = "Invalid Email";
     }
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,15 +101,13 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Password";
     //Logic here
-    if(!passwordValid){
-      textStyle  = kLabelStyleRed;
+    if (!passwordValid) {
+      textStyle = kLabelStyleRed;
       text = "Invalid Password";
     }
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +186,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildLoginBtn(context) {
-
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
@@ -214,9 +201,9 @@ class _LoginScreenState extends State<LoginScreen> {
           String passwordInput = passwordController.text;
 
           Widget screen = MainScreen();
-          LoginController loginController = new LoginController.buildContext(context, screen);
+          LoginController loginController =
+              new LoginController.buildContext(context, screen);
           loginController.login(emailInput, passwordInput, isValid);
-          
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -286,14 +273,10 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          _buildSocialBtn(
-            () => print('Login with Facebook'),
-            AssetImage('assets/logos/facebook.jpg')
-            ),
-          _buildSocialBtn(
-            () => print('Login with Google'),
-            AssetImage('assets/logos/google.jpg')
-            ),
+          _buildSocialBtn(() => print('Login with Facebook'),
+              AssetImage('assets/logos/facebook.jpg')),
+          _buildSocialBtn(() => print('Login with Google'),
+              AssetImage('assets/logos/google.jpg')),
         ],
       ),
     );
@@ -305,7 +288,8 @@ class _LoginScreenState extends State<LoginScreen> {
         print('Sign Up Button Pressed');
 
         Widget screen = SignUpScreen();
-        LoginController loginController = new LoginController.buildContext(context, screen);
+        LoginController loginController =
+            new LoginController.buildContext(context, screen);
         loginController.signup();
       },
       child: RichText(
@@ -347,59 +331,35 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: new EdgeInsets.all(30.0),
                 color: login_bg_color,
                 child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Expanded(
-                          flex: 5,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                              'Sign In',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'OpenSans',
-                                fontSize: 30.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          flex: 5,
-                          child: _buildEmailTF()
-                          ),
-                        Expanded(
-                          flex: 5,
-                          child: _buildPasswordTF()
-                          ),
-                        Expanded(
-                          flex: 1,
-                          child: _buildForgotPasswordBtn()
-                          ),
-                        Expanded(
-                          flex: 2,
-                          child: _buildRememberMeCheckbox()
-                          ),
-                        Expanded(
-                          flex: 5,
-                          child: _buildLoginBtn(context)
-                          ),
-                        Expanded(
-                          flex: 3,
-                          child: _buildSignInWithText()
-                          ),
-                        Expanded(
-                          flex: 4,
-                          child: _buildSocialBtnRow()
-                          ),
-                        Expanded(
-                          flex: 1,
-                          child: _buildSignupBtn()
-                          ),
-                      ],
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      flex: 5,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            'Sign In',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'OpenSans',
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
+                    Expanded(flex: 5, child: _buildEmailTF()),
+                    Expanded(flex: 5, child: _buildPasswordTF()),
+                    Expanded(flex: 1, child: _buildForgotPasswordBtn()),
+                    Expanded(flex: 2, child: _buildRememberMeCheckbox()),
+                    Expanded(flex: 5, child: _buildLoginBtn(context)),
+                    Expanded(flex: 3, child: _buildSignInWithText()),
+                    Expanded(flex: 4, child: _buildSocialBtnRow()),
+                    Expanded(flex: 1, child: _buildSignupBtn()),
+                  ],
+                ),
               )
             ],
           ),

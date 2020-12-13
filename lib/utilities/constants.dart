@@ -6,8 +6,6 @@ import 'package:flutter/services.dart';
 
 const double sidePadding = 15.0;
 const Color iconColor = Colors.redAccent;
-Map sharedStateManagement =
-    {}; //global Map that other widgets can add and extract data from
 
 //login screen parameters and styles
 

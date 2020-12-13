@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:unicons/unicons.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 /*This screen will be made of tabs: Home, Inbox, and Personal 
   link: https://api.flutter.dev/flutter/material/BottomNavigationBar-class.html 
@@ -70,7 +67,7 @@ class _MainScreenState extends State<MainScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      mainScreenState[mainScreen.selectedIndex] = index;
 
       //uncomment the below to enable icons to be solid when page is selected
 
@@ -90,13 +87,19 @@ class _MainScreenState extends State<MainScreen> {
 
 //uncomment the below to enable icons to be solid when page is selected
     // indexedPageIcons[0] = bottomIcons[0]["selected"];
+
+    //stateCallback declaration
+    stateCallback[screen.main] = setState;
+
+    mainScreenState = {mainScreen.selectedIndex: 0};
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child:
+            _widgetOptions.elementAt(mainScreenState[mainScreen.selectedIndex]),
       ),
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: false,
@@ -115,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
             title: Text('Personal'),
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: mainScreenState[mainScreen.selectedIndex],
         selectedItemColor: Colors.blueAccent,
         onTap: _onItemTapped,
       ),

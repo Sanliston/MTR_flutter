@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/material.dart';
-import 'package:MTR_flutter/utilities/constants.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 class MemberSearchScreen extends StatefulWidget {
   @override

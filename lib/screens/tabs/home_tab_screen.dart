@@ -1,7 +1,5 @@
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
@@ -394,6 +392,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     sharedStateManagement['hometabscreen_setstate'] = setState;
     sharedStateManagement['display_invite_menu'] = displayInviteMenu;
+
+    //state callback declaration
+    stateCallback[screen.homeTab] = setState;
   }
 
   @override
@@ -509,55 +510,69 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 bottom: 10.0,
                                 left: sidePadding,
                                 right: sidePadding),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                        width: avatarWidth,
-                                        height: avatarHeight,
-                                        margin: const EdgeInsets.only(
-                                            right: 15, bottom: 5),
-                                        decoration: new BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(avatarRadius)),
-                                            image: new DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: NetworkImage(
-                                                  "https://randomuser.me/api/portraits/women/69.jpg"),
-                                            ))),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Sanliston",
-                                          style: homeTextStyleBold,
-                                          overflow: TextOverflow.visible,
-                                        ),
-                                        Text(
-                                          "Owner",
-                                          style: homeSubTextStyle,
-                                          overflow: TextOverflow.visible,
-                                        )
-                                      ],
-                                    ),
-                                  ],
-                                ),
-
-                                //button which takes you to user profile
-                                IconButton(
-                                  icon: Icon(
-                                    EvaIcons.chevronRightOutline,
-                                    color: Colors.black,
+                            child: FlatButton(
+                              padding: EdgeInsets.zero,
+                              onPressed: () {
+                                if (null != stateCallback[screen.main]) {
+                                  stateCallback[screen.main](() {
+                                    Navigator.pop(context);
+                                    mainScreenState[mainScreen.selectedIndex] =
+                                        2;
+                                  });
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                          width: avatarWidth,
+                                          height: avatarHeight,
+                                          margin: const EdgeInsets.only(
+                                              right: 15, bottom: 5),
+                                          decoration: new BoxDecoration(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      avatarRadius)),
+                                              image: new DecorationImage(
+                                                fit: BoxFit.cover,
+                                                image: NetworkImage(
+                                                    "https://randomuser.me/api/portraits/women/69.jpg"),
+                                              ))),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Sanliston",
+                                            style: homeTextStyleBold,
+                                            overflow: TextOverflow.visible,
+                                          ),
+                                          Text(
+                                            "Owner",
+                                            style: homeSubTextStyle,
+                                            overflow: TextOverflow.visible,
+                                          )
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  onPressed: () {
-                                    // Take user to their profile page
-                                  },
-                                )
-                              ],
+
+                                  //button which takes you to user profile
+                                  IconButton(
+                                    icon: Icon(
+                                      EvaIcons.chevronRightOutline,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {
+                                      // Take user to their profile page
+                                    },
+                                  )
+                                ],
+                              ),
                             ),
                           );
                           Map params = {

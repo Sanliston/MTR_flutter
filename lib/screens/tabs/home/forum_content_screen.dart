@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:MTR_flutter/utilities/constants.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
-import 'package:unicons/unicons.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 /*
 For the animation of the list i used this for reference:

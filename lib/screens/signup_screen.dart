@@ -1,11 +1,10 @@
 import 'dart:collection';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/login_screen.dart';
 import 'package:MTR_flutter/controllers/signup_controller.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -13,7 +12,6 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-
   bool fullNameValid = true;
   bool phoneNumberValid = true;
   bool emailValid = true;
@@ -32,74 +30,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
-    _passwordFocus.addListener((){
-
+    _passwordFocus.addListener(() {
       //scroll to show Widget here
-
     });
-
 
     _passwordConfirmFocus.addListener(() {
-
       //scroll to show widget here
-
-      
     });
+
+    //stateCallback declaration
+    stateCallback['signup_screen'] = setState;
   }
 
-
-
-  void isValid(HashMap<String, bool> validMap){
-
-
-
+  void isValid(HashMap<String, bool> validMap) {
     setState(() {
-
-
-      if(!validMap.containsKey('fullName') || !validMap['fullName']){
+      if (!validMap.containsKey('fullName') || !validMap['fullName']) {
         this.fullNameValid = false;
-      }else {
+      } else {
         this.fullNameValid = true;
       }
-      
-      if(!validMap.containsKey('phoneNumber') || !validMap['phoneNumber']){
+
+      if (!validMap.containsKey('phoneNumber') || !validMap['phoneNumber']) {
         this.phoneNumberValid = false;
-      }else {
+      } else {
         this.phoneNumberValid = true;
       }
 
-      if(!validMap.containsKey('email') || !validMap['email']){
+      if (!validMap.containsKey('email') || !validMap['email']) {
         this.emailValid = false;
-      }else {
+      } else {
         this.emailValid = true;
       }
 
-
-      if(!validMap.containsKey('password') || !validMap['password']){
+      if (!validMap.containsKey('password') || !validMap['password']) {
         this.passwordValid = false;
-      }else {
+      } else {
         this.passwordValid = true;
-      }     
-
+      }
     });
 
-    
-
-
     //set state
-    
   }
 
   Widget _buildFullNameTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Full Name";
 
-    if(!fullNameValid){
+    if (!fullNameValid) {
       text = "Full name is invalid";
       textStyle = kLabelStyleRed;
     }
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,11 +117,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildPhoneNumberTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Phone No";
 
-    if(!phoneNumberValid){
+    if (!phoneNumberValid) {
       text = "Phone No is invalid";
       textStyle = kLabelStyleRed;
     }
@@ -182,15 +161,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildEmailTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Email";
     //Logic here
-    if(!emailValid){
-      textStyle  = kLabelStyleRed;
+    if (!emailValid) {
+      textStyle = kLabelStyleRed;
       text = "Invalid Email";
     }
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -228,10 +205,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildPasswordTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Password";
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,15 +245,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildConfirmPasswordTF() {
-
-    TextStyle textStyle = kLabelStyle; 
+    TextStyle textStyle = kLabelStyle;
     String text = "Confirm Password";
     //Logic here
-    if(!passwordValid){
-      textStyle  = kLabelStyleRed;
+    if (!passwordValid) {
+      textStyle = kLabelStyleRed;
       text = "Passwords don't match";
     }
-
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +304,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildRegisterBtn(context) {
-
     return Container(
       padding: EdgeInsets.symmetric(vertical: 15.0),
       width: double.infinity,
@@ -342,7 +314,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
           //create HashMap -- are there better data types for this?
           HashMap dataMap = new HashMap<String, String>();
-
 
           //get fullname from form
           dataMap['fullName'] = fullNameController.text;
@@ -357,13 +328,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
           dataMap['password'] = passwordController.text;
 
           //get confirmed password
-           dataMap['passwordConfirmed'] = passwordConfirmController.text;
-
+          dataMap['passwordConfirmed'] = passwordConfirmController.text;
 
           Widget screen = MainScreen();
-          SignupController signupController = new SignupController.buildContext(context, screen);
+          SignupController signupController =
+              new SignupController.buildContext(context, screen);
           signupController.register(dataMap, isValid);
-          
         },
         padding: EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -447,14 +417,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Widget _buildSignInBtn() {
-
     //purpose of this is to switch back to login screen
     return GestureDetector(
       onTap: () {
         print('Sign in Button Pressed');
 
         Widget screen = LoginScreen();
-        SignupController signupController = new SignupController.buildContext(context, screen);
+        SignupController signupController =
+            new SignupController.buildContext(context, screen);
         signupController.switchScreen(context, screen);
       },
       child: RichText(
@@ -492,63 +462,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
           children: <Widget>[
             Container(
               height: MediaQuery.of(context).size.height,
-              padding: new EdgeInsets.only(top:30.0, left: 30.0, right: 30.0, bottom: 0.0),
+              padding: new EdgeInsets.only(
+                  top: 30.0, left: 30.0, right: 30.0, bottom: 0.0),
               color: login_bg_color,
               child: SingleChildScrollView(
-                      child: SizedBox(
-                        height: MediaQuery.of(context).size.height*0.95,
-                        child: Column(
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Expanded(
+                        flex: 2,
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Expanded(
-                              flex: 2,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                    Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontFamily: 'Roboto',
-                                      fontSize: 25.0,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                )
-                                ],
+                            Text(
+                              'Sign Up',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Roboto',
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildFullNameTF()
-                              ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildPhoneNumberTF()
-                              ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildEmailTF()
-                              ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildPasswordTF()
-                              ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildConfirmPasswordTF()
-                              ),
-                            Expanded(
-                              flex: 2,
-                              child: _buildRegisterBtn(context)
-                              ),
-                            
-                            Expanded(
-                              flex: 1,
-                              child: _buildSignInBtn()
-                              )
+                            )
                           ],
                         ),
-                              ),
+                      ),
+                      Expanded(flex: 2, child: _buildFullNameTF()),
+                      Expanded(flex: 2, child: _buildPhoneNumberTF()),
+                      Expanded(flex: 2, child: _buildEmailTF()),
+                      Expanded(flex: 2, child: _buildPasswordTF()),
+                      Expanded(flex: 2, child: _buildConfirmPasswordTF()),
+                      Expanded(flex: 2, child: _buildRegisterBtn(context)),
+                      Expanded(flex: 1, child: _buildSignInBtn())
+                    ],
+                  ),
+                ),
               ),
             )
           ],

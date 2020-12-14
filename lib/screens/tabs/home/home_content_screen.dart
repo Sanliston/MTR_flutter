@@ -17,7 +17,7 @@ List<Widget> buildHomeTab(BuildContext context) {
 
   List<Widget> widgets = <Widget>[];
 
-  List components = homeTabState[homeTab.homeLayout];
+  List components = contentLayouts["home"];
 
   for (var i = 0; i < components.length; i++) {
     //ADD components to build list

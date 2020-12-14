@@ -1,4 +1,4 @@
-import 'package:MTR_flutter/screens/tabs/home/sections/forumPostsSection.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 
@@ -12,7 +12,7 @@ List<Widget> buildForumTab(BuildContext context) {
 
   List<Widget> widgets = <Widget>[];
 
-  List components = homeTabState[homeTab.forumLayout];
+  List components = contentLayouts["forum"];
 
   for (var i = 0; i < components.length; i++) {
     //ADD components to build list

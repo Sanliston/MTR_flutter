@@ -18,6 +18,9 @@ https://medium.com/flutter-community/how-to-animate-items-in-list-using-animated
 Solved the janky animation issue by combining 2 animations together
 */
 
+  //create your own animation key
+  GlobalKey<AnimatedListState> forumPostKey;
+
   List forumPosts;
   _ForumPostsSectionState({@required this.forumPosts});
 
@@ -87,6 +90,8 @@ Solved the janky animation issue by combining 2 animations together
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    forumPostKey = new GlobalKey<AnimatedListState>();
   }
 
   @override
@@ -146,10 +151,8 @@ Solved the janky animation issue by combining 2 animations together
                           forumPosts.insert(0, newPost);
                         });
 
-                        sharedStateManagement['forum_post_key']
-                            .currentState
-                            .insertItem(0,
-                                duration: const Duration(milliseconds: 500));
+                        forumPostKey.currentState.insertItem(0,
+                            duration: const Duration(milliseconds: 500));
                       },
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -197,7 +200,7 @@ Solved the janky animation issue by combining 2 animations together
           child: Padding(
             padding: const EdgeInsets.only(top: 5.0, bottom: 10.0),
             child: AnimatedList(
-              key: sharedStateManagement['forum_post_key'],
+              key: forumPostKey,
               initialItemCount: forumPosts.length,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,

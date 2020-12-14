@@ -52,27 +52,33 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   AnimationController forumAnimationController;
   Animation forumInsertAnimation;
 
-  final List<String> _tabs = <String>[
-    "Home",
-    "Forum",
-    "Groups",
-    "Members",
-    "Events",
-    "Services",
-    "Pricing",
-    "Content"
-  ];
+  List<String> _tabs;
 
-  Map<String, Function> _tab_widgets = {
-    "Home": buildHomeTab,
-    "Forum": buildForumTab,
-    "Groups": buildGroupsTab,
-    "Members": buildMembersTab,
-    "Events": buildEventsTab,
-    "Services": buildServicesTab,
-    "Pricing": buildPricingTab,
-    "Content": buildContentTab
-  };
+  List<Widget> buildTab(BuildContext context, String tab) {
+    /*List will hold certain information:
+    number of entries in List
+    List of widgets in order of how they will be displayed */
+
+    /*Decided to have each element as an individual item in the list. As opposed to having some nested.
+    This is so that it will be easier to add and remove items from the list on the fly. */
+
+    if (null == contentLayouts[tab]) {
+      tab = "default";
+    }
+
+    List<Widget> widgets = <Widget>[];
+
+    List components = contentLayouts[tab];
+
+    for (var i = 0; i < components.length; i++) {
+      //ADD components to build list
+      Widget component = componentMap[components[i]]();
+
+      widgets.add(component);
+    }
+
+    return widgets;
+  }
 
   static List<Widget> buildEventsTab(BuildContext context) {
     /*List will hold certain information:
@@ -358,8 +364,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   @override
   void initState() {
     super.initState();
+
+    //get the configured tab list
+    _tabs = homeTabList;
+
+    //set controller list based on obtained list
     controller = TabController(
-      length: 8,
+      length: _tabs.length,
       vsync: this,
     );
 
@@ -384,9 +395,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         onTabDrag();
     });
 
-    forumPostKey = GlobalKey<AnimatedListState>();
-    forumAnimationController = AnimationController(vsync: this);
-
     // sharedStateManagement = {
     //   "forum_post_key": forumPostKey,
     //   "forum_animation_controller": forumAnimationController,
@@ -394,9 +402,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     // };
 
     //decided to make the sharedStateManagement Map a global variable
-    sharedStateManagement['forum_post_key'] = forumPostKey;
-    sharedStateManagement['forum_animation_controller'] =
-        forumAnimationController;
     sharedStateManagement['display_navigation_drawer'] =
         displayNavigationDrawer;
 
@@ -680,13 +685,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                   tab index is decided by: name 
                                   So we create a map containing the arrays and the views for the relevant tab
                                   And then we index that map using the value of the name variable*/
-                                  return _tab_widgets[name](context)[index];
+                                  return buildTab(context, name)[index];
                                 },
                                 // The childCount of the SliverChildBuilderDelegate
                                 // specifies how many children this inner list
                                 // has. In this example, each tab has a list of
                                 // exactly 30 items, but this is arbitrary.
-                                childCount: _tab_widgets[name](context).length,
+                                childCount: contentLayouts[name].length,
                               ),
                             ),
                           ),

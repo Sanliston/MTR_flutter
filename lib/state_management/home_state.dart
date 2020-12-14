@@ -1,11 +1,12 @@
-import 'package:MTR_flutter/screens/tabs/home/sections/forumPostsSection.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
-import 'package:MTR_flutter/screens/tabs/home/sections/AnnouncementsSection.dart';
-import 'package:MTR_flutter/screens/tabs/home/sections/MembersSection.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/UpcomingSection.dart';
-import 'package:MTR_flutter/screens/tabs/home/sections/ContactUsSection.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/contact_us_section.dart';
 
-//tab persistence when switching to messages or profile etc - init state gets called when you return after switching to messages or profile
+//home tab tabs persistence when switching to messages or profile etc - init state gets called when you return to home after switching to messages or profile
 String selectedHomeTab = "home";
 
 //State data
@@ -96,6 +97,117 @@ List<Map> forumPosts = [
   },
 ];
 
+List<Map> membersList = [
+  {
+    "username": "Jane Ipsum",
+    "role": "Owner",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Bebe Rxha",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Claire Jojo",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Bebe Reha",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Yolo oi",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Bebe Reha",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Yolo oi",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Bebe Reha",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  },
+  {
+    "username": "Yolo oi",
+    "role": "Member",
+    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ]
+  }
+];
+
 //functions to build components
 Widget buildHomeAnnouncements() {
   return new AnnoucementsSection(
@@ -103,47 +215,83 @@ Widget buildHomeAnnouncements() {
   );
 }
 
-Widget buildHomeMembers() {
-  return new MembersSection(
+Widget buildMembersPreviewSection() {
+  return new MembersPreviewSection(
     membersShortlist: membersShortlist,
   );
 }
 
-Widget buildHomeUpcoming() {
+Widget buildUpcomingSection() {
   return new UpcomingSection();
 }
 
-Widget buildHomeContactUs() {
+Widget buildContactUsSection() {
   return new ContactUsSection();
 }
 
-Widget buildForumPosts() {
+Widget buildForumPostsSection() {
   return new ForumPostsSection(forumPosts: forumPosts);
 }
 
+Widget buildMembersSection() {
+  return new MembersSection();
+}
+
+//add any newly created components to this enum
+enum components {
+  announcements,
+  membersPreview,
+  upcoming,
+  contactUs,
+  forumPosts,
+  members
+}
+
 Map componentMap = {
-  "announcements": buildHomeAnnouncements,
-  "members": buildHomeMembers,
-  "upcoming": buildHomeUpcoming,
-  "contact_us": buildHomeContactUs,
-  "forum_posts": buildForumPosts
+  components.announcements: buildHomeAnnouncements,
+  components.membersPreview: buildMembersPreviewSection,
+  components.upcoming: buildUpcomingSection,
+  components.contactUs: buildContactUsSection,
+  components.forumPosts: buildForumPostsSection,
+  components.members: buildMembersSection
 };
 
 //home tab state
-enum homeTab {
-  headerLayout,
-  homeLayout,
-  forumLayout,
-  groupsLayout,
-  membersLayout,
-  eventsLayout,
-  servicesLayout,
-  pricingLayout,
-  contentLayout
-}
+List<String> homeTabList = <String>[
+  "Home",
+  "test tab",
+  "Forum",
+  "Groups",
+  "Members",
+  "Events",
+  "Services",
+  "Pricing",
+  "Content"
+];
 
-Map homeTabState = {
-  homeTab.headerLayout: [],
-  homeTab.homeLayout: ["announcements", "members", "upcoming", "contact_us"],
-  homeTab.forumLayout: ["forum_posts", "members"]
+//decided to use string values in the map, as these can be
+//added during runtime allowing for the creation of custom
+//tabs with custom layouts
+Map contentLayouts = {
+  "header": [],
+  "default": [
+    components.announcements,
+    components.membersPreview,
+    components.upcoming,
+    components.contactUs
+  ],
+  "Home": [
+    components.announcements,
+    components.membersPreview,
+    components.upcoming,
+    components.upcoming
+  ],
+  "Schedule": [components.announcements],
+  "Forum": [components.forumPosts],
+  "Groups": [components.forumPosts],
+  "Members": [components.membersPreview, components.members],
+  "Events": [components.announcements],
+  "Services": [components.announcements],
+  "Pricing": [components.announcements],
+  "test tab": [components.membersPreview]
 };

@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/screens/tabs/home/sections/groups_list_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
@@ -9,7 +10,8 @@ import 'package:MTR_flutter/screens/tabs/home/sections/contact_us_section.dart';
 //home tab tabs persistence when switching to messages or profile etc - init state gets called when you return to home after switching to messages or profile
 String selectedHomeTab = "home";
 
-//State data
+//State data -- currently populated for development
+//in production these will be populated from API and cache
 List<Map> announcements = [
   {
     'user': 'Jane',
@@ -208,7 +210,190 @@ List<Map> membersList = [
   }
 ];
 
-//functions to build components
+List<Map> groupsList = [
+  {
+    'name': 'The Fallen Order',
+    'security': 'public',
+    'members': [
+      {
+        "username": "Jane Ipsum",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      }
+    ],
+    'recent_activity': {
+      'username': 'James',
+      'action': 'posted',
+      'post_title': 'I\'m sick of these damn Siths'
+    }
+  },
+  {
+    'name': 'Band of Bastards',
+    'security': 'public',
+    'members': [
+      {
+        "username": "Jane Ipsum",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      }
+    ],
+    'recent_activity': {
+      'username': 'Smith',
+      'action': 'liked',
+      'post_title': 'That group name needs to be changed'
+    }
+  },
+  {
+    'name': 'The add ons',
+    'security': 'private',
+    'members': [
+      {
+        "username": "Jane Ipsum",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      }
+    ],
+    'recent_activity': {
+      'username': 'Jordan',
+      'action': 'replied to',
+      'post_title':
+          'This is a super super super long long long long question question question question you should not be able to see this part?'
+    }
+  },
+  {
+    'name': 'Awesome People',
+    'security': 'public',
+    'members': [
+      {
+        "username": "Jane Ipsum",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      }
+    ],
+    'recent_activity': null
+  },
+  {
+    'name': 'Top Secret Crew',
+    'security': 'private',
+    'members': [
+      {
+        "username": "Jane Ipsum",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Rxha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Claire Jojo",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Bebe Reha",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      },
+      {
+        "username": "Yolo oi",
+        "profile_image": "https://randomuser.me/api/portraits/women/69.jpg"
+      }
+    ],
+    'recent_activity': {
+      'username': 'Jordan',
+      'action': 'replied to',
+      'post_title': 'Is this the assassins creed?'
+    }
+  }
+];
+
+//functions to build sections
 Widget buildHomeAnnouncements() {
   return new AnnoucementsSection(
     announcements: announcements,
@@ -237,23 +422,29 @@ Widget buildMembersSection() {
   return new MembersSection();
 }
 
-//add any newly created components to this enum
-enum components {
+Widget buildGroupsListSection() {
+  return new GroupsListSection();
+}
+
+//add any newly created sections to this enum
+enum sections {
   announcements,
   membersPreview,
   upcoming,
   contactUs,
   forumPosts,
-  members
+  members,
+  groupsList
 }
 
-Map componentMap = {
-  components.announcements: buildHomeAnnouncements,
-  components.membersPreview: buildMembersPreviewSection,
-  components.upcoming: buildUpcomingSection,
-  components.contactUs: buildContactUsSection,
-  components.forumPosts: buildForumPostsSection,
-  components.members: buildMembersSection
+Map sectionMap = {
+  sections.announcements: buildHomeAnnouncements,
+  sections.membersPreview: buildMembersPreviewSection,
+  sections.upcoming: buildUpcomingSection,
+  sections.contactUs: buildContactUsSection,
+  sections.forumPosts: buildForumPostsSection,
+  sections.members: buildMembersSection,
+  sections.groupsList: buildGroupsListSection
 };
 
 //home tab state
@@ -269,29 +460,58 @@ List<String> homeTabList = <String>[
   "Content"
 ];
 
+List<String> homeAdminTabList = <String>[
+  "Home",
+  "Forum",
+  "Groups",
+  "Members",
+  "AddTabButton"
+];
+
 //decided to use string values in the map, as these can be
 //added during runtime allowing for the creation of custom
 //tabs with custom layouts
+//NOTE: tab names here have to match those in homeTabList (excluding header and default)
+enum headerOptions {
+  tagLine,
+  placeLogo,
+  memberPreview,
+  inviteButton,
+  customButton
+}
+
 Map contentLayouts = {
-  "header": [],
+  "header": {
+    headerOptions.tagLine: false,
+    headerOptions.placeLogo: false,
+    headerOptions.memberPreview: true,
+    headerOptions.inviteButton: true,
+    headerOptions.customButton: false
+  },
   "default": [
-    components.announcements,
-    components.membersPreview,
-    components.upcoming,
-    components.contactUs
+    sections.announcements,
+    sections.membersPreview,
+    sections.upcoming,
+    sections.contactUs
   ],
   "Home": [
-    components.announcements,
-    components.membersPreview,
-    components.upcoming,
-    components.upcoming
+    sections.announcements,
+    sections.membersPreview,
+    sections.upcoming,
+    sections.upcoming
   ],
-  "Schedule": [components.announcements],
-  "Forum": [components.forumPosts],
-  "Groups": [components.forumPosts],
-  "Members": [components.membersPreview, components.members],
-  "Events": [components.announcements],
-  "Services": [components.announcements],
-  "Pricing": [components.announcements],
-  "test tab": [components.membersPreview]
+  "Schedule": [sections.announcements],
+  "Forum": [sections.forumPosts],
+  "Groups": [sections.groupsList],
+  "Members": [sections.membersPreview, sections.members],
+  "Events": [sections.announcements],
+  "Services": [sections.announcements],
+  "Pricing": [sections.announcements],
+  "test tab": [sections.membersPreview],
+  "Content": [
+    sections.announcements,
+    sections.membersPreview,
+    sections.upcoming,
+    sections.upcoming
+  ]
 };

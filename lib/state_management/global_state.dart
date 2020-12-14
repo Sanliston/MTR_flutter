@@ -14,8 +14,8 @@ TODO: use enums
 Map sharedStateManagement =
     {}; //global Map that other widgets can add and extract data from
 
-bool loggedIn;
-String userRole;
+bool loggedIn = true;
+bool isAdmin = true;
 int selectedPageIndex = 1;
 
 //Enum to be used stateCallback

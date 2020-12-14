@@ -4,10 +4,7 @@ import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
-import 'package:MTR_flutter/screens/tabs/home/home_content_screen.dart';
-import 'package:MTR_flutter/screens/tabs/home/forum_content_screen.dart';
-import 'package:MTR_flutter/screens/tabs/home/groups_content_screen.dart';
-import 'package:MTR_flutter/screens/tabs/home/members_content_screen.dart';
+
 import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
 import "dart:math";
@@ -72,78 +69,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     for (var i = 0; i < components.length; i++) {
       //ADD components to build list
-      Widget component = componentMap[components[i]]();
+      Widget component = sectionMap[components[i]]();
 
       widgets.add(component);
     }
-
-    return widgets;
-  }
-
-  static List<Widget> buildEventsTab(BuildContext context) {
-    /*List will hold certain information:
-    number of entries in List
-    List of widgets in order of how they will be displayed */
-
-    List<Widget> widgets = <Widget>[
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder())
-    ];
-
-    return widgets;
-  }
-
-  static List<Widget> buildServicesTab(BuildContext context) {
-    /*List will hold certain information:
-    number of entries in List
-    List of widgets in order of how they will be displayed */
-
-    List<Widget> widgets = <Widget>[
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder())
-    ];
-
-    return widgets;
-  }
-
-  static List<Widget> buildPricingTab(BuildContext context) {
-    /*List will hold certain information:
-    number of entries in List
-    List of widgets in order of how they will be displayed */
-
-    List<Widget> widgets = <Widget>[
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder())
-    ];
-
-    return widgets;
-  }
-
-  static List<Widget> buildContentTab(BuildContext context) {
-    /*List will hold certain information:
-    number of entries in List
-    List of widgets in order of how they will be displayed */
-
-    List<Widget> widgets = <Widget>[
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder()),
-      SizedBox(height: 150.0, child: Placeholder())
-    ];
 
     return widgets;
   }
@@ -366,7 +295,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     super.initState();
 
     //get the configured tab list
-    _tabs = homeTabList;
+
+    _tabs = isAdmin ? homeAdminTabList : homeTabList;
 
     //set controller list based on obtained list
     controller = TabController(
@@ -617,12 +547,39 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     ),
                     bottom: TabBar(
                       isScrollable: true,
-                      tabs:
-                          _tabs.map((String name) => Tab(text: name)).toList(),
+                      tabs: _tabs.map((String name) {
+                        Widget widget = Tab(text: name);
+
+                        if ("AddTabButton" == name) {
+                          widget = Icon(
+                            EvaIcons.plusCircle,
+                            color: Colors.redAccent,
+                          );
+                        }
+
+                        return widget;
+                      }).toList(),
                       controller: controller,
                       labelColor: Colors.red,
                       unselectedLabelColor: Colors.black54,
                       indicatorColor: Colors.red,
+                      onTap: (index) {
+                        String name = _tabs[index];
+
+                        if ("AddTabButton" == name) {
+                          //stop event execution
+                          int index = controller.previousIndex;
+                          setState(() {
+                            controller.index = index;
+                          });
+
+                          //do stuff with button here
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => HomeCustomizeScreen()));
+                        }
+                      },
                     )),
               ),
             ];
@@ -743,22 +700,87 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   Padding buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
-          top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
-      child: SizedBox(
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                flex: 3,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 25.0),
-                        child: Column(children: <Widget>[
+    if (contentLayouts['header'][headerOptions.placeLogo]) {
+      return Padding(
+        padding: const EdgeInsets.only(
+            top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
+        child: SizedBox(
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 5,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 25.0),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Flexible(
+                                    flex: 20,
+                                    child: Text(
+                                      "More than Rubies",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        letterSpacing: 1.5,
+                                        fontSize: 28.0,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'OpenSans',
+                                      ),
+                                    )),
+                                Spacer(
+                                  flex: 1,
+                                ),
+                                buildHeaderTagLine(),
+                                Expanded(
+                                  flex: 10,
+                                  child: buildHeaderMemberPreview(context),
+                                )
+                              ]),
+                        ),
+                      ),
+                      buildHeaderPlaceLogo(context)
+                    ],
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        buildHeaderInviteButton(),
+                        buildHeaderCustomButton()
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(
+            top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
+        child: SizedBox(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                  flex: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 25.0),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
                           Flexible(
                               flex: 20,
                               child: Text(
@@ -774,174 +796,265 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           Spacer(
                             flex: 1,
                           ),
+                          buildHeaderTagLine(),
                           Expanded(
                             flex: 10,
-                            child: FlatButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) =>
-                                            MemberSearchScreen()));
-                              },
-                              padding: EdgeInsets.all(0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Expanded(
-                                    flex: 3,
-                                    child: Stack(
-                                      children: <Widget>[
-                                        //use a function to dynamically build this list
-                                        Positioned(
-                                          left: 0.0,
-                                          top: 5.0,
-                                          child: Container(
-                                              width: 25,
-                                              height: 25,
-                                              decoration: new BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: new DecorationImage(
-                                                    fit: BoxFit.fill,
-                                                    image: NetworkImage(
-                                                        "https://randomuser.me/api/portraits/women/36.jpg"),
-                                                  ))),
-                                        ),
-                                        Positioned(
-                                          left: 20.0,
-                                          top: 5.0,
-                                          child: Container(
-                                              width: 25,
-                                              height: 25,
-                                              decoration: new BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: new DecorationImage(
-                                                    fit: BoxFit.fill,
-                                                    image: NetworkImage(
-                                                        "https://randomuser.me/api/portraits/women/37.jpg"),
-                                                  ))),
-                                        ),
-                                        Positioned(
-                                          left: 40.0,
-                                          top: 5.0,
-                                          child: Container(
-                                              width: 25,
-                                              height: 25,
-                                              decoration: new BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: new DecorationImage(
-                                                    fit: BoxFit.fill,
-                                                    image: NetworkImage(
-                                                        "https://randomuser.me/api/portraits/women/32.jpg"),
-                                                  ))),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 5,
-                                    child: Text(
-                                      "87 Members",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        letterSpacing: 1.5,
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.normal,
-                                        fontFamily: 'OpenSans',
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
+                            child: buildHeaderMemberPreview(context),
                           )
                         ]),
-                      ),
+                  ),
+                ),
+                Flexible(
+                  flex: 2,
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildHeaderInviteButton(),
+                        buildHeaderCustomButton()
+                      ],
                     ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
-                        child: Row(
-                          children: <Widget>[
-                            Spacer(),
-                            Expanded(
-                              child: FlatButton(
-                                padding: EdgeInsets.zero,
-                                child: Container(
-                                    decoration: new BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(8.0)),
-                                        image: new DecorationImage(
-                                          fit: BoxFit.cover,
-                                          image: NetworkImage(
-                                              "https://randomuser.me/api/portraits/women/69.jpg"),
-                                        ))),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      new MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomeCustomizeScreen()));
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  Widget buildHeaderTagLine() {
+    Widget widget = Container(height: 1.0, width: 2.0);
+
+    if (contentLayouts['header'][headerOptions.tagLine]) {
+      widget = Padding(
+        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+        child: Text(
+          "This is the tagline text here",
+          textAlign: TextAlign.start,
+          style: homeTextStyle,
+        ),
+      );
+    }
+    return widget;
+  }
+
+  Widget buildHeaderCustomButton() {
+    Widget widget = Container(height: 1.0, width: 1.0);
+
+    if (contentLayouts['header'][headerOptions.customButton]) {
+      widget = FlatButton(
+        onPressed: () {
+          sharedStateManagement['display_invite_menu']();
+        },
+        padding:
+            EdgeInsets.only(top: 4.0, left: 30.0, right: 30.0, bottom: 4.0),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: Colors.red,
+            width: 1.5,
+          ),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: Colors.white,
+        child: Row(
+          children: <Widget>[
+            Icon(
+              Icons.add,
+              color: Colors.red,
+              size: 14.0,
+            ),
+            Text(
+              'Custom',
+              overflow: TextOverflow.clip,
+              style: TextStyle(
+                color: Colors.red,
+                letterSpacing: 1.5,
+                fontSize: 14.0,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'OpenSans',
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return widget;
+  }
+
+  Widget buildHeaderInviteButton() {
+    Widget widget = Container(height: 1.0, width: 1.0);
+
+    if (contentLayouts['header'][headerOptions.inviteButton]) {
+      widget = Padding(
+        padding: const EdgeInsets.only(right: 20.0),
+        child: FlatButton(
+          onPressed: () {
+            sharedStateManagement['display_invite_menu']();
+          },
+          padding:
+              EdgeInsets.only(top: 4.0, left: 30.0, right: 30.0, bottom: 4.0),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: Colors.red,
+              width: 1.5,
+            ),
+            borderRadius: BorderRadius.circular(30.0),
+          ),
+          color: Colors.white,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: 15,
+              maxWidth: 70,
+            ),
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  Icons.add,
+                  color: Colors.red,
+                  size: 14.0,
+                ),
+                Text(
+                  'Invite',
+                  style: TextStyle(
+                    color: Colors.red,
+                    letterSpacing: 1.5,
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'OpenSans',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return widget;
+  }
+
+  Widget buildHeaderPlaceLogo(BuildContext context) {
+    Widget widget = Container();
+
+    if (contentLayouts['header'][headerOptions.placeLogo]) {
+      widget = Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+          child: FlatButton(
+            padding: EdgeInsets.zero,
+            child: Container(
+                height: 120.0,
+                width: 120.0,
+                decoration: new BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    image: new DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                          "https://randomuser.me/api/portraits/women/69.jpg"),
+                    ))),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  new MaterialPageRoute(
+                      builder: (context) => HomeCustomizeScreen()));
+            },
+          ),
+        ),
+      );
+    }
+
+    return widget;
+  }
+
+  Widget buildHeaderMemberPreview(BuildContext context) {
+    Widget widget = Container(height: 1.0, width: 1.0);
+
+    if (contentLayouts['header'][headerOptions.memberPreview]) {
+      widget = FlatButton(
+        onPressed: () {
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) => MemberSearchScreen()));
+        },
+        padding: EdgeInsets.all(0),
+        child: Container(
+          width: 200.0,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                flex: 3,
+                child: Stack(
+                  children: <Widget>[
+                    //use a function to dynamically build this list
+                    Positioned(
+                      left: 0.0,
+                      top: 5.0,
+                      child: Container(
+                          width: 25,
+                          height: 25,
+                          decoration: new BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: NetworkImage(
+                                    "https://randomuser.me/api/portraits/women/36.jpg"),
+                              ))),
+                    ),
+                    Positioned(
+                      left: 20.0,
+                      top: 5.0,
+                      child: Container(
+                          width: 25,
+                          height: 25,
+                          decoration: new BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: NetworkImage(
+                                    "https://randomuser.me/api/portraits/women/37.jpg"),
+                              ))),
+                    ),
+                    Positioned(
+                      left: 40.0,
+                      top: 5.0,
+                      child: Container(
+                          width: 25,
+                          height: 25,
+                          decoration: new BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: new DecorationImage(
+                                fit: BoxFit.fill,
+                                image: NetworkImage(
+                                    "https://randomuser.me/api/portraits/women/32.jpg"),
+                              ))),
                     )
                   ],
                 ),
               ),
               Expanded(
-                flex: 2,
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: FlatButton(
-                    onPressed: () {
-                      sharedStateManagement['display_invite_menu']();
-                    },
-                    padding: EdgeInsets.only(
-                        top: 4.0, left: 50.0, right: 50.0, bottom: 4.0),
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        color: Colors.red,
-                        width: 1.5,
-                      ),
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                    color: Colors.white,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxHeight: 15,
-                        maxWidth: 70,
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          Icon(
-                            Icons.add,
-                            color: Colors.red,
-                            size: 14.0,
-                          ),
-                          Text(
-                            'Invite',
-                            style: TextStyle(
-                              color: Colors.red,
-                              letterSpacing: 1.5,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'OpenSans',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                flex: 5,
+                child: Text(
+                  "87 Members",
+                  style: TextStyle(
+                    color: Colors.black,
+                    letterSpacing: 1.5,
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.normal,
+                    fontFamily: 'OpenSans',
                   ),
                 ),
               )
             ],
           ),
         ),
-      ),
-    );
+      );
+    }
+
+    return widget;
   }
 }

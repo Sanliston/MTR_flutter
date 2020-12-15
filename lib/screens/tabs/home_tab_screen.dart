@@ -340,6 +340,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     //state callback declaration
     stateCallback[screen.homeTab] = setState;
+
+    //pass build functions to headerBuilders
+    headerBuilders['background'] = buildHeaderBackground;
+    headerBuilders['header'] = buildHeader;
+    headerBuilders['tagline'] = buildHeaderTagLine;
+    headerBuilders['place_logo'] = buildHeaderPlaceLogo;
+    headerBuilders['member_preview'] = buildHeaderMemberPreview;
+    headerBuilders['invite_button'] = buildHeaderInviteButton;
+    headerBuilders['custom_button'] = buildHeaderCustomButton;
   }
 
   @override
@@ -407,16 +416,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               "title": "Dashboard",
                               "onPressed": () {
                                 //takes them to dashboard page, with analytics etc
-                                print(
-                                    "****************callback function1 called");
+                                Navigator.pop(context);
                               }
                             },
                             {
                               "iconData": EvaIcons.brushOutline,
                               "title": "Customize",
                               "onPressed": () {
-                                print(
-                                    "****************callback function2 called");
+                                Navigator.pop(context);
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomeCustomizeScreen()));
                               }
                             },
                             {"title": "More Actions", "type": "subtitle"},
@@ -435,16 +447,14 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               "iconData": EvaIcons.bellOutline,
                               "title": "Manage Notifications",
                               "onPressed": () {
-                                print(
-                                    "****************callback function3 called");
+                                Navigator.pop(context);
                               }
                             },
                             {
-                              "iconData": EvaIcons.monitorOutline,
+                              "iconData": UniconsLine.mobile_android,
                               "title": "Add to Home Screen",
                               "onPressed": () {
-                                print(
-                                    "****************callback function3 called");
+                                Navigator.pop(context);
                               }
                             }
                           ];
@@ -546,6 +556,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                       ],
                     ),
                     bottom: TabBar(
+                      indicatorSize: TabBarIndicatorSize.label,
                       isScrollable: true,
                       tabs: _tabs.map((String name) {
                         Widget widget = Tab(text: name);
@@ -735,15 +746,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 Spacer(
                                   flex: 1,
                                 ),
-                                buildHeaderTagLine(),
+                                headerBuilders['tagline'](),
                                 Expanded(
                                   flex: 10,
-                                  child: buildHeaderMemberPreview(context),
+                                  child:
+                                      headerBuilders['member_preview'](context),
                                 )
                               ]),
                         ),
                       ),
-                      buildHeaderPlaceLogo(context)
+                      headerBuilders['place_logo'](context)
                     ],
                   ),
                 ),
@@ -753,8 +765,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        buildHeaderInviteButton(),
-                        buildHeaderCustomButton()
+                        headerBuilders['invite_button'](),
+                        headerBuilders['custom_button']()
                       ],
                     ),
                   ),
@@ -796,10 +808,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           Spacer(
                             flex: 1,
                           ),
-                          buildHeaderTagLine(),
+                          headerBuilders['tagline'](),
                           Expanded(
                             flex: 10,
-                            child: buildHeaderMemberPreview(context),
+                            child: headerBuilders['member_preview'](context),
                           )
                         ]),
                   ),
@@ -810,8 +822,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        buildHeaderInviteButton(),
-                        buildHeaderCustomButton()
+                        headerBuilders['invite_button'](),
+                        headerBuilders['custom_button']()
                       ],
                     ),
                   ),

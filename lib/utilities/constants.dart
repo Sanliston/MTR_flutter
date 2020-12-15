@@ -7,6 +7,19 @@ import 'package:flutter/services.dart';
 const double sidePadding = 15.0;
 const Color iconColor = Colors.redAccent;
 
+//Global Colors -- for dev -- future colors will be set in a themes file
+const Color darkNight = Color(0xFF263238);
+
+//example theme structure for development
+class AppTheme {
+  Color background;
+  AppTheme({this.background});
+}
+
+AppTheme myTheme = new AppTheme(background: Color(0xFF263238));
+//you would then get the color etc via
+Color background = myTheme.background;
+
 //login screen parameters and styles
 
 const login_bg_color = const Color(0xFF2d82fe);
@@ -63,6 +76,10 @@ final homeTextStyleBoldWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white));
 
+final homeTextStyleWhite = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.white));
+
 final homeSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
@@ -100,3 +117,9 @@ final groupsSubTextStyle = GoogleFonts.heebo(
 final groupsSubTextStyleBold = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black54));
+
+//customize screen values
+const double memberViewPadding = 30.0;
+final customizeButtonText = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 10, color: Colors.white));

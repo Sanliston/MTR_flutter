@@ -1,8 +1,11 @@
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_place_card.dart';
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_member_view.dart';
 
 class HomeCustomizeScreen extends StatefulWidget {
   @override
@@ -26,7 +29,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: darkNight,
         child: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,7 +37,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.black12, width: 0.5))),
+                        bottom: BorderSide(color: Colors.black, width: 0.0))),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
                   child: Row(
@@ -43,8 +46,8 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                       children: [
                         IconButton(
                           icon: Icon(
-                            Icons.info_outline,
-                            color: Colors.black,
+                            EvaIcons.infoOutline,
+                            color: Colors.white,
                           ),
                           onPressed: () {},
                         ),
@@ -52,7 +55,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                           'Customize',
                           textAlign: TextAlign.start,
                           overflow: TextOverflow.ellipsis,
-                          style: homeTextStyleBold,
+                          style: homeTextStyleBoldWhite,
                         ),
                         FlatButton(
                           onPressed: () {
@@ -62,7 +65,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                             'Done',
                             textAlign: TextAlign.start,
                             overflow: TextOverflow.ellipsis,
-                            style: homeLinkTextStyle,
+                            style: homeTextStyleWhite,
                           ),
                         )
                       ]),
@@ -75,8 +78,11 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                       appBar: PreferredSize(
                         preferredSize: Size.fromHeight(50.0),
                         child: AppBar(
+                          backgroundColor: darkNight,
                           automaticallyImplyLeading: false,
                           bottom: TabBar(
+                            indicatorColor: Colors.white,
+                            indicatorSize: TabBarIndicatorSize.tab,
                             tabs: myTabs,
                           ),
                         ),
@@ -84,13 +90,20 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                       body: TabBarView(
                         children: myTabs.map((Tab tab) {
                           //place relevant tab widgets here
-                          final String label = tab.text.toLowerCase();
-                          return Center(
-                            child: Text(
-                              'This is the $label tab',
-                              style: const TextStyle(fontSize: 36),
-                            ),
-                          );
+                          final String label = tab.text;
+
+                          Widget widget = Container();
+
+                          switch (label) {
+                            case "Member View":
+                              widget = new CustomizeMemberView();
+                              break;
+                            case "Place Card":
+                              widget = new CustomizePlaceCard();
+                              break;
+                          }
+
+                          return widget;
                         }).toList(),
                       ),
                     )),

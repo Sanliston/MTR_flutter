@@ -32,11 +32,36 @@ class GroupsListSection extends StatelessWidget {
     print("groupsListIndexName: $groupsListIndexName");
 
     if (null != recentActivity) {
+      IconData icon = UniconsLine.comment_message;
+
+      switch (recentActivity['action']) {
+        case "replied to":
+          icon = UniconsLine.comment_message;
+          break;
+
+        case "liked":
+          icon = UniconsLine.comment_heart;
+          break;
+
+        case "posted":
+          icon = UniconsLine.chat;
+          break;
+
+        default:
+          icon = UniconsLine.comment_message;
+      }
       widget = new Padding(
         padding: const EdgeInsets.only(
             left: 20.0, top: 5.0, right: 20.0, bottom: 10.0),
         child: Row(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: Icon(
+                icon,
+                color: Colors.redAccent,
+              ),
+            ),
             new Text(
                 groupsList[index]['recent_activity']['username'] +
                     " " +

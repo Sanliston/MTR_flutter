@@ -477,16 +477,36 @@ enum headerOptions {
   placeLogo,
   memberPreview,
   inviteButton,
-  customButton
+  customButton,
+  layout,
+  blurEffect,
+  logoShape,
+  logoRadius
+}
+
+enum headerLayouts {
+  left,
+  centered,
+  right,
+}
+
+enum logoShape {
+  square,
+  circle,
 }
 
 Map contentLayouts = {
   "header": {
-    headerOptions.tagLine: false,
+    headerOptions.tagLine: true,
     headerOptions.placeLogo: false,
     headerOptions.memberPreview: true,
     headerOptions.inviteButton: true,
-    headerOptions.customButton: false
+    headerOptions.customButton: true,
+    headerOptions.layout:
+        "default", //idea is to have different layouts, like picture on the left, all centered, etc.
+    headerOptions.blurEffect: false,
+    headerOptions.logoShape: logoShape.square,
+    headerOptions.logoRadius: 4.0
   },
   "default": [
     sections.announcements,
@@ -515,3 +535,6 @@ Map contentLayouts = {
     sections.upcoming
   ]
 };
+
+//function holder for home header build functions
+Map<String, Function> headerBuilders = {};

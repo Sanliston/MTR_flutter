@@ -41,14 +41,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     with TickerProviderStateMixin {
   TabController controller;
   final ScrollController scrollController = ScrollController();
-
   final List<String> listItems = [];
-
   //State management: Forum
   GlobalKey<AnimatedListState> forumPostKey;
   AnimationController forumAnimationController;
   Animation forumInsertAnimation;
-
   List<String> _tabs;
 
   List<Widget> buildTab(BuildContext context, String tab) {
@@ -710,11 +707,26 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     );
   }
 
-  Padding buildHeader(BuildContext context) {
+  Padding buildHeader(BuildContext context,
+      {bool memberViewMode = false, double sizeFactor = 1.0}) {
+    double paddingTop = 90.0 * sizeFactor;
+    double paddingLeft = 20.0 * sizeFactor;
+    double paddingRight = 20.0 * sizeFactor;
+    double paddingBottom =
+        memberViewMode ? 0.0 * sizeFactor : 30.0 * sizeFactor;
+
+    double innerPaddingTop = 25.0 * sizeFactor;
+
+    double titleFontSize = 28.0 * sizeFactor;
+    double titleSpacing = 1.5 * sizeFactor;
+
     if (contentLayouts['header'][headerOptions.placeLogo]) {
       return Padding(
-        padding: const EdgeInsets.only(
-            top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
+        padding: EdgeInsets.only(
+            top: paddingTop,
+            left: paddingLeft,
+            right: paddingRight,
+            bottom: paddingBottom),
         child: SizedBox(
           child: Center(
             child: Column(
@@ -727,7 +739,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     children: <Widget>[
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 25.0),
+                          padding: EdgeInsets.only(top: innerPaddingTop),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
@@ -737,8 +749,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                       "More than Rubies",
                                       style: TextStyle(
                                         color: Colors.black,
-                                        letterSpacing: 1.5,
-                                        fontSize: 28.0,
+                                        letterSpacing: titleSpacing,
+                                        fontSize: titleFontSize,
                                         fontWeight: FontWeight.bold,
                                         fontFamily: 'OpenSans',
                                       ),
@@ -746,28 +758,36 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 Spacer(
                                   flex: 1,
                                 ),
-                                headerBuilders['tagline'](),
+                                headerBuilders['tagline'](
+                                    sizeFactor: sizeFactor),
                                 Expanded(
                                   flex: 10,
-                                  child:
-                                      headerBuilders['member_preview'](context),
+                                  child: headerBuilders['member_preview'](
+                                      context,
+                                      sizeFactor: sizeFactor),
                                 )
                               ]),
                         ),
                       ),
-                      headerBuilders['place_logo'](context)
+                      headerBuilders['place_logo'](context,
+                          sizeFactor: sizeFactor)
                     ],
                   ),
                 ),
                 Flexible(
                   flex: 2,
                   child: Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        headerBuilders['invite_button'](),
-                        headerBuilders['custom_button']()
-                      ],
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.0 * sizeFactor),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          headerBuilders['invite_button'](
+                              sizeFactor: sizeFactor),
+                          headerBuilders['custom_button'](
+                              sizeFactor: sizeFactor)
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -778,8 +798,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.only(
-            top: 90.0, left: 20.0, right: 20.0, bottom: 30.0),
+        padding: EdgeInsets.only(
+            top: paddingTop,
+            left: paddingLeft,
+            right: paddingRight,
+            bottom: paddingBottom),
         child: SizedBox(
           child: Center(
             child: Column(
@@ -789,7 +812,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 Expanded(
                   flex: 4,
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 25.0),
+                    padding: EdgeInsets.only(top: innerPaddingTop),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
@@ -799,8 +822,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 "More than Rubies",
                                 style: TextStyle(
                                   color: Colors.black,
-                                  letterSpacing: 1.5,
-                                  fontSize: 28.0,
+                                  letterSpacing: titleSpacing,
+                                  fontSize: titleFontSize,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'OpenSans',
                                 ),
@@ -808,10 +831,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           Spacer(
                             flex: 1,
                           ),
-                          headerBuilders['tagline'](),
+                          headerBuilders['tagline'](sizeFactor: sizeFactor),
                           Expanded(
                             flex: 10,
-                            child: headerBuilders['member_preview'](context),
+                            child: headerBuilders['member_preview'](context,
+                                sizeFactor: sizeFactor),
                           )
                         ]),
                   ),
@@ -819,12 +843,17 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 Flexible(
                   flex: 2,
                   child: Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        headerBuilders['invite_button'](),
-                        headerBuilders['custom_button']()
-                      ],
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 8.0 * sizeFactor),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          headerBuilders['invite_button'](
+                              sizeFactor: sizeFactor),
+                          headerBuilders['custom_button'](
+                              sizeFactor: sizeFactor)
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -836,108 +865,125 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
   }
 
-  Widget buildHeaderTagLine() {
+  Widget buildHeaderTagLine({sizeFactor: 1.0}) {
     Widget widget = Container(height: 1.0, width: 2.0);
 
     if (contentLayouts['header'][headerOptions.tagLine]) {
       widget = Padding(
         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
         child: Text(
-          "This is the tagline text here",
+          "This is the length of this tag line ,text past the comma and including the comma is therefore not shown",
+          maxLines: 1,
           textAlign: TextAlign.start,
-          style: homeTextStyle,
+          style: GoogleFonts.heebo(
+              textStyle: TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14 * sizeFactor,
+                  color: Colors.black87)),
         ),
       );
     }
     return widget;
   }
 
-  Widget buildHeaderCustomButton() {
+  Widget buildHeaderCustomButton({sizeFactor: 1.0}) {
     Widget widget = Container(height: 1.0, width: 1.0);
 
     if (contentLayouts['header'][headerOptions.customButton]) {
-      widget = FlatButton(
-        onPressed: () {
-          sharedStateManagement['display_invite_menu']();
-        },
-        padding:
-            EdgeInsets.only(top: 4.0, left: 30.0, right: 30.0, bottom: 4.0),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: Colors.red,
-            width: 1.5,
-          ),
-          borderRadius: BorderRadius.circular(30.0),
-        ),
-        color: Colors.white,
-        child: Row(
-          children: <Widget>[
-            Icon(
-              Icons.add,
-              color: Colors.red,
-              size: 14.0,
-            ),
-            Text(
-              'Custom',
-              overflow: TextOverflow.clip,
-              style: TextStyle(
-                color: Colors.red,
-                letterSpacing: 1.5,
-                fontSize: 14.0,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'OpenSans',
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    return widget;
-  }
-
-  Widget buildHeaderInviteButton() {
-    Widget widget = Container(height: 1.0, width: 1.0);
-
-    if (contentLayouts['header'][headerOptions.inviteButton]) {
-      widget = Padding(
-        padding: const EdgeInsets.only(right: 20.0),
+      widget = SizedBox(
+        height: 35.0 * sizeFactor,
         child: FlatButton(
           onPressed: () {
             sharedStateManagement['display_invite_menu']();
           },
-          padding:
-              EdgeInsets.only(top: 4.0, left: 30.0, right: 30.0, bottom: 4.0),
+          padding: EdgeInsets.only(
+              top: 4.0 * sizeFactor,
+              left: 30.0 * sizeFactor,
+              right: 30.0 * sizeFactor,
+              bottom: 4.0 * sizeFactor),
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: Colors.red,
-              width: 1.5,
+              width: 1.5 * sizeFactor,
             ),
-            borderRadius: BorderRadius.circular(30.0),
+            borderRadius: BorderRadius.circular(30.0 * sizeFactor),
           ),
           color: Colors.white,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: 15,
-              maxWidth: 70,
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.add,
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.add,
+                color: Colors.red,
+                size: 14.0 * sizeFactor,
+              ),
+              Text(
+                'Custom',
+                overflow: TextOverflow.clip,
+                style: TextStyle(
                   color: Colors.red,
-                  size: 14.0,
+                  letterSpacing: 1.5 * sizeFactor,
+                  fontSize: 14.0 * sizeFactor,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'OpenSans',
                 ),
-                Text(
-                  'Invite',
-                  style: TextStyle(
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return widget;
+  }
+
+  Widget buildHeaderInviteButton({sizeFactor: 1.0}) {
+    Widget widget = Container(height: 1.0, width: 1.0);
+
+    if (contentLayouts['header'][headerOptions.inviteButton]) {
+      widget = Padding(
+        padding: EdgeInsets.only(right: 20.0 * sizeFactor),
+        child: SizedBox(
+          height: 35.0 * sizeFactor,
+          child: FlatButton(
+            onPressed: () {
+              sharedStateManagement['display_invite_menu']();
+            },
+            padding: EdgeInsets.only(
+                top: 4.0 * sizeFactor,
+                left: 30.0 * sizeFactor,
+                right: 30.0 * sizeFactor,
+                bottom: 4.0 * sizeFactor),
+            shape: RoundedRectangleBorder(
+              side: BorderSide(
+                color: Colors.red,
+                width: 1.5 * sizeFactor,
+              ),
+              borderRadius: BorderRadius.circular(30.0 * sizeFactor),
+            ),
+            color: Colors.white,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: 15 * sizeFactor,
+                maxWidth: 70 * sizeFactor,
+              ),
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    Icons.add,
                     color: Colors.red,
-                    letterSpacing: 1.5,
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'OpenSans',
+                    size: 14.0 * sizeFactor,
                   ),
-                ),
-              ],
+                  Text(
+                    'Invite',
+                    style: TextStyle(
+                      color: Colors.red,
+                      letterSpacing: 1.5 * sizeFactor,
+                      fontSize: 14.0 * sizeFactor,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'OpenSans',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -947,20 +993,22 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderPlaceLogo(BuildContext context) {
+  Widget buildHeaderPlaceLogo(BuildContext context, {sizeFactor: 1.0}) {
     Widget widget = Container();
 
     if (contentLayouts['header'][headerOptions.placeLogo]) {
       widget = Expanded(
         child: Padding(
-          padding: const EdgeInsets.only(top: 25.0, bottom: 20.0),
+          padding: EdgeInsets.only(
+              top: 25.0 * sizeFactor, bottom: 20.0 * sizeFactor),
           child: FlatButton(
             padding: EdgeInsets.zero,
             child: Container(
-                height: 120.0,
-                width: 120.0,
+                height: 120.0 * sizeFactor,
+                width: 120.0 * sizeFactor,
                 decoration: new BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                    borderRadius:
+                        BorderRadius.all(Radius.circular(8.0 * sizeFactor)),
                     image: new DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
@@ -980,7 +1028,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderMemberPreview(BuildContext context) {
+  Widget buildHeaderMemberPreview(BuildContext context, {sizeFactor: 1.0}) {
     Widget widget = Container(height: 1.0, width: 1.0);
 
     if (contentLayouts['header'][headerOptions.memberPreview]) {
@@ -993,7 +1041,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         },
         padding: EdgeInsets.all(0),
         child: Container(
-          width: 200.0,
+          width: 200.0 * sizeFactor,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1005,10 +1053,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     //use a function to dynamically build this list
                     Positioned(
                       left: 0.0,
-                      top: 5.0,
+                      top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25,
-                          height: 25,
+                          width: 25 * sizeFactor,
+                          height: 25 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
@@ -1018,11 +1066,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               ))),
                     ),
                     Positioned(
-                      left: 20.0,
-                      top: 5.0,
+                      left: 20.0 * sizeFactor,
+                      top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25,
-                          height: 25,
+                          width: 25 * sizeFactor,
+                          height: 25 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
@@ -1032,11 +1080,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               ))),
                     ),
                     Positioned(
-                      left: 40.0,
-                      top: 5.0,
+                      left: 40.0 * sizeFactor,
+                      top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25,
-                          height: 25,
+                          width: 25 * sizeFactor,
+                          height: 25 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
@@ -1054,8 +1102,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                   "87 Members",
                   style: TextStyle(
                     color: Colors.black,
-                    letterSpacing: 1.5,
-                    fontSize: 12.0,
+                    letterSpacing: 1.5 * sizeFactor,
+                    fontSize: 12.0 * sizeFactor,
                     fontWeight: FontWeight.normal,
                     fontFamily: 'OpenSans',
                   ),

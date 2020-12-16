@@ -498,7 +498,7 @@ enum logoShape {
 Map contentLayouts = {
   "header": {
     headerOptions.tagLine: true,
-    headerOptions.placeLogo: false,
+    headerOptions.placeLogo: true,
     headerOptions.memberPreview: true,
     headerOptions.inviteButton: true,
     headerOptions.customButton: true,

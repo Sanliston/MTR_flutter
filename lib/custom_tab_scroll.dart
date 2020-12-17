@@ -24,16 +24,26 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   /*
      */
   double _offset;
+  double _maxOffset;
+  double _minOffset;
+  bool _maxOffsetSet = false;
 
   @override
   initState() {
     super.initState();
+
+    print("init state called");
     _offset = widget.scrollController.offset;
+    _maxOffset = widget.scrollController.position.maxScrollExtent;
+    _minOffset = widget.scrollController.position.minScrollExtent;
     widget.scrollController.addListener(_setOffset);
+    widget.scrollController.position.isScrollingNotifier.addListener(snap);
   }
 
   @override
   dispose() {
+    print("dispose called");
+    widget.scrollController.position.isScrollingNotifier.removeListener(snap);
     widget.scrollController.removeListener(_setOffset);
     super.dispose();
   }
@@ -41,7 +51,37 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   void _setOffset() {
     setState(() {
       _offset = widget.scrollController.offset;
+
+      // print("scroll controller offset: $_offset");
     });
+  }
+
+  //This is the implementation of a custom snap functionality or the header when user stops scrolling
+  void snap() {
+    print("snap called");
+    //set maxOffset if not already set
+    if (!_maxOffsetSet) {
+      _maxOffset = widget.scrollController.position.maxScrollExtent;
+      _minOffset = widget.scrollController.position.minScrollExtent;
+      _maxOffsetSet = true;
+    }
+
+    if (!widget.scrollController.position.isScrollingNotifier.value) {
+      //This means the scroll has stopped
+      double currentOffset = widget.scrollController.offset;
+
+      if (currentOffset > _maxOffset / 2 && currentOffset < _maxOffset) {
+        widget.scrollController.animateTo(_maxOffset,
+            duration: Duration(milliseconds: 100), curve: Curves.linear);
+      } else if (currentOffset < _maxOffset / 2 &&
+          currentOffset != _minOffset) {
+        widget.scrollController.animateTo(_minOffset,
+            duration: Duration(milliseconds: 100), curve: Curves.linear);
+      }
+    } else {
+      //this means scroll has started
+
+    }
   }
 
   double _calculateOpacity() {
@@ -136,7 +176,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: 100.0,
-                  color: Colors.red,
+                  color: Colors.teal,
                 ),
               ),
             ),

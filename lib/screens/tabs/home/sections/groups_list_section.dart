@@ -59,7 +59,7 @@ class GroupsListSection extends StatelessWidget {
               padding: const EdgeInsets.only(right: 10.0),
               child: Icon(
                 icon,
-                color: Colors.redAccent,
+                color: primaryColor,
               ),
             ),
             new Text(
@@ -229,27 +229,32 @@ class GroupsListSection extends StatelessWidget {
                                                                   [memberIndex][
                                                               "profile_image"]),
                                                     ))),
-                                            Container(
-                                                width: memberAvatarWidth,
-                                                height: memberAvatarHeight,
-                                                margin: const EdgeInsets.only(
-                                                    right: 5, bottom: 5),
-                                                decoration: new BoxDecoration(
-                                                    borderRadius: BorderRadius
-                                                        .all(Radius.circular(
-                                                            memberAvatarRadius)),
-                                                    color: new Color.fromRGBO(
-                                                        255, 0, 0, 0.5)),
-                                                child: Center(
-                                                    child: Text(
-                                                  "+" +
-                                                      (groupsList[index][
-                                                                      'members']
-                                                                  .length -
-                                                              memberIndex)
-                                                          .toString(),
-                                                  style: homeTextStyleBoldWhite,
-                                                ))),
+                                            Opacity(
+                                              opacity: 0.9,
+                                              child: Container(
+                                                  constraints: BoxConstraints(
+                                                      minWidth:
+                                                          memberAvatarWidth),
+                                                  height: memberAvatarHeight,
+                                                  margin: const EdgeInsets.only(
+                                                      right: 5, bottom: 5),
+                                                  decoration: new BoxDecoration(
+                                                      borderRadius: BorderRadius
+                                                          .all(Radius.circular(
+                                                              memberAvatarRadius)),
+                                                      color: Colors.teal),
+                                                  child: Center(
+                                                      child: Text(
+                                                    "+" +
+                                                        (groupsList[index][
+                                                                        'members']
+                                                                    .length -
+                                                                memberIndex)
+                                                            .toString(),
+                                                    style:
+                                                        homeTextStyleBoldWhiteSmall,
+                                                  ))),
+                                            ),
                                           ]);
                                         } else {
                                           return Container(

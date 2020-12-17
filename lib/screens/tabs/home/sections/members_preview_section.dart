@@ -139,16 +139,37 @@ class MembersPreviewSection extends StatelessWidget {
                       top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
                   shape: RoundedRectangleBorder(
                     side: BorderSide(
-                      color: Colors.red,
+                      color: primaryColor,
                       width: 1.2,
                     ),
                     borderRadius: BorderRadius.circular(30.0),
                   ),
                   color: Colors.white,
-                  child: Text(
-                    'Invite Members',
-                    overflow: TextOverflow.visible,
-                    style: homeLinkTextStyle,
+                  child: SizedBox(
+                    width: 150.0,
+                    child: Row(
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: Icon(
+                            EvaIcons.personAddOutline,
+                            color: primaryColor,
+                            size: 18.0,
+                          ),
+                        ),
+                        Text(
+                          'Invite Members',
+                          overflow: TextOverflow.clip,
+                          style: GoogleFonts.heebo(
+                              textStyle: TextStyle(
+                            color: primaryColor,
+                            letterSpacing: 1.5,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                          )),
+                        ),
+                      ],
+                    ),
                   ),
                 )
               ],

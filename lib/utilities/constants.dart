@@ -5,20 +5,11 @@ import 'package:flutter/services.dart';
 //global parameters and styles - these can all be changed via settings by the user
 
 const double sidePadding = 15.0;
-const Color iconColor = Colors.redAccent;
+const Color iconColor = Colors.teal;
+const Color primaryColor = Colors.teal;
 
 //Global Colors -- for dev -- future colors will be set in a themes file
 const Color darkNight = Color(0xFF263238);
-
-//example theme structure for development
-class AppTheme {
-  Color background;
-  AppTheme({this.background});
-}
-
-AppTheme myTheme = new AppTheme(background: Color(0xFF263238));
-//you would then get the color etc via
-Color background = myTheme.background;
 
 //login screen parameters and styles
 
@@ -58,11 +49,11 @@ final homeSubtitleTextStyle = GoogleFonts.heebo(
 
 final homeLinkTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.redAccent));
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.teal));
 
 final homeSubtitleTextStyleAccent = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.redAccent));
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.teal));
 
 final homeTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -75,6 +66,10 @@ final homeTextStyleBold = GoogleFonts.heebo(
 final homeTextStyleBoldWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white));
+
+final homeTextStyleBoldWhiteSmall = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 9, color: Colors.white));
 
 final homeTextStyleWhite = GoogleFonts.heebo(
     textStyle: TextStyle(

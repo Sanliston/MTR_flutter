@@ -447,6 +447,16 @@ Map sectionMap = {
   sections.groupsList: buildGroupsListSection
 };
 
+Map sectionStringMap = {
+  sections.announcements: "Announcements",
+  sections.membersPreview: "Members Preview",
+  sections.upcoming: "Upcoming",
+  sections.contactUs: "Contact Us",
+  sections.forumPosts: "Forum Posts",
+  sections.members: "Members",
+  sections.groupsList: "Groups List"
+};
+
 //home tab state
 List<String> homeTabList = <String>[
   "Home",
@@ -481,8 +491,11 @@ enum headerOptions {
   layout,
   blurEffect,
   logoShape,
-  logoRadius
+  logoRadius,
+  backgroundStyle
 }
+
+enum backgroundStyles { diagonalLine, image, solid }
 
 enum headerLayouts {
   left,
@@ -499,14 +512,15 @@ Map contentLayouts = {
   "header": {
     headerOptions.tagLine: true,
     headerOptions.placeLogo: true,
-    headerOptions.memberPreview: true,
+    headerOptions.memberPreview: false,
     headerOptions.inviteButton: true,
     headerOptions.customButton: true,
     headerOptions.layout:
         "default", //idea is to have different layouts, like picture on the left, all centered, etc.
     headerOptions.blurEffect: false,
     headerOptions.logoShape: logoShape.square,
-    headerOptions.logoRadius: 4.0
+    headerOptions.logoRadius: 4.0,
+    headerOptions.backgroundStyle: backgroundStyles.diagonalLine
   },
   "default": [
     sections.announcements,

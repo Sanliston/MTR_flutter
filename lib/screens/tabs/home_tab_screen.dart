@@ -322,12 +322,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         onTabDrag();
     });
 
-    // sharedStateManagement = {
-    //   "forum_post_key": forumPostKey,
-    //   "forum_animation_controller": forumAnimationController,
-    //   "display_navigation_drawer": displayNavigationDrawer
-    // };
-
     //decided to make the sharedStateManagement Map a global variable
     sharedStateManagement['display_navigation_drawer'] =
         displayNavigationDrawer;
@@ -339,13 +333,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     stateCallback[screen.homeTab] = setState;
 
     //pass build functions to headerBuilders
-    headerBuilders['background'] = buildHeaderBackground;
+    headerBuilders['preview_background'] = buildPreviewHeaderBackground;
     headerBuilders['header'] = buildHeader;
     headerBuilders['tagline'] = buildHeaderTagLine;
     headerBuilders['place_logo'] = buildHeaderPlaceLogo;
     headerBuilders['member_preview'] = buildHeaderMemberPreview;
     headerBuilders['invite_button'] = buildHeaderInviteButton;
     headerBuilders['custom_button'] = buildHeaderCustomButton;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    stateCallback[screen.homeTab] = null;
   }
 
   @override
@@ -561,16 +561,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         if ("AddTabButton" == name) {
                           widget = Icon(
                             EvaIcons.plusCircle,
-                            color: Colors.redAccent,
+                            color: primaryColor,
                           );
                         }
 
                         return widget;
                       }).toList(),
                       controller: controller,
-                      labelColor: Colors.red,
+                      labelColor: primaryColor,
                       unselectedLabelColor: Colors.black54,
-                      indicatorColor: Colors.red,
+                      indicatorColor: primaryColor,
                       onTap: (index) {
                         String name = _tabs[index];
 
@@ -673,38 +673,176 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     );
   }
 
-  Positioned buildHeaderBackground(
-      double homeHeaderHeight, double screenWidth) {
-    return Positioned.fill(
-      child: CustomTabScroll(
-        scrollController: scrollController,
-        zeroOpacityOffset: homeHeaderHeight * 0.6,
-        fullOpacityOffset: 0,
-        child: Stack(
-          children: <Widget>[
-            Image.asset(
-              "assets/images/home_background.jpg",
-              height: homeHeaderHeight * 1.1,
-              width: screenWidth,
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                colors: [
-                  Colors.black38,
-                  Colors.transparent,
-                ],
-                begin: Alignment.topRight,
-                end: Alignment.bottomRight,
-                stops: [0.0, 0.4],
-                tileMode: TileMode.clamp,
-              )),
-            ),
-          ],
-        ),
+  Positioned buildPreviewHeaderBackground(
+      double homeHeaderHeight, double screenWidth,
+      {bool memberViewMode = false}) {
+    backgroundStyles backgroundStyle =
+        contentLayouts["header"][headerOptions.backgroundStyle];
+    double heightFactor = 0.6;
+
+    //default background style
+    Positioned widget = Positioned.fill(
+      child: SizedBox(
+        width: screenWidth,
+        height: homeHeaderHeight * heightFactor,
+        child: Container(color: primaryColor),
       ),
     );
+
+    switch (backgroundStyle) {
+      case backgroundStyles.diagonalLine:
+        widget = Positioned.fill(
+          child: Stack(
+            children: <Widget>[
+              Image.asset(
+                "assets/images/home_background.jpg",
+                height: homeHeaderHeight * 1.1,
+                width: screenWidth,
+                fit: BoxFit.cover,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  colors: [
+                    Colors.black38,
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 0.4],
+                  tileMode: TileMode.clamp,
+                )),
+              ),
+            ],
+          ),
+        );
+        break;
+
+      case backgroundStyles.image:
+        widget = Positioned.fill(
+          child: SizedBox(
+            width: screenWidth,
+            height: homeHeaderHeight * heightFactor,
+            child: Stack(
+              children: <Widget>[
+                Image.asset(
+                  "assets/images/home_background.jpg",
+                  height: homeHeaderHeight * 1.1,
+                  width: screenWidth,
+                  fit: BoxFit.cover,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
+      default:
+    }
+
+    return widget;
+  }
+
+  Positioned buildHeaderBackground(
+    double homeHeaderHeight,
+    double screenWidth,
+  ) {
+    backgroundStyles backgroundStyle =
+        contentLayouts["header"][headerOptions.backgroundStyle];
+    double heightFactor = 0.6;
+
+    //default background style
+    Positioned widget = Positioned.fill(
+      child: SizedBox(
+        width: screenWidth,
+        height: homeHeaderHeight * heightFactor,
+        child: Container(color: Colors.teal),
+      ),
+    );
+
+    switch (backgroundStyle) {
+      case backgroundStyles.diagonalLine:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            child: Stack(
+              children: <Widget>[
+                Image.asset(
+                  "assets/images/home_background.jpg",
+                  height: homeHeaderHeight * 1.1,
+                  width: screenWidth,
+                  fit: BoxFit.cover,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
+      case backgroundStyles.image:
+        widget = Positioned.fill(
+          child: SizedBox(
+            width: screenWidth,
+            height: homeHeaderHeight * heightFactor,
+            child: Stack(
+              children: <Widget>[
+                Image.asset(
+                  "assets/images/home_background.jpg",
+                  height: homeHeaderHeight * 1.1,
+                  width: screenWidth,
+                  fit: BoxFit.cover,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
+      default:
+    }
+
+    return widget;
   }
 
   Padding buildHeader(BuildContext context,
@@ -903,29 +1041,32 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               bottom: 4.0 * sizeFactor),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: Colors.red,
+              color: primaryColor,
               width: 1.5 * sizeFactor,
             ),
             borderRadius: BorderRadius.circular(30.0 * sizeFactor),
           ),
-          color: Colors.white,
+          color: Colors.transparent,
           child: Row(
             children: <Widget>[
-              Icon(
-                Icons.add,
-                color: Colors.red,
-                size: 14.0 * sizeFactor,
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Icon(
+                  EvaIcons.brushOutline,
+                  color: primaryColor,
+                  size: 18.0 * sizeFactor,
+                ),
               ),
               Text(
                 'Custom',
                 overflow: TextOverflow.clip,
-                style: TextStyle(
-                  color: Colors.red,
+                style: GoogleFonts.heebo(
+                    textStyle: TextStyle(
+                  color: primaryColor,
                   letterSpacing: 1.5 * sizeFactor,
                   fontSize: 14.0 * sizeFactor,
                   fontWeight: FontWeight.bold,
-                  fontFamily: 'OpenSans',
-                ),
+                )),
               ),
             ],
           ),
@@ -954,33 +1095,34 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 bottom: 4.0 * sizeFactor),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                color: Colors.red,
+                color: primaryColor,
                 width: 1.5 * sizeFactor,
               ),
               borderRadius: BorderRadius.circular(30.0 * sizeFactor),
             ),
-            color: Colors.white,
+            color: Colors.transparent,
             child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: 15 * sizeFactor,
-                maxWidth: 70 * sizeFactor,
-              ),
+              constraints: BoxConstraints(),
               child: Row(
                 children: <Widget>[
-                  Icon(
-                    Icons.add,
-                    color: Colors.red,
-                    size: 14.0 * sizeFactor,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Icon(
+                      EvaIcons.personAddOutline,
+                      color: primaryColor,
+                      size: 18.0 * sizeFactor,
+                    ),
                   ),
                   Text(
                     'Invite',
-                    style: TextStyle(
-                      color: Colors.red,
+                    overflow: TextOverflow.clip,
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                      color: primaryColor,
                       letterSpacing: 1.5 * sizeFactor,
                       fontSize: 14.0 * sizeFactor,
                       fontWeight: FontWeight.bold,
-                      fontFamily: 'OpenSans',
-                    ),
+                    )),
                   ),
                 ],
               ),
@@ -1011,8 +1153,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         BorderRadius.all(Radius.circular(8.0 * sizeFactor)),
                     image: new DecorationImage(
                       fit: BoxFit.cover,
-                      image: NetworkImage(
-                          "https://randomuser.me/api/portraits/women/69.jpg"),
+                      image:
+                          AssetImage('assets/images/profile_images/user1.jpg'),
                     ))),
             onPressed: () {
               Navigator.push(

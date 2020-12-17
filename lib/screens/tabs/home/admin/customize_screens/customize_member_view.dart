@@ -61,7 +61,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
   Widget buildHeaderPreview(BuildContext context) {
     Widget widget = Stack(
       children: [
-        headerBuilders['background'](400.0,
+        headerBuilders['preview_background'](400.0,
             MediaQuery.of(context).size.width - (memberViewPadding * 2.0)),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,7 +191,6 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           child: Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: SmallButton(
-                width: 90.0,
                 height: smallButtonHeight,
                 iconData: EvaIcons.edit,
                 text: 'Edit Header'),
@@ -203,7 +202,6 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           child: Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: SmallButton(
-                width: 150.0,
                 height: smallButtonHeight,
                 iconData: EvaIcons.edit,
                 text: 'Edit Navigation Tabs'),
@@ -226,6 +224,9 @@ Widget buildContentSection(BuildContext context, String currentTab,
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         Widget widget = Container();
+        sections component = contentLayouts[currentTab][index];
+        print("component: $component");
+        String sectionName = sectionStringMap[component];
 
         if (index >= contentList.length - 1) {
           widget = Stack(alignment: Alignment.topCenter, children: [
@@ -238,17 +239,20 @@ Widget buildContentSection(BuildContext context, String currentTab,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
-                      end: Alignment(-0.9, -0.5),
+                      end: Alignment(-0.9, -0.7),
                       stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
                       colors: [
                         Colors.white,
-                        Colors.blue[100],
+
                         Colors.white,
                         Colors.blue[100],
-                        Colors.white,
                         Colors.blue[100],
                         Colors.white,
-                        Colors.blue[100], //red
+
+                        Colors.white,
+                        Colors.blue[100],
+                        Colors.blue[100],
+                        //red
                         //orange
                       ],
                       tileMode: TileMode.repeated,
@@ -258,7 +262,6 @@ Widget buildContentSection(BuildContext context, String currentTab,
                 Positioned(
                   top: 20.0,
                   child: SmallButton(
-                      width: 90.0,
                       height: smallButtonHeight,
                       iconData: EvaIcons.edit,
                       text: 'Add section'),
@@ -310,7 +313,6 @@ Widget buildContentSection(BuildContext context, String currentTab,
                   Positioned(
                     top: 20.0,
                     child: SmallButton(
-                        width: 90.0,
                         height: smallButtonHeight,
                         iconData: EvaIcons.edit,
                         text: 'Add section'),
@@ -346,10 +348,9 @@ Widget buildContentSection(BuildContext context, String currentTab,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0),
                   child: SmallButton(
-                      width: 90.0,
                       height: smallButtonHeight,
                       iconData: EvaIcons.edit,
-                      text: 'Edit section'),
+                      text: 'Edit $sectionName'),
                 ),
               ),
             ]),
@@ -396,7 +397,7 @@ class SmallButton extends StatelessWidget {
 
   const SmallButton(
       {Key key,
-      @required this.width,
+      this.width,
       this.height = 24.0,
       this.iconData,
       this.iconSize = 14.0,
@@ -418,6 +419,8 @@ class SmallButton extends StatelessWidget {
       );
     }
 
+    // double buttonWidth = null == width ? text.length * 10.0 : width;
+
     return SizedBox(
       height: height,
       width: width,
@@ -425,7 +428,7 @@ class SmallButton extends StatelessWidget {
         onPressed: () {
           sharedStateManagement['display_invite_menu']();
         },
-        padding: EdgeInsets.only(top: 0.0, left: 0.0, right: 0.0, bottom: 0.0),
+        padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 10.0, bottom: 0.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
         ),
@@ -436,7 +439,11 @@ class SmallButton extends StatelessWidget {
             icon,
             Text(
               text,
-              style: customizeButtonText,
+              style: GoogleFonts.heebo(
+                  textStyle: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: Colors.white)),
             ),
           ],
         ),

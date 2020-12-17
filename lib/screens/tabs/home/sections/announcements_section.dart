@@ -101,9 +101,9 @@ class AnnoucementsSection extends StatelessWidget {
                       bottomRight: Radius.circular(5)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.15),
+                      color: Colors.grey.withOpacity(0.30),
                       spreadRadius: 1,
-                      blurRadius: 12,
+                      blurRadius: 9,
                       offset: Offset(0, 3), // changes position of shadow
                     ),
                   ],

@@ -242,7 +242,7 @@ class GroupsListSection extends StatelessWidget {
                                                       borderRadius: BorderRadius
                                                           .all(Radius.circular(
                                                               memberAvatarRadius)),
-                                                      color: Colors.teal),
+                                                      color: primaryColor),
                                                   child: Center(
                                                       child: Text(
                                                     "+" +

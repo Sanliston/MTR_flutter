@@ -5,8 +5,16 @@ import 'package:flutter/services.dart';
 //global parameters and styles - these can all be changed via settings by the user
 
 const double sidePadding = 15.0;
-const Color iconColor = Colors.teal;
-const Color primaryColor = Colors.teal;
+
+//bright red and orange theme
+// const Color primaryColor = Color(0xFFFF416C);
+// const Color secondaryColor = Color(0xFFFF4B2B);
+// const Color accentColor = Color(0xFFFF4B2B);
+
+const Color primaryColor = Color(0xFF4568DC);
+const Color secondaryColor = Color(0xFFB06AB3);
+const Color accentColor = Color(0xFFB06AB3);
+const Color iconColor = primaryColor;
 
 //Global Colors -- for dev -- future colors will be set in a themes file
 const Color darkNight = Color(0xFF263238);
@@ -16,7 +24,7 @@ const Color darkNight = Color(0xFF263238);
 const login_bg_color = const Color(0xFF2d82fe);
 
 final kHintTextStyle = TextStyle(
-  color: Colors.white54,
+  color: Colors.white,
   fontFamily: 'OpenSans',
 );
 
@@ -49,11 +57,11 @@ final homeSubtitleTextStyle = GoogleFonts.heebo(
 
 final homeLinkTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.teal));
+        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
 
 final homeSubtitleTextStyleAccent = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.teal));
+        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
 
 final homeTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -79,8 +87,25 @@ final homeSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
 
+final warningTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.red));
+
 final kBoxDecorationStyle = BoxDecoration(
   color: Color(0xFF6CA8F1),
+  borderRadius: BorderRadius.circular(30.0),
+  boxShadow: [
+    BoxShadow(
+      color: Colors.transparent,
+      blurRadius: 0.0,
+      offset: Offset(0, 0),
+    ),
+  ],
+);
+
+final inputTransparentDecorationStyle = BoxDecoration(
+  color: Colors.transparent,
+  border: Border.all(width: 1.0, color: Colors.white),
   borderRadius: BorderRadius.circular(30.0),
   boxShadow: [
     BoxShadow(

@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
@@ -40,13 +41,14 @@ class HomeTabScreen extends StatefulWidget {
 class _HomeTabScreenState extends State<HomeTabScreen>
     with TickerProviderStateMixin {
   TabController controller;
-  final ScrollController scrollController = ScrollController();
+  ScrollController scrollController;
   final List<String> listItems = [];
   //State management: Forum
   GlobalKey<AnimatedListState> forumPostKey;
   AnimationController forumAnimationController;
   Animation forumInsertAnimation;
   List<String> _tabs;
+  Color unselectedLabelColor;
 
   List<Widget> buildTab(BuildContext context, String tab) {
     /*List will hold certain information:
@@ -147,7 +149,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         isScrollControlled: true, //stops max height being half screen
         context: context,
         builder: (BuildContext context) {
-          return Container(
+          Widget container = Container(
               margin: const EdgeInsets.only(
                   top: 0.0,
                   left: sidePadding,
@@ -244,6 +246,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     bottomLeft: Radius.circular(10),
                     bottomRight: Radius.circular(10)),
               ));
+
+          //for blur effect
+          return new BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), child: container);
         });
   }
 
@@ -285,7 +291,39 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
   void onTabTap() {}
 
-  void onTabDrag() {}
+  void onTabDrag(int index) {
+    String name = _tabs[index];
+
+    if ("AddTabButton" == name) {
+      //stop event execution
+      int index = controller.previousIndex;
+      setState(() {
+        controller.index = index;
+      });
+    }
+  }
+
+  void scrollControllerHandler() {
+    double offset = scrollController.offset;
+    double maxOffset = scrollController.position.maxScrollExtent;
+
+    if (!scrollController.position.isScrollingNotifier.value &&
+        offset == maxOffset) {
+      print("Setting unselectedLabel color to black");
+      setState(() {
+        unselectedLabelColor = Colors.black38;
+      });
+    }
+  }
+
+  void indexChangeListener() {
+    if (controller.indexIsChanging) {
+      onTabTap();
+    } else if (controller.index != controller.previousIndex) {
+      // Tab Changed swiping to a new tab
+      onTabDrag(controller.index);
+    }
+  }
 
   @override
   void initState() {
@@ -294,6 +332,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     //get the configured tab list
 
     _tabs = isAdmin ? homeAdminTabList : homeTabList;
+    unselectedLabelColor = Colors.white;
 
     //set controller list based on obtained list
     controller = TabController(
@@ -313,14 +352,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     //event handlers for when tab is changed via swipe or tap
-    controller.addListener(() {
-      if (controller.indexIsChanging)
-        // Tab Changed tapping on new tab
-        onTabTap();
-      else if (controller.index != controller.previousIndex)
-        // Tab Changed swiping to a new tab
-        onTabDrag();
-    });
+    controller.addListener(indexChangeListener);
+
+    //scroll controller
+    scrollController = new ScrollController();
+
+    //assign listener event to scroll controller
+    scrollController.addListener(scrollControllerHandler);
 
     //decided to make the sharedStateManagement Map a global variable
     sharedStateManagement['display_navigation_drawer'] =
@@ -346,13 +384,24 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   void dispose() {
     super.dispose();
     stateCallback[screen.homeTab] = null;
+    controller.removeListener(indexChangeListener);
+    scrollController.removeListener(scrollControllerHandler);
   }
 
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
-    var homeHeaderHeight = screenHeight * 0.5;
+    var minimumHeaderHeight =
+        340.0; //this can be set by the user in settings - to add a full screen effect to the header
+    var screenHeightFactor =
+        0.5; //can also be set by the user -- when screen height factor > 0.7 or 0.8 then the header will have a different layout
+    var homeHeaderHeight =
+        minimumHeaderHeight > screenHeight * screenHeightFactor
+            ? minimumHeaderHeight
+            : screenHeight * screenHeightFactor;
+
+    print("header height: $homeHeaderHeight");
 
     return Scaffold(
       body: DefaultTabController(
@@ -381,11 +430,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     pinned: true,
                     snap: false,
                     forceElevated: true,
-                    elevation: 4.0,
-                    shadowColor: Colors.black38,
+                    elevation: contentLayouts['header']
+                        [headerOptions.shadowHeight],
+                    shadowColor: accentColor,
                     floating: false,
                     expandedHeight: homeHeaderHeight,
-                    backgroundColor: Colors.white,
+                    backgroundColor: contentLayouts['header']
+                        [headerOptions.appBarColor],
                     actionsIconTheme: IconThemeData(opacity: 1.0),
                     actions: <Widget>[
                       IconButton(
@@ -491,8 +542,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                                       avatarRadius)),
                                               image: new DecorationImage(
                                                 fit: BoxFit.cover,
-                                                image: NetworkImage(
-                                                    "https://randomuser.me/api/portraits/women/69.jpg"),
+                                                image: AssetImage(
+                                                    'assets/images/profile_images/default_user.png'),
                                               ))),
                                       Column(
                                         crossAxisAlignment:
@@ -553,24 +604,48 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                       ],
                     ),
                     bottom: TabBar(
+                      labelPadding: EdgeInsets.only(
+                          top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
                       indicatorSize: TabBarIndicatorSize.label,
                       isScrollable: true,
                       tabs: _tabs.map((String name) {
-                        Widget widget = Tab(text: name);
+                        Widget widget = Tab(
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(
+                                    color: Colors.transparent, width: 1)),
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 15.0),
+                                child: Text(name),
+                              ),
+                            ),
+                          ),
+                        );
 
                         if ("AddTabButton" == name) {
                           widget = Icon(
                             EvaIcons.plusCircle,
-                            color: primaryColor,
+                            color: Colors.white,
                           );
                         }
 
                         return widget;
                       }).toList(),
                       controller: controller,
-                      labelColor: primaryColor,
-                      unselectedLabelColor: Colors.black54,
-                      indicatorColor: primaryColor,
+                      labelColor: contentLayouts['header']
+                          [headerOptions.appBarColor],
+                      unselectedLabelColor: unselectedLabelColor,
+                      indicatorColor: contentLayouts['header']
+                          [headerOptions.appBarColor],
+                      indicator: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              topRight: Radius.circular(10)),
+                          color: Colors.white),
                       onTap: (index) {
                         String name = _tabs[index];
 
@@ -750,6 +825,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.gradient:
+        widget = Positioned.fill(
+          child: SizedBox(
+              width: screenWidth,
+              height: homeHeaderHeight * heightFactor,
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient: contentLayouts['header']
+                        [headerOptions.backgroundGradient]),
+              )),
+        );
+        break;
+
       default:
     }
 
@@ -760,6 +848,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     double homeHeaderHeight,
     double screenWidth,
   ) {
+    homeHeaderHeight = MediaQuery.of(context).size.height * 0.5;
     backgroundStyles backgroundStyle =
         contentLayouts["header"][headerOptions.backgroundStyle];
     double heightFactor = 0.6;
@@ -767,10 +856,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     //default background style
     Positioned widget = Positioned.fill(
       child: SizedBox(
-        width: screenWidth,
-        height: homeHeaderHeight * heightFactor,
-        child: Container(color: Colors.teal),
-      ),
+          width: screenWidth,
+          height: homeHeaderHeight * heightFactor,
+          child: Container(color: primaryColor)),
     );
 
     switch (backgroundStyle) {
@@ -839,6 +927,54 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.gradient:
+        Widget gradient = Positioned.fill(
+          child: SizedBox(
+              width: screenWidth,
+              height: homeHeaderHeight * heightFactor,
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient: contentLayouts['header']
+                        [headerOptions.backgroundGradient]),
+              )),
+        );
+
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: SizedBox(
+                      width: screenWidth,
+                      height: homeHeaderHeight * heightFactor,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            gradient: contentLayouts['header']
+                                [headerOptions.backgroundGradient]),
+                      )),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
       default:
     }
 
@@ -855,7 +991,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     double innerPaddingTop = 25.0 * sizeFactor;
 
-    double titleFontSize = 28.0 * sizeFactor;
+    double titleFontSize = 22.0 * sizeFactor;
     double titleSpacing = 1.5 * sizeFactor;
 
     if (contentLayouts['header'][headerOptions.placeLogo]) {
@@ -886,7 +1022,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                     child: Text(
                                       "More than Rubies",
                                       style: TextStyle(
-                                        color: Colors.black,
+                                        color: Colors.white,
                                         letterSpacing: titleSpacing,
                                         fontSize: titleFontSize,
                                         fontWeight: FontWeight.bold,
@@ -1008,7 +1144,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     if (contentLayouts['header'][headerOptions.tagLine]) {
       widget = Padding(
-        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+        padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Text(
           "This is the length of this tag line ,text past the comma and including the comma is therefore not shown",
           maxLines: 1,
@@ -1016,8 +1152,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           style: GoogleFonts.heebo(
               textStyle: TextStyle(
                   fontWeight: FontWeight.normal,
-                  fontSize: 14 * sizeFactor,
-                  color: Colors.black87)),
+                  fontSize: 11 * sizeFactor,
+                  color: Colors.white)),
         ),
       );
     }
@@ -1029,20 +1165,20 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     if (contentLayouts['header'][headerOptions.customButton]) {
       widget = SizedBox(
-        height: 35.0 * sizeFactor,
+        height: 25.0 * sizeFactor,
         child: FlatButton(
           onPressed: () {
             sharedStateManagement['display_invite_menu']();
           },
           padding: EdgeInsets.only(
-              top: 4.0 * sizeFactor,
-              left: 30.0 * sizeFactor,
-              right: 30.0 * sizeFactor,
-              bottom: 4.0 * sizeFactor),
+              top: 0.0 * sizeFactor,
+              left: 15.0 * sizeFactor,
+              right: 15.0 * sizeFactor,
+              bottom: 0.0 * sizeFactor),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: primaryColor,
-              width: 1.5 * sizeFactor,
+              color: Colors.white,
+              width: 1.0,
             ),
             borderRadius: BorderRadius.circular(30.0 * sizeFactor),
           ),
@@ -1053,7 +1189,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
                   EvaIcons.brushOutline,
-                  color: primaryColor,
+                  color: Colors.white,
                   size: 18.0 * sizeFactor,
                 ),
               ),
@@ -1062,10 +1198,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 overflow: TextOverflow.clip,
                 style: GoogleFonts.heebo(
                     textStyle: TextStyle(
-                  color: primaryColor,
+                  color: Colors.white,
                   letterSpacing: 1.5 * sizeFactor,
-                  fontSize: 14.0 * sizeFactor,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 11.0 * sizeFactor,
+                  fontWeight: FontWeight.normal,
                 )),
               ),
             ],
@@ -1083,20 +1219,20 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       widget = Padding(
         padding: EdgeInsets.only(right: 20.0 * sizeFactor),
         child: SizedBox(
-          height: 35.0 * sizeFactor,
+          height: 25.0 * sizeFactor,
           child: FlatButton(
             onPressed: () {
               sharedStateManagement['display_invite_menu']();
             },
             padding: EdgeInsets.only(
-                top: 4.0 * sizeFactor,
-                left: 30.0 * sizeFactor,
-                right: 30.0 * sizeFactor,
-                bottom: 4.0 * sizeFactor),
+                top: 0.0 * sizeFactor,
+                left: 15.0 * sizeFactor,
+                right: 15.0 * sizeFactor,
+                bottom: 0.0 * sizeFactor),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                color: primaryColor,
-                width: 1.5 * sizeFactor,
+                color: Colors.white,
+                width: 1.0,
               ),
               borderRadius: BorderRadius.circular(30.0 * sizeFactor),
             ),
@@ -1109,7 +1245,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Icon(
                       EvaIcons.personAddOutline,
-                      color: primaryColor,
+                      color: Colors.white,
                       size: 18.0 * sizeFactor,
                     ),
                   ),
@@ -1118,10 +1254,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     overflow: TextOverflow.clip,
                     style: GoogleFonts.heebo(
                         textStyle: TextStyle(
-                      color: primaryColor,
+                      color: Colors.white,
                       letterSpacing: 1.5 * sizeFactor,
-                      fontSize: 14.0 * sizeFactor,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 11.0 * sizeFactor,
+                      fontWeight: FontWeight.normal,
                     )),
                   ),
                 ],
@@ -1138,23 +1274,35 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   Widget buildHeaderPlaceLogo(BuildContext context, {sizeFactor: 1.0}) {
     Widget widget = Container();
 
+    double radius = 8.0;
+
+    switch (contentLayouts['header'][headerOptions.logoShape]) {
+      case logoShape.square:
+        radius = contentLayouts['header'][headerOptions.logoRadius];
+        break;
+      case logoShape.circle:
+        radius = 150;
+        break;
+      default:
+    }
+
     if (contentLayouts['header'][headerOptions.placeLogo]) {
       widget = Expanded(
         child: Padding(
-          padding: EdgeInsets.only(
-              top: 25.0 * sizeFactor, bottom: 20.0 * sizeFactor),
+          padding:
+              EdgeInsets.only(top: 0.0 * sizeFactor, bottom: 0.0 * sizeFactor),
           child: FlatButton(
             padding: EdgeInsets.zero,
             child: Container(
-                height: 120.0 * sizeFactor,
-                width: 120.0 * sizeFactor,
+                height: 100.0 * sizeFactor,
+                width: 100.0 * sizeFactor,
                 decoration: new BoxDecoration(
                     borderRadius:
-                        BorderRadius.all(Radius.circular(8.0 * sizeFactor)),
+                        BorderRadius.all(Radius.circular(radius * sizeFactor)),
                     image: new DecorationImage(
                       fit: BoxFit.cover,
-                      image:
-                          AssetImage('assets/images/profile_images/user1.jpg'),
+                      image: AssetImage(
+                          'assets/images/profile_images/default_user.png'),
                     ))),
             onPressed: () {
               Navigator.push(
@@ -1191,61 +1339,62 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               Expanded(
                 flex: 3,
                 child: Stack(
+                  alignment: Alignment.centerLeft,
                   children: <Widget>[
                     //use a function to dynamically build this list
                     Positioned(
                       left: 0.0,
-                      top: 5.0 * sizeFactor,
+                      // top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25 * sizeFactor,
-                          height: 25 * sizeFactor,
+                          width: 20 * sizeFactor,
+                          height: 20 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
                                 fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    "https://randomuser.me/api/portraits/women/36.jpg"),
+                                image: AssetImage(
+                                    'assets/images/profile_images/user3.jpg'),
                               ))),
                     ),
                     Positioned(
-                      left: 20.0 * sizeFactor,
-                      top: 5.0 * sizeFactor,
+                      left: 15.0 * sizeFactor,
+                      // top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25 * sizeFactor,
-                          height: 25 * sizeFactor,
+                          width: 20 * sizeFactor,
+                          height: 20 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
                                 fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    "https://randomuser.me/api/portraits/women/37.jpg"),
+                                image: AssetImage(
+                                    'assets/images/profile_images/default_user.png'),
                               ))),
                     ),
                     Positioned(
-                      left: 40.0 * sizeFactor,
-                      top: 5.0 * sizeFactor,
+                      left: 30.0 * sizeFactor,
+                      // top: 5.0 * sizeFactor,
                       child: Container(
-                          width: 25 * sizeFactor,
-                          height: 25 * sizeFactor,
+                          width: 20 * sizeFactor,
+                          height: 20 * sizeFactor,
                           decoration: new BoxDecoration(
                               shape: BoxShape.circle,
                               image: new DecorationImage(
                                 fit: BoxFit.fill,
-                                image: NetworkImage(
-                                    "https://randomuser.me/api/portraits/women/32.jpg"),
+                                image: AssetImage(
+                                    'assets/images/profile_images/user2.jpg'),
                               ))),
                     )
                   ],
                 ),
               ),
               Expanded(
-                flex: 5,
+                flex: 6,
                 child: Text(
                   "87 Members",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     letterSpacing: 1.5 * sizeFactor,
-                    fontSize: 12.0 * sizeFactor,
+                    fontSize: 11.0 * sizeFactor,
                     fontWeight: FontWeight.normal,
                     fontFamily: 'OpenSans',
                   ),

@@ -12,7 +12,7 @@ class CustomizeMemberView extends StatefulWidget {
 
 class _CustomizeMemberView extends State<CustomizeMemberView>
     with TickerProviderStateMixin {
-  final double sizeFactor = 0.8;
+  final double sizeFactor = 0.9;
   List<String> _tabs;
   TabController mVcontroller;
   String currentTab;

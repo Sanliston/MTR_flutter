@@ -492,10 +492,20 @@ enum headerOptions {
   blurEffect,
   logoShape,
   logoRadius,
-  backgroundStyle
+  backgroundStyle,
+  shadowHeight, //0.0 will represent no shadow,
+  tabBarColor,
+  appBarColor,
+  backgroundGradient
 }
 
-enum backgroundStyles { diagonalLine, image, solid }
+enum backgroundStyles {
+  diagonalLine,
+  image,
+  solid,
+  gradient,
+  gradientDiagonalLine
+}
 
 enum headerLayouts {
   left,
@@ -508,19 +518,37 @@ enum logoShape {
   circle,
 }
 
+//background gradient starting colors
+Color gradientColor1 = primaryColor;
+Color gradientColor2 = secondaryColor;
+
+//This is immutable and should only be written to when settings are changed by user
 Map contentLayouts = {
   "header": {
     headerOptions.tagLine: true,
     headerOptions.placeLogo: true,
-    headerOptions.memberPreview: false,
+    headerOptions.memberPreview: true,
     headerOptions.inviteButton: true,
     headerOptions.customButton: true,
     headerOptions.layout:
         "default", //idea is to have different layouts, like picture on the left, all centered, etc.
     headerOptions.blurEffect: false,
-    headerOptions.logoShape: logoShape.square,
+
+    headerOptions.logoShape: logoShape.circle,
     headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.diagonalLine
+    headerOptions.backgroundStyle: backgroundStyles.gradient,
+    headerOptions.backgroundGradient: LinearGradient(
+      //maybe in future versions you can have an advanced tool for users to create gradients
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      colors: [
+        gradientColor1,
+        gradientColor2,
+      ],
+    ),
+    headerOptions.shadowHeight: 0.0, //default should be 4.0
+    headerOptions.appBarColor: primaryColor,
+    headerOptions.tabBarColor: primaryColor
   },
   "default": [
     sections.announcements,
@@ -548,6 +576,22 @@ Map contentLayouts = {
     sections.upcoming,
     sections.upcoming
   ]
+};
+
+enum CTS {
+  tabBackgroundImage,
+  appBarBackgroundImage,
+  dynamicDiagnonalBar,
+}
+
+//only active when headerOptions.backgroundStyle: backgroundStyles.diagonalLine is set
+Map customTabScrollSettings = {
+  CTS.tabBackgroundImage:
+      false, //should tabbar be solid(false) or show background image (true)
+  CTS.appBarBackgroundImage:
+      false, //should appbar be solid(false) or show background image(true) -- overrides dynamic diagonal bar if true
+  CTS.dynamicDiagnonalBar:
+      true //should diagonal effect fade in (true) or be consistent (false)
 };
 
 //function holder for home header build functions

@@ -81,21 +81,23 @@ class MembersPreviewSection extends StatelessWidget {
                                             membersShortlist[index]
                                                 ["profile_image"]),
                                       ))),
-                              Container(
-                                  width: avatarWidth,
-                                  height: avatarHeight,
-                                  margin: const EdgeInsets.only(
-                                      right: 10, bottom: 5),
-                                  decoration: new BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(avatarRadius)),
-                                      color:
-                                          new Color.fromRGBO(255, 0, 0, 0.5)),
-                                  child: Center(
-                                      child: Text(
-                                    "+86",
-                                    style: homeTextStyleBoldWhite,
-                                  ))),
+                              Opacity(
+                                opacity: 0.7,
+                                child: Container(
+                                    width: avatarWidth,
+                                    height: avatarHeight,
+                                    margin: const EdgeInsets.only(
+                                        right: 10, bottom: 5),
+                                    decoration: new BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(avatarRadius)),
+                                        color: primaryColor),
+                                    child: Center(
+                                        child: Text(
+                                      "+86",
+                                      style: homeTextStyleBoldWhite,
+                                    ))),
+                              ),
                             ]);
                           } else {
                             return Container(
@@ -146,7 +148,7 @@ class MembersPreviewSection extends StatelessWidget {
                   ),
                   color: Colors.white,
                   child: SizedBox(
-                    width: 150.0,
+                    width: 130.0,
                     child: Row(
                       children: <Widget>[
                         Padding(
@@ -154,7 +156,7 @@ class MembersPreviewSection extends StatelessWidget {
                           child: Icon(
                             EvaIcons.personAddOutline,
                             color: primaryColor,
-                            size: 18.0,
+                            size: 14.0,
                           ),
                         ),
                         Text(
@@ -164,7 +166,7 @@ class MembersPreviewSection extends StatelessWidget {
                               textStyle: TextStyle(
                             color: primaryColor,
                             letterSpacing: 1.5,
-                            fontSize: 14.0,
+                            fontSize: 11.0,
                             fontWeight: FontWeight.bold,
                           )),
                         ),

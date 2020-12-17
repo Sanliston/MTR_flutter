@@ -1,3 +1,5 @@
+import 'dart:ui';
+import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/material.dart';
 
 /*Used this to make the fade easier with sliver
@@ -8,19 +10,24 @@ class CustomTabScroll extends StatefulWidget {
   final double zeroOpacityOffset;
   final double fullOpacityOffset;
   final Widget child;
+  final bool diagonalLine;
 
   CustomTabScroll(
       {Key key,
       @required this.scrollController,
       @required this.child,
       this.zeroOpacityOffset = 0,
-      this.fullOpacityOffset = 0});
+      this.fullOpacityOffset = 0,
+      this.diagonalLine = false});
 
   @override
-  _CustomTabScrollState createState() => _CustomTabScrollState();
+  _CustomTabScrollState createState() =>
+      _CustomTabScrollState(diagonalLine: this.diagonalLine);
 }
 
 class _CustomTabScrollState extends State<CustomTabScroll> {
+  bool diagonalLine;
+  _CustomTabScrollState({this.diagonalLine = false});
   /*
      */
   double _offset;
@@ -123,6 +130,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   @override
   Widget build(BuildContext context) {
     double calculatedOpacity = _calculateOpacity();
+    calculatedOpacity = customTabScrollSettings[CTS.appBarBackgroundImage]
+        ? 1.0
+        : calculatedOpacity;
     double barOpacity = 1 - calculatedOpacity;
     double rotateAngle = 220.0 >= _offset ? (1 - (_offset / 220)) / 4 : 0;
     double tolerance = 241.0 >= _offset ? (1 - (_offset / 241)) / 4 : 0;
@@ -131,40 +141,51 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     // print("offset: $_offset , angle: $rotateAngle");
     // print("bottomOffset: $bottomOffset");
 
+    //opacity settings based on global statemenagement
+    double tabBarOpacity = customTabScrollSettings[CTS.tabBackgroundImage]
+        ? 1.0
+        : calculatedOpacity;
+    double dynamicBarOpacity =
+        customTabScrollSettings[CTS.dynamicDiagnonalBar] ? barOpacity : 1.0;
+
+    if (!diagonalLine) {
+      return widget.child;
+    }
+
     return Stack(
       overflow: Overflow.clip,
       children: <Widget>[
-        Positioned(
-          bottom: 50.0 + bottomOffset,
-          child: Opacity(
-            opacity: barOpacity,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: 300.0,
-                maxWidth: MediaQuery.of(context).size.width,
-              ),
-              child: Transform(
-                alignment: Alignment.topRight,
-                transform: Matrix4.skewY(rotateAngle),
-                child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 100.0,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-          ),
-        ),
+        // Positioned(
+        //   bottom: 50.0 + bottomOffset,
+        //   child: Opacity(
+        //     opacity: barOpacity,
+        //     child: ConstrainedBox(
+        //       constraints: BoxConstraints(
+        //         minHeight: 300.0,
+        //         maxWidth: MediaQuery.of(context).size.width,
+        //       ),
+        //       child: Transform(
+        //         alignment: Alignment.topRight,
+        //         transform: Matrix4.skewY(rotateAngle),
+        //         child: Container(
+        //           width: MediaQuery.of(context).size.width,
+        //           height: 100.0,
+        //           color: Colors.red,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         Positioned.fill(
           child: Opacity(
-            opacity: calculatedOpacity,
+            opacity: tabBarOpacity,
             child: widget.child,
           ),
         ),
         Positioned(
           bottom: 50.0 + bottomOffset,
           child: Opacity(
-            opacity: barOpacity,
+            opacity: dynamicBarOpacity,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: 300.0,

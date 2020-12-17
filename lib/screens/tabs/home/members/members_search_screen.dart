@@ -34,10 +34,10 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
                       IconButton(
                         icon: Icon(
                           Icons.clear,
-                          color: Colors.black,
+                          color: primaryColor,
                         ),
                         onPressed: () {
-                          Navigator.pop(context);
+                          rebuildMainScreen(context);
                         },
                       ),
                       Text(

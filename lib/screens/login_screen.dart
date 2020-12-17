@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildEmailTF() {
-    TextStyle textStyle = kLabelStyle;
+    TextStyle textStyle = homeTextStyleWhite;
     String text = "Email";
     //Logic here
     if (!emailValid) {
@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: inputTransparentDecorationStyle,
           height: 60.0,
           child: new TextField(
             controller: emailController,
@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Colors.white,
               ),
               hintText: 'Enter your Email',
-              hintStyle: kHintTextStyle,
+              hintStyle: homeTextStyleWhite,
             ),
           ),
         ),
@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _buildPasswordTF() {
-    TextStyle textStyle = kLabelStyle;
+    TextStyle textStyle = homeTextStyleWhite;
     String text = "Password";
     //Logic here
     if (!passwordValid) {
@@ -119,25 +119,21 @@ class _LoginScreenState extends State<LoginScreen> {
         SizedBox(height: 10.0),
         Container(
           alignment: Alignment.centerLeft,
-          decoration: kBoxDecorationStyle,
+          decoration: inputTransparentDecorationStyle,
           height: 60.0,
           child: TextField(
             controller: passwordController,
             obscureText: true,
-            style: TextStyle(
-              color: Colors.white,
-              fontFamily: 'OpenSans',
-            ),
+            style: homeTextStyleWhite,
             decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.only(top: 14.0),
-              prefixIcon: Icon(
-                Icons.lock,
-                color: Colors.white,
-              ),
-              hintText: 'Enter your Password',
-              hintStyle: kHintTextStyle,
-            ),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.only(top: 14.0),
+                prefixIcon: Icon(
+                  Icons.lock,
+                  color: Colors.white,
+                ),
+                hintText: 'Enter your Password',
+                hintStyle: homeTextStyleWhite),
           ),
         ),
       ],
@@ -152,7 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           'Forgot Password?',
-          style: kLabelStyle,
+          style: homeTextStyleWhite,
         ),
       ),
     );
@@ -178,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
           Text(
             'Remember me',
-            style: kLabelStyle,
+            style: homeTextStyleWhite,
           ),
         ],
       ),
@@ -327,9 +323,15 @@ class _LoginScreenState extends State<LoginScreen> {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Stack(
             children: <Widget>[
+              SizedBox.expand(
+                child: Image.asset(
+                  "assets/images/home_background.jpg",
+                  fit: BoxFit.cover,
+                ),
+              ),
               Container(
                 padding: new EdgeInsets.all(30.0),
-                color: login_bg_color,
+                color: Colors.transparent,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[

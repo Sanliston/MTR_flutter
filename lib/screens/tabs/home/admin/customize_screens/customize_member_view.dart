@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/components/navigation_drawer.dart';
 
 class CustomizeMemberView extends StatefulWidget {
   @override
@@ -66,10 +67,18 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-                height: 280.0,
-                child: headerBuilders['header'](context,
-                    memberViewMode: true, sizeFactor: sizeFactor)),
+            FlatButton(
+              onPressed: () {
+                print("headerPreview pressed");
+              },
+              padding: EdgeInsets.zero,
+              child: AbsorbPointer(
+                child: SizedBox(
+                    height: 280.0,
+                    child: headerBuilders['header'](context,
+                        memberViewMode: true, sizeFactor: sizeFactor)),
+              ),
+            ),
             buildTabBarPreview()
           ],
         )
@@ -82,10 +91,25 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     return SizedBox(
       height: 39.0,
       child: TabBar(
+        labelPadding:
+            EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
         indicatorSize: TabBarIndicatorSize.label,
         isScrollable: true,
         tabs: _tabs.map((String name) {
-          Widget widget = Tab(text: name);
+          Widget widget = Tab(
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(color: Colors.transparent, width: 1)),
+              child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  child: Text(name),
+                ),
+              ),
+            ),
+          );
 
           if ("AddTabButton" == name) {
             widget = Icon(
@@ -97,9 +121,13 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           return widget;
         }).toList(),
         controller: mVcontroller,
-        labelColor: Colors.red,
+        labelColor: contentLayouts['header'][headerOptions.appBarColor],
         unselectedLabelColor: Colors.black54,
-        indicatorColor: Colors.red,
+        indicatorColor: contentLayouts['header'][headerOptions.appBarColor],
+        indicator: BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: Colors.white),
         onTap: (index) {
           _currentIndex.value = index;
           print("tab clicked current tab: $currentTab");
@@ -108,9 +136,188 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     );
   }
 
-  Widget scaleDown(Widget section) {
-    //purpose of function is to scale down font size, width etc to make it more
-    //https://stasheq.medium.com/scale-whole-app-or-widget-contents-to-a-screen-size-in-flutter-e3be161b5ab4
+  void displayEditDrawer(BuildContext context, String sectionName) {
+    Widget customHeader = Padding(
+      padding: const EdgeInsets.only(
+          top: 0.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            sectionName + " Section",
+            style: homeTextStyleBold,
+            overflow: TextOverflow.visible,
+          ),
+
+          //button which takes you to user profile
+          TransparentButton(
+            text: "Manage Bookings",
+            onPressed: () {},
+          )
+        ],
+      ),
+    );
+
+    Widget customBody = Padding(
+      padding:
+          const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 0.0, right: 0.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: avatarWidth,
+                    height: avatarHeight,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: new BoxDecoration(
+                      border: Border.all(color: primaryColor),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(avatarRadius)),
+                    ),
+                    child: Icon(
+                      EvaIcons.arrowUpwardOutline,
+                      color: primaryColor,
+                      size: 18.0,
+                    ),
+                  ),
+                  Text(
+                    "Move Up",
+                    style: homeSubTextStyle,
+                    overflow: TextOverflow.visible,
+                    textAlign: TextAlign.center,
+                  )
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: avatarWidth,
+                    height: avatarHeight,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: new BoxDecoration(
+                      border: Border.all(color: primaryColor),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(avatarRadius)),
+                    ),
+                    child: Icon(
+                      EvaIcons.arrowDownwardOutline,
+                      color: primaryColor,
+                      size: 18.0,
+                    ),
+                  ),
+                  Text(
+                    "Move Down",
+                    style: homeSubTextStyle,
+                    overflow: TextOverflow.visible,
+                  )
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: avatarWidth,
+                    height: avatarHeight,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: new BoxDecoration(
+                      border: Border.all(color: primaryColor),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(avatarRadius)),
+                    ),
+                    child: Icon(
+                      EvaIcons.copyOutline,
+                      color: primaryColor,
+                      size: 18.0,
+                    ),
+                  ),
+                  Text(
+                    "Duplicate",
+                    style: homeSubTextStyle,
+                    overflow: TextOverflow.visible,
+                  )
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: avatarWidth,
+                    height: avatarHeight,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: new BoxDecoration(
+                      border: Border.all(color: primaryColor),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(avatarRadius)),
+                    ),
+                    child: Icon(
+                      EvaIcons.fileAddOutline,
+                      color: primaryColor,
+                      size: 18.0,
+                    ),
+                  ),
+                  Text(
+                    "Copy to tab",
+                    style: homeSubTextStyle,
+                    overflow: TextOverflow.visible,
+                  )
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: avatarWidth,
+                    height: avatarHeight,
+                    margin: const EdgeInsets.only(bottom: 5),
+                    decoration: new BoxDecoration(
+                      border: Border.all(color: Colors.redAccent),
+                      borderRadius:
+                          BorderRadius.all(Radius.circular(avatarRadius)),
+                    ),
+                    child: Icon(
+                      EvaIcons.trash2Outline,
+                      color: Colors.redAccent,
+                      size: 18.0,
+                    ),
+                  ),
+                  Text(
+                    "Remove",
+                    style: warningSubTextStyle,
+                    overflow: TextOverflow.visible,
+                  )
+                ],
+              )
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 25.0),
+            child: SizedBox(
+                width: 140.0,
+                child: SolidButton(
+                    text: "Edit Section",
+                    iconData: EvaIcons.edit,
+                    height: 35.0)),
+          )
+        ],
+      ),
+    );
+
+    Map params = {
+      "context": context,
+      "custom_header": customHeader,
+      "custom_body": customBody,
+      "blur": false
+    };
+
+    displayNavigationDrawer(context, params);
   }
 
   /*to do the fancy little buttons we will be taking a unique approach using stacks and lists
@@ -210,105 +417,55 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
       ]),
     );
   }
-}
 
-Widget buildContentSection(BuildContext context, String currentTab,
-    double headerHeight, double smallButtonHeight) {
-  print("build content section called");
-  //this builds the content section depending on the selected tab
-  List<Widget> contentList = buildTab(context, currentTab);
+  Widget buildContentSection(BuildContext context, String currentTab,
+      double headerHeight, double smallButtonHeight) {
+    print("build content section called");
+    //this builds the content section depending on the selected tab
+    List<Widget> contentList = buildTab(context, currentTab);
 
-  return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: contentList.length,
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int index) {
-        Widget widget = Container();
-        sections component = contentLayouts[currentTab][index];
-        print("component: $component");
-        String sectionName = sectionStringMap[component];
+    return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: contentList.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          Widget widget = Container();
+          sections component = contentLayouts[currentTab][index];
+          print("component: $component");
+          String sectionName = sectionStringMap[component];
 
-        if (index >= contentList.length - 1) {
-          widget = Stack(alignment: Alignment.topCenter, children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  left: memberViewPadding, right: memberViewPadding, top: 20.0),
-              child: Stack(alignment: Alignment.center, children: [
-                Container(
-                  height: 60.0,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment(-0.9, -0.7),
-                      stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
-                      colors: [
-                        Colors.white,
-
-                        Colors.white,
-                        Colors.blue[100],
-                        Colors.blue[100],
-                        Colors.white,
-
-                        Colors.white,
-                        Colors.blue[100],
-                        Colors.blue[100],
-                        //red
-                        //orange
-                      ],
-                      tileMode: TileMode.repeated,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: 20.0,
-                  child: SmallButton(
-                      height: smallButtonHeight,
-                      iconData: EvaIcons.edit,
-                      text: 'Add section'),
-                )
-              ]),
-            ),
-            SizedBox(
-              height: 1.0,
-              width: MediaQuery.of(context).size.width,
-              child: CustomPaint(
-                painter: DashedLine(topOffset: 2.0),
-              ),
-            ),
-          ]);
-        }
-
-        return Column(
-          children: [
-            Stack(alignment: Alignment.topCenter, children: [
+          if (index >= contentList.length - 1) {
+            widget = Stack(alignment: Alignment.topCenter, children: [
               Padding(
                 padding: EdgeInsets.only(
                     left: memberViewPadding,
                     right: memberViewPadding,
-                    top: 20.0,
-                    bottom: 10.0),
+                    top: 20.0),
                 child: Stack(alignment: Alignment.center, children: [
                   Container(
+                    height: 60.0,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
-                        end: Alignment(-0.9, -0.5),
+                        end: Alignment(-0.9, -0.7),
                         stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
                         colors: [
                           Colors.white,
-                          Colors.blue[100],
+
                           Colors.white,
                           Colors.blue[100],
-                          Colors.white,
                           Colors.blue[100],
                           Colors.white,
-                          Colors.blue[100], //red
+
+                          Colors.white,
+                          Colors.blue[100],
+                          Colors.blue[100],
+                          //red
                           //orange
                         ],
                         tileMode: TileMode.repeated,
                       ),
                     ),
-                    height: 60.0,
                   ),
                   Positioned(
                     top: 20.0,
@@ -326,66 +483,128 @@ Widget buildContentSection(BuildContext context, String currentTab,
                   painter: DashedLine(topOffset: 2.0),
                 ),
               ),
-            ]),
-            Stack(alignment: Alignment.topCenter, children: [
-              Padding(
-                padding: EdgeInsets.only(
-                    left: memberViewPadding,
-                    right: memberViewPadding,
-                    top: 12.0),
-                child:
-                    Container(color: Colors.white, child: contentList[index]),
-              ),
-              SizedBox(
-                height: 1.0,
-                width: MediaQuery.of(context).size.width,
-                child: CustomPaint(
-                  painter: DashedLine(topOffset: 12.0),
+            ]);
+          }
+
+          return Column(
+            children: [
+              Stack(alignment: Alignment.topCenter, children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: memberViewPadding,
+                      right: memberViewPadding,
+                      top: 20.0,
+                      bottom: 10.0),
+                  child: Stack(alignment: Alignment.center, children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment(-0.9, -0.5),
+                          stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
+                          colors: [
+                            Colors.white,
+                            Colors.blue[100],
+                            Colors.white,
+                            Colors.blue[100],
+                            Colors.white,
+                            Colors.blue[100],
+                            Colors.white,
+                            Colors.blue[100], //red
+                            //orange
+                          ],
+                          tileMode: TileMode.repeated,
+                        ),
+                      ),
+                      height: 60.0,
+                    ),
+                    Positioned(
+                      top: 20.0,
+                      child: SmallButton(
+                          height: smallButtonHeight,
+                          iconData: EvaIcons.edit,
+                          text: 'Add section'),
+                    )
+                  ]),
                 ),
-              ),
-              Positioned(
-                left: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0),
-                  child: SmallButton(
+                SizedBox(
+                  height: 1.0,
+                  width: MediaQuery.of(context).size.width,
+                  child: CustomPaint(
+                    painter: DashedLine(topOffset: 2.0),
+                  ),
+                ),
+              ]),
+              Stack(alignment: Alignment.topCenter, children: [
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: memberViewPadding,
+                      right: memberViewPadding,
+                      top: 12.0),
+                  child: Container(
+                      color: Colors.white,
+                      child: FlatButton(
+                          onPressed: () {
+                            displayEditDrawer(context, sectionName);
+                          },
+                          padding: EdgeInsets.zero,
+                          child: AbsorbPointer(child: contentList[index]))),
+                ),
+                SizedBox(
+                  height: 1.0,
+                  width: MediaQuery.of(context).size.width,
+                  child: CustomPaint(
+                    painter: DashedLine(topOffset: 12.0),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 20.0),
+                    child: SmallButton(
                       height: smallButtonHeight,
                       iconData: EvaIcons.edit,
-                      text: 'Edit $sectionName'),
+                      text: 'Edit $sectionName',
+                      onPressed: () {
+                        displayEditDrawer(context, sectionName);
+                      },
+                    ),
+                  ),
                 ),
-              ),
-            ]),
-            widget
-          ],
-        );
-      });
-}
+              ]),
+              widget
+            ],
+          );
+        });
+  }
 
-List<Widget> buildTab(BuildContext context, String tab) {
-  /*List will hold certain information:
+  List<Widget> buildTab(BuildContext context, String tab) {
+    /*List will hold certain information:
     number of entries in List
     List of widgets in order of how they will be displayed */
 
-  /*Decided to have each element as an individual item in the list. As opposed to having some nested.
+    /*Decided to have each element as an individual item in the list. As opposed to having some nested.
     This is so that it will be easier to add and remove items from the list on the fly. */
 
-  if (null == contentLayouts[tab]) {
-    tab = "default";
+    if (null == contentLayouts[tab]) {
+      tab = "default";
+    }
+
+    List<Widget> widgets = <Widget>[];
+
+    List components = contentLayouts[tab];
+
+    for (var i = 0; i < components.length; i++) {
+      //ADD components to build list
+      Widget component = sectionMap[components[i]]();
+
+      widgets.add(component);
+    }
+
+    print("build tab called");
+
+    return widgets;
   }
-
-  List<Widget> widgets = <Widget>[];
-
-  List components = contentLayouts[tab];
-
-  for (var i = 0; i < components.length; i++) {
-    //ADD components to build list
-    Widget component = sectionMap[components[i]]();
-
-    widgets.add(component);
-  }
-
-  print("build tab called");
-
-  return widgets;
 }
 
 class SmallButton extends StatelessWidget {
@@ -394,6 +613,7 @@ class SmallButton extends StatelessWidget {
   final double iconSize;
   final IconData iconData;
   final String text;
+  final Function onPressed;
 
   const SmallButton(
       {Key key,
@@ -401,6 +621,7 @@ class SmallButton extends StatelessWidget {
       this.height = 24.0,
       this.iconData,
       this.iconSize = 14.0,
+      this.onPressed,
       @required this.text})
       : super(key: key);
 
@@ -420,14 +641,16 @@ class SmallButton extends StatelessWidget {
     }
 
     // double buttonWidth = null == width ? text.length * 10.0 : width;
+    Function buttonOnPressed = () {};
+    if (null != onPressed) {
+      buttonOnPressed = onPressed;
+    }
 
     return SizedBox(
       height: height,
       width: width,
       child: FlatButton(
-        onPressed: () {
-          sharedStateManagement['display_invite_menu']();
-        },
+        onPressed: buttonOnPressed,
         padding: EdgeInsets.only(top: 0.0, left: 5.0, right: 10.0, bottom: 0.0),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30.0),
@@ -445,6 +668,170 @@ class SmallButton extends StatelessWidget {
                       fontSize: 12,
                       color: Colors.white)),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TransparentButton extends StatelessWidget {
+  final double width;
+  final double height;
+  final double iconSize;
+  final IconData iconData;
+  final String text;
+  final Function onPressed;
+  final Color borderColor;
+  final Color backgroundColor;
+  final Color fontColor;
+  final Color iconColor;
+
+  const TransparentButton(
+      {Key key,
+      this.width,
+      this.height = 25.0,
+      this.iconData,
+      this.iconSize = 18.0,
+      this.onPressed,
+      this.backgroundColor = Colors.transparent,
+      this.borderColor = primaryColor,
+      this.fontColor = primaryColor,
+      this.iconColor = primaryColor,
+      @required this.text})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget icon = Container(width: 1.0);
+
+    if (null != iconData) {
+      icon = Padding(
+        padding: const EdgeInsets.only(right: 5.0),
+        child: Icon(
+          iconData,
+          color: iconColor,
+          size: iconSize,
+        ),
+      );
+    }
+
+    // double buttonWidth = null == width ? text.length * 10.0 : width;
+    Function buttonOnPressed = () {};
+    if (null != onPressed) {
+      buttonOnPressed = onPressed;
+    }
+
+    return SizedBox(
+      height: height,
+      width: width,
+      child: FlatButton(
+        onPressed: buttonOnPressed,
+        padding:
+            EdgeInsets.only(top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: borderColor,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: backgroundColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            Text(
+              text,
+              style: GoogleFonts.heebo(
+                textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: fontColor),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SolidButton extends StatelessWidget {
+  final double width;
+  final double height;
+  final double iconSize;
+  final IconData iconData;
+  final String text;
+  final Function onPressed;
+  final Color borderColor;
+  final Color backgroundColor;
+  final Color fontColor;
+  final Color iconColor;
+
+  const SolidButton(
+      {Key key,
+      this.width,
+      this.height = 25.0,
+      this.iconData,
+      this.iconSize = 18.0,
+      this.onPressed,
+      this.backgroundColor = primaryColor,
+      this.borderColor = primaryColor,
+      this.fontColor = Colors.white,
+      this.iconColor = Colors.white,
+      @required this.text})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Widget icon = Container(width: 1.0);
+
+    if (null != iconData) {
+      icon = Padding(
+        padding: const EdgeInsets.only(right: 5.0),
+        child: Icon(
+          iconData,
+          color: iconColor,
+          size: iconSize,
+        ),
+      );
+    }
+
+    // double buttonWidth = null == width ? text.length * 10.0 : width;
+    Function buttonOnPressed = () {};
+    if (null != onPressed) {
+      buttonOnPressed = onPressed;
+    }
+
+    return SizedBox(
+      height: height,
+      width: width,
+      child: FlatButton(
+        onPressed: buttonOnPressed,
+        padding:
+            EdgeInsets.only(top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: borderColor,
+            width: 1.0,
+          ),
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        color: backgroundColor,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            icon,
+            Text(
+              text,
+              style: GoogleFonts.heebo(
+                textStyle: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    color: fontColor),
+              ),
+            )
           ],
         ),
       ),

@@ -80,6 +80,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     Widget header = Container(height: 1.0);
 
     Color dividerColor = Colors.grey[200];
+    double blurSigmaX = 0;
+    double blurSigmaY = 0;
 
     //dart returns null if key doesnt exist in map -- unlike JS which returns 'undefined', ya'll be easy now
     if (null == params['title'] &&
@@ -142,6 +144,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     if (null != params['custom_header']) {
       header = params['custom_header'];
+    }
+
+    if (modalBottomSheetBlur) {
+      blurSigmaX = mbsSigmaX;
+      blurSigmaY = mbsSigmaY;
     }
 
     showModalBottomSheet(
@@ -249,7 +256,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
           //for blur effect
           return new BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), child: container);
+              filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
+              child: container);
         });
   }
 
@@ -603,67 +611,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         ),
                       ],
                     ),
-                    bottom: TabBar(
-                      labelPadding: EdgeInsets.only(
-                          top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
-                      indicatorSize: TabBarIndicatorSize.label,
-                      isScrollable: true,
-                      tabs: _tabs.map((String name) {
-                        Widget widget = Tab(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(50),
-                                border: Border.all(
-                                    color: Colors.transparent, width: 1)),
-                            child: Align(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 15.0, right: 15.0),
-                                child: Text(name),
-                              ),
-                            ),
-                          ),
-                        );
-
-                        if ("AddTabButton" == name) {
-                          widget = Icon(
-                            EvaIcons.plusCircle,
-                            color: Colors.white,
-                          );
-                        }
-
-                        return widget;
-                      }).toList(),
-                      controller: controller,
-                      labelColor: contentLayouts['header']
-                          [headerOptions.appBarColor],
-                      unselectedLabelColor: unselectedLabelColor,
-                      indicatorColor: contentLayouts['header']
-                          [headerOptions.appBarColor],
-                      indicator: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10)),
-                          color: Colors.white),
-                      onTap: (index) {
-                        String name = _tabs[index];
-
-                        if ("AddTabButton" == name) {
-                          //stop event execution
-                          int index = controller.previousIndex;
-                          setState(() {
-                            controller.index = index;
-                          });
-
-                          //do stuff with button here
-                          Navigator.push(
-                              context,
-                              new MaterialPageRoute(
-                                  builder: (context) => HomeCustomizeScreen()));
-                        }
-                      },
-                    )),
+                    bottom: buildTabBar(context)),
               ),
             ];
           },
@@ -745,6 +693,65 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           ),
         ),
       ),
+    );
+  }
+
+  TabBar buildTabBar(BuildContext context) {
+    return TabBar(
+      labelPadding:
+          EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
+      indicatorSize: TabBarIndicatorSize.label,
+      isScrollable: true,
+      tabs: _tabs.map((String name) {
+        Widget widget = Tab(
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(color: Colors.transparent, width: 1)),
+            child: Align(
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                child: Text(name),
+              ),
+            ),
+          ),
+        );
+
+        if ("AddTabButton" == name) {
+          widget = Icon(
+            EvaIcons.plusCircle,
+            color: Colors.white,
+          );
+        }
+
+        return widget;
+      }).toList(),
+      controller: controller,
+      labelColor: contentLayouts['header'][headerOptions.appBarColor],
+      unselectedLabelColor: unselectedLabelColor,
+      indicatorColor: contentLayouts['header'][headerOptions.appBarColor],
+      indicator: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+          color: Colors.white),
+      onTap: (index) {
+        String name = _tabs[index];
+
+        if ("AddTabButton" == name) {
+          //stop event execution
+          int index = controller.previousIndex;
+          setState(() {
+            controller.index = index;
+          });
+
+          //do stuff with button here
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) => HomeCustomizeScreen()));
+        }
+      },
     );
   }
 

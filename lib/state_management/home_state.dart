@@ -578,6 +578,12 @@ Map contentLayouts = {
   ]
 };
 
+//modalBottomSheet blur settings
+bool modalBottomSheetBlur = true;
+double mbsSigmaX = 5.0;
+double mbsSigmaY = 5.0;
+
+//custom scroll settings
 enum CTS {
   tabBackgroundImage,
   appBarBackgroundImage,

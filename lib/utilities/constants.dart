@@ -11,8 +11,8 @@ const double sidePadding = 15.0;
 // const Color secondaryColor = Color(0xFFFF4B2B);
 // const Color accentColor = Color(0xFFFF4B2B);
 
-const Color primaryColor = Color(0xFF4568DC);
-const Color secondaryColor = Color(0xFFB06AB3);
+const Color primaryColor = Color(0xFF11998e);
+const Color secondaryColor = Color(0xFF38ef7d);
 const Color accentColor = Color(0xFFB06AB3);
 const Color iconColor = primaryColor;
 
@@ -86,6 +86,10 @@ final homeTextStyleWhite = GoogleFonts.heebo(
 final homeSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
+
+final warningSubTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.red));
 
 final warningTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(

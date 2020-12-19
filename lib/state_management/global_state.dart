@@ -15,7 +15,7 @@ Map sharedStateManagement =
     {}; //global Map that other widgets can add and extract data from
 
 bool loggedIn = true;
-bool isAdmin = true;
+bool isAdmin = false;
 int selectedPageIndex = 1;
 
 //Enum to be used stateCallback

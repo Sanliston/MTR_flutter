@@ -5,9 +5,34 @@ import 'dart:ui';
 void displayNavigationDrawer(BuildContext context, Map params) {
   Widget header = Container(height: 1.0);
   Widget body = Container(height: 1.0);
+  Widget container = Container(height: 1.0);
   Color dividerColor = Colors.grey[200];
   double blurSigmaX = 0;
   double blurSigmaY = 0;
+
+  //This section will run if a custom_container value is set and exit out of the function before the next section
+  if (modalBottomSheetBlur &&
+      (null == params['blur'] || false != params['blur'])) {
+    blurSigmaX = mbsSigmaX;
+    blurSigmaY = mbsSigmaY;
+  }
+
+  if (null != params['custom_container']) {
+    //means entire contents are custom
+    container = params['custom_container'];
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true, //stops max height being half screen
+        context: context,
+        builder: (BuildContext context) {
+          //for blur effect
+          return new BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
+              child: container);
+        });
+
+    return;
+  }
 
   //dart returns null if key doesnt exist in map -- unlike JS which returns 'undefined', ya'll be easy now
   if (null == params['title'] &&
@@ -72,12 +97,6 @@ void displayNavigationDrawer(BuildContext context, Map params) {
     header = params['custom_header'];
   }
 
-  if (modalBottomSheetBlur &&
-      (null == params['blur'] || false != params['blur'])) {
-    blurSigmaX = mbsSigmaX;
-    blurSigmaY = mbsSigmaY;
-  }
-
   if (null != params['custom_body']) {
     body = params['custom_body'];
   } else {
@@ -118,8 +137,6 @@ void displayNavigationDrawer(BuildContext context, Map params) {
             );
           }
 
-          print("iconData: $iconData");
-
           return FlatButton(
             onPressed:
                 onPressed, //passing function definition onPressed and not invoking onPressed().
@@ -134,51 +151,54 @@ void displayNavigationDrawer(BuildContext context, Map params) {
         });
   }
 
+  container = Container(
+      margin: const EdgeInsets.only(
+          top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0),
+        child: Wrap(
+          children: <Widget>[
+            Center(
+                child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                  height: 5.0,
+                  width: 45.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
+                  )),
+            )),
+            header,
+            Divider(
+              thickness: 1.0,
+              color: dividerColor,
+            ),
+            body,
+          ],
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10),
+            topRight: Radius.circular(10),
+            bottomLeft: Radius.circular(10),
+            bottomRight: Radius.circular(10)),
+      ));
+
   showModalBottomSheet(
       backgroundColor: Colors.transparent,
       isScrollControlled: true, //stops max height being half screen
       context: context,
       builder: (BuildContext context) {
-        Widget container = Container(
-            margin: const EdgeInsets.only(
-                top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: Wrap(
-                children: <Widget>[
-                  Center(
-                      child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                        height: 5.0,
-                        width: 45.0,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[200],
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              topRight: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                              bottomRight: Radius.circular(10)),
-                        )),
-                  )),
-                  header,
-                  Divider(
-                    thickness: 1.0,
-                    color: dividerColor,
-                  ),
-                  body,
-                ],
-              ),
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                  bottomLeft: Radius.circular(10),
-                  bottomRight: Radius.circular(10)),
-            ));
-
+        if (false == params["blur"]) {
+          return container;
+        }
         //for blur effect
         return new BackdropFilter(
             filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),

@@ -104,109 +104,179 @@ List<Map> membersList = [
     "username": "Jane Ipsum",
     "role": "Owner",
     "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "joined": "Nov 28 2020",
+    "followers": 10,
+    "following": 200,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
   },
   {
     "username": "Bebe Rxha",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://pagesix.com/wp-content/uploads/sites/3/2020/03/bebe-rexha-30.jpg?quality=80&strip=all",
+    "joined": "Nov 28 2020",
+    "followers": 130002,
+    "following": 200,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
   },
   {
-    "username": "Claire Jojo",
+    "username": "Kratos",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://i1.wp.com/metro.co.uk/wp-content/uploads/2018/12/god-of-war-kratos-dad-jokes-0ddb.png?quality=90&strip=all&zoom=1&resize=644%2C381&ssl=1",
+    "joined": "Nov 28 2020",
+    "followers": 1000000010020,
+    "following": 3,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": false
   },
   {
-    "username": "Bebe Reha",
+    "username": "The boy",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image": "https://i.ytimg.com/vi/80VpyWccS64/maxresdefault.jpg",
+    "joined": "Nov 28 2020",
+    "followers": 1030056,
+    "following": 218,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": false
   },
   {
-    "username": "Yolo oi",
+    "username": "Boba Fett",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://imgix.bustle.com/uploads/image/2020/11/12/62c8f368-f427-4c10-8873-e6ad4d69f51b-boba-fett.jpg?w=1200&h=630&q=70&fit=crop&crop=faces&fm=jpg",
+    "joined": "Nov 28 2020",
+    "followers": 10500098,
+    "following": 5,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
   },
   {
-    "username": "Bebe Reha",
+    "username": "Arthur Morgan",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://i.pinimg.com/originals/90/09/79/900979ebb3fe7ed2b6c0436a67ef02c3.jpg",
+    "joined": "Nov 28 2020",
+    "followers": 10,
+    "following": 0,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": false
   },
   {
-    "username": "Yolo oi",
+    "username": "Boah",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://pm1.narvii.com/7117/a44b941b250670579795af9a87fc18444174ad99r1-1555-2048v2_hq.jpg",
+    "joined": "Nov 28 2020",
+    "followers": 1,
+    "following": 1,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
   },
   {
-    "username": "Bebe Reha",
+    "username": "Mando Lorian",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://cdn.vox-cdn.com/thumbor/KEKGNFGnAJYBVK5uJCbCpf664Q4=/0x0:3840x1610/1200x800/filters:focal(1613x498:2227x1112)/cdn.vox-cdn.com/uploads/chorus_image/image/68549230/huc2_ff_003159_4661a2c0.0.jpeg",
+    "joined": "Nov 28 2020",
+    "followers": 14,
+    "following": 1,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
   },
   {
-    "username": "Yolo oi",
+    "username": "Mckenzie Davis",
     "role": "Member",
-    "profile_image": "https://randomuser.me/api/portraits/women/69.jpg",
+    "profile_image":
+        "https://variety.com/wp-content/uploads/2018/03/mackenzie-davis.jpg?w=681&h=383&crop=1",
+    "joined": "Nov 28 2020",
+    "followers": 389,
+    "following": 244,
+    "email": "Jane@outlook.com",
     "subscribed_groups": [
       "The Fallen Order",
       "Band of Bastards",
       "The add ons",
       "Awesome People",
       "Top Secret Crew"
-    ]
+    ],
+    "online": true
+  },
+  {
+    "username": "Sleepy Samurai",
+    "role": "Member",
+    "profile_image":
+        "https://www.sideshow.com/wp/wp-content/uploads/2019/12/Cyberpunk-Keanu.jpg",
+    "joined": "Nov 28 2020",
+    "followers": 10,
+    "following": 200,
+    "email": "Jane@outlook.com",
+    "subscribed_groups": [
+      "The Fallen Order",
+      "Band of Bastards",
+      "The add ons",
+      "Awesome People",
+      "Top Secret Crew"
+    ],
+    "online": true
   }
 ];
 

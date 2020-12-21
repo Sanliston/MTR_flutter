@@ -65,7 +65,10 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
 
   //This is the implementation of a custom snap functionality or the header when user stops scrolling
   void snap() {
+    /*Rounding values before comparing fixes issue where it kept snapping even when the header
+    was fully extended or not. Causing the user to lose their scroll position randomly when scrolling */
     print("snap called");
+    print(widget.scrollController.offset);
     //set maxOffset if not already set
     if (!_maxOffsetSet) {
       _maxOffset = widget.scrollController.position.maxScrollExtent;
@@ -73,15 +76,21 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
       _maxOffsetSet = true;
     }
 
+    double currentOffset = widget.scrollController.offset;
+    if (currentOffset == _maxOffset) {
+      return;
+    }
+
     if (!widget.scrollController.position.isScrollingNotifier.value) {
       //This means the scroll has stopped
-      double currentOffset = widget.scrollController.offset;
 
-      if (currentOffset > _maxOffset / 2 && currentOffset < _maxOffset) {
+      if ((currentOffset).roundToDouble() > (_maxOffset / 2).roundToDouble() &&
+          (currentOffset).roundToDouble() < (_maxOffset).roundToDouble()) {
         widget.scrollController.animateTo(_maxOffset,
             duration: Duration(milliseconds: 100), curve: Curves.linear);
-      } else if (currentOffset < _maxOffset / 2 &&
-          currentOffset != _minOffset) {
+      } else if ((currentOffset).roundToDouble() <
+              (_maxOffset / 2).roundToDouble() &&
+          (currentOffset).roundToDouble() != (_minOffset).roundToDouble()) {
         widget.scrollController.animateTo(_minOffset,
             duration: Duration(milliseconds: 100), curve: Curves.linear);
       }

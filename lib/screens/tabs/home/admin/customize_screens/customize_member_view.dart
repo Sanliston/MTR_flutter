@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_header/customize_header_screen.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -70,7 +71,10 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           children: [
             FlatButton(
               onPressed: () {
-                print("headerPreview pressed");
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => CustomizeHeaderScreen()));
               },
               padding: EdgeInsets.zero,
               child: AbsorbPointer(

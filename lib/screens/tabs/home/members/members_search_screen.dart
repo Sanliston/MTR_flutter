@@ -15,6 +15,13 @@ class _MemberSearchScreenState extends State<MemberSearchScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+
+    //free up any used resources here
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(

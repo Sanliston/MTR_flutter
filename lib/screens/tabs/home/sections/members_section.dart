@@ -4,6 +4,7 @@ import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:MTR_flutter/components/buttons.dart';
+import 'package:intl/intl.dart';
 
 class MembersSection extends StatelessWidget {
   const MembersSection({
@@ -11,6 +12,11 @@ class MembersSection extends StatelessWidget {
   }) : super(key: key);
 
   void displayMemberOptions(BuildContext context, GlobalKey key, int index) {
+    //format followers etc
+    final formatter = new NumberFormat("#,###", "en_US");
+    String followingCount = formatter.format(membersList[index]["following"]);
+    String followerCount = formatter.format(membersList[index]["followers"]);
+
     //figure out if person follows user or not
     bool followsYou = true;
 
@@ -156,8 +162,7 @@ class MembersSection extends StatelessWidget {
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
                                               Text(
-                                                membersList[index]["following"]
-                                                    .toString(),
+                                                followingCount,
                                                 style: homeSubTextStyleBold,
                                               ),
                                               Text(
@@ -173,8 +178,7 @@ class MembersSection extends StatelessWidget {
                                               MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text(
-                                              membersList[index]["followers"]
-                                                  .toString(),
+                                              followerCount,
                                               style: homeSubTextStyleBold,
                                             ),
                                             Text(
@@ -215,7 +219,9 @@ class MembersSection extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 15.0),
                                     child: TransparentButton(
-                                        text: "Profile", width: 100),
+                                        text: "Profile",
+                                        width: 100,
+                                        iconData: EvaIcons.personOutline),
                                   )
                                 ],
                               ),
@@ -311,7 +317,7 @@ class MembersSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                       width: avatarWidth,

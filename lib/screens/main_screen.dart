@@ -71,13 +71,13 @@ class _MainScreenState extends State<MainScreen> {
 
       //uncomment the below to enable icons to be solid when page is selected
 
-      // indexedPageIcons = [
-      //   bottomIcons[0]["normal"],
-      //   bottomIcons[1]["normal"],
-      //   bottomIcons[2]["normal"]
-      // ];
+      indexedPageIcons = [
+        bottomIcons[0]["normal"],
+        bottomIcons[1]["normal"],
+        bottomIcons[2]["normal"]
+      ];
 
-      // indexedPageIcons[index] = bottomIcons[index]["selected"];
+      indexedPageIcons[index] = bottomIcons[index]["selected"];
     });
   }
 
@@ -86,7 +86,7 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
 
 //uncomment the below to enable icons to be solid when page is selected
-    // indexedPageIcons[0] = bottomIcons[0]["selected"];
+    indexedPageIcons[0] = bottomIcons[0]["selected"];
 
     //stateCallback declaration
     stateCallback[screen.main] = setState;
@@ -107,15 +107,15 @@ class _MainScreenState extends State<MainScreen> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(indexedPageIcons[0]),
-            title: Text('Home'),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(indexedPageIcons[1]),
-            title: Text('Inbox'),
+            label: 'Inbox',
           ),
           BottomNavigationBarItem(
             icon: Icon(indexedPageIcons[2]),
-            title: Text('Personal'),
+            label: 'Personal',
           ),
         ],
         currentIndex: mainScreenState[mainScreen.selectedIndex],

@@ -11,8 +11,8 @@ const double sidePadding = 15.0;
 // const Color secondaryColor = Color(0xFFFF4B2B);
 // const Color accentColor = Color(0xFFFF4B2B);
 
-const Color primaryColor = Color(0xFF6C5B7B);
-const Color secondaryColor = Color(0xFFC06C84);
+const Color primaryColor = Color(0xFFbc4e9c);
+const Color secondaryColor = Color(0xFFf80759);
 const Color accentColor = Color(0xFFC06C84);
 const Color iconColor = primaryColor;
 

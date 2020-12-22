@@ -430,6 +430,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 sliver: SliverAppBar(
+                    stretch: true,
+                    onStretchTrigger: () {
+                      print("stretch event triggered");
+                    },
                     title: FadeOnScroll(
                         scrollController: scrollController,
                         fullOpacityOffset: homeHeaderHeight * 0.3,

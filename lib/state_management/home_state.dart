@@ -589,8 +589,8 @@ enum logoShape {
 }
 
 //background gradient starting colors
-Color gradientColor1 = primaryColor;
-Color gradientColor2 = secondaryColor;
+const Color gradientColor1 = primaryColor;
+const Color gradientColor2 = secondaryColor;
 
 //This is immutable and should only be written to when settings are changed by user
 Map contentLayouts = {

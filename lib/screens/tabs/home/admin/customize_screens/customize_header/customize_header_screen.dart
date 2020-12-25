@@ -1,9 +1,30 @@
 import 'package:MTR_flutter/blur_on_scroll.dart';
+import 'package:MTR_flutter/components/color_picker.dart';
 import 'package:MTR_flutter/core_overrides/custom_reorderable_list.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
+
+enum Options {
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  gradientFirstColor,
+  gradientSecondColor,
+  gradientThirdColor
+}
+
+enum WorkingColors {
+  primaryColor,
+  secondaryColor,
+  accentColor,
+  gradientFirstColor,
+  gradientSecondColor,
+  gradientThirdColor
+}
+
+void dummyCB() {}
 
 class CustomizeHeaderScreen extends StatefulWidget {
   @override
@@ -13,6 +34,24 @@ class CustomizeHeaderScreen extends StatefulWidget {
 class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   ScrollController mainScrollController = new ScrollController();
   List list;
+  Color workingPrimaryColor;
+  Color workingSecondaryColor;
+  Color workingAccentColor;
+
+  Color workingFirstGradientColor;
+  Color workingSecondGradientColor;
+  Color workingThirdGradientColor;
+
+  Widget dormantWidget = Container(height: 1.0);
+  double containerHeight = 1.0;
+  bool colorEditorOpened = false;
+
+  WorkingColors targetColor;
+  Options currentOption;
+  Map<Options, Widget> colorPickerContainers;
+  Map<Options, double> colorPickerContainerHeights;
+  Map<WorkingColors, Color> workingColors;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +64,35 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       "assets/images/home_background.jpg",
       "assets/images/home_background.jpg",
     ];
+
+    workingColors = {
+      WorkingColors.primaryColor: primaryColor,
+      WorkingColors.secondaryColor: secondaryColor,
+      WorkingColors.accentColor: accentColor,
+      WorkingColors.gradientFirstColor: primaryColor,
+      WorkingColors.gradientSecondColor: secondaryColor,
+      WorkingColors.gradientThirdColor: accentColor
+    };
+
+    targetColor = null;
+
+    colorPickerContainers = {
+      Options.primaryColor: dormantWidget,
+      Options.secondaryColor: dormantWidget,
+      Options.accentColor: dormantWidget,
+      Options.gradientFirstColor: dormantWidget,
+      Options.gradientSecondColor: dormantWidget,
+      Options.gradientThirdColor: dormantWidget
+    };
+
+    colorPickerContainerHeights = {
+      Options.primaryColor: 1.0,
+      Options.secondaryColor: 1.0,
+      Options.accentColor: 1.0,
+      Options.gradientFirstColor: 1.0,
+      Options.gradientSecondColor: 1.0,
+      Options.gradientThirdColor: 1.0
+    };
 
     //state stuff here
   }
@@ -100,10 +168,351 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       buildPlaceName(),
       buildTagLine(),
       buildPlaceLogo(),
-      buildCoverPhoto()
+      buildCoverPhoto(),
+      buildThemeColors(),
+      buildGradientBackground()
     ];
 
     return listItems;
+  }
+
+  Padding buildGradientBackground() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(sidePadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Gradient Background", style: homeTextStyleBold),
+                    ],
+                  ),
+                  Icon(
+                    UniconsSolid.toggle_on,
+                    color: workingColors[WorkingColors.primaryColor],
+                    size: 40.0,
+                  )
+                ],
+              ),
+              Container(
+                height: 50.0,
+                child: Text(
+                    "This changes the background of the header to a gradient of your chosen colors. Enabling this option automatically disables the Background Photo.",
+                    style: homeSubTextStyle,
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: AnimatedContainer(
+                  //turn this into animated container
+                  duration: Duration(milliseconds: 1500),
+                  height: 100,
+                  width:
+                      MediaQuery.of(context).size.width - (sidePadding * 2.0),
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        //maybe in future versions you can have an advanced tool for users to create gradients
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          workingColors[WorkingColors.gradientFirstColor],
+                          workingColors[WorkingColors.gradientSecondColor],
+                        ],
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
+                ),
+              ),
+              buildColorRow("First Color",
+                  workingColors[WorkingColors.gradientFirstColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.gradientFirstColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.gradientFirstColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height: colorPickerContainerHeights[Options.gradientFirstColor],
+                child: colorPickerContainers[Options.gradientFirstColor],
+              ),
+              buildColorRow("Second Color",
+                  workingColors[WorkingColors.gradientSecondColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.gradientSecondColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.gradientSecondColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height:
+                    colorPickerContainerHeights[Options.gradientSecondColor],
+                child: colorPickerContainers[Options.gradientSecondColor],
+              ),
+              buildColorRow("Third Color (Optional)",
+                  workingColors[WorkingColors.gradientThirdColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.gradientThirdColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.gradientThirdColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height: colorPickerContainerHeights[Options.gradientThirdColor],
+                child: colorPickerContainers[Options.gradientThirdColor],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildColorRow(String text, Color color,
+      {Function onTapCallback = dummyCB,
+      Function longpressCallback = dummyCB}) {
+    return ElevatedButton(
+      onPressed: onTapCallback,
+      onLongPress: longpressCallback,
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
+        elevation: MaterialStateProperty.all<double>(0.0),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  EvaIcons.droplet,
+                  color: color,
+                  size: 25.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15),
+                  child: Text(text, style: homeSubTextStyleBold),
+                ),
+              ],
+            ),
+            Icon(
+              EvaIcons.colorPaletteOutline,
+              color: color,
+              size: 25.0,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding buildThemeColors() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(sidePadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Theme Colors", style: homeTextStyleBold),
+                    ],
+                  ),
+                  Icon(
+                    UniconsSolid.toggle_on,
+                    color: workingColors[WorkingColors.primaryColor],
+                    size: 40.0,
+                  )
+                ],
+              ),
+              Container(
+                height: 40.0,
+                child: Text(
+                    "These are the colors used by buttons and links. When user clicks the color a color selection tool will popup",
+                    style: homeSubTextStyle,
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.left),
+              ),
+              buildColorRow(
+                  "Primary Color", workingColors[WorkingColors.primaryColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.primaryColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.primaryColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height: colorPickerContainerHeights[Options.primaryColor],
+                child: colorPickerContainers[Options.primaryColor],
+              ),
+              buildColorRow("Secondary Color",
+                  workingColors[WorkingColors.secondaryColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.secondaryColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.secondaryColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height: colorPickerContainerHeights[Options.secondaryColor],
+                child: colorPickerContainers[Options.secondaryColor],
+              ),
+              buildColorRow(
+                  "Accent Color", workingColors[WorkingColors.accentColor],
+                  onTapCallback: () {
+                toggleColorEditor(Options.accentColor);
+              }, longpressCallback: () {
+                displayPopupColorEditor(Options.accentColor);
+              }),
+              AnimatedContainer(
+                duration: Duration(milliseconds: 350),
+                height: colorPickerContainerHeights[Options.accentColor],
+                child: colorPickerContainers[Options.accentColor],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void toggleColorEditor(Options option) {
+    Options previousOption = currentOption;
+    currentOption = option;
+    switch (option) {
+      case Options.primaryColor:
+        targetColor = WorkingColors.primaryColor;
+        break;
+
+      case Options.secondaryColor:
+        targetColor = WorkingColors.secondaryColor;
+
+        break;
+
+      case Options.accentColor:
+        targetColor = WorkingColors.accentColor;
+        break;
+
+      case Options.gradientFirstColor:
+        targetColor = WorkingColors.gradientFirstColor;
+        break;
+
+      case Options.gradientSecondColor:
+        targetColor = WorkingColors.gradientSecondColor;
+        break;
+
+      case Options.gradientThirdColor:
+        targetColor = WorkingColors.gradientThirdColor;
+        break;
+
+      default:
+        targetColor = WorkingColors.primaryColor;
+    }
+
+    setState(() {
+      if (colorEditorOpened && currentOption == previousOption) {
+        colorPickerContainers[previousOption] = Container(height: 1.0);
+        colorPickerContainerHeights[previousOption] = 1.0;
+        colorEditorOpened = false;
+
+        return;
+      }
+
+      if (previousOption != currentOption) {
+        colorPickerContainers[previousOption] = Container(height: 1.0);
+        colorPickerContainerHeights[previousOption] = 1.0;
+      }
+
+      colorPickerContainers[currentOption] = SimpleColorPicker(
+        height: 300,
+        onColorTapped: (color) {
+          print("on color tapped called");
+          setState(() {
+            workingColors[targetColor] = color;
+          });
+        },
+        onSave: (color) {
+          setState(() {
+            workingColors[targetColor] = color;
+          });
+        },
+        startingColor: workingColors[targetColor],
+      );
+
+      colorPickerContainerHeights[currentOption] = 400;
+      colorEditorOpened = true;
+    });
+  }
+
+  void displayPopupColorEditor(Options option) {
+    WorkingColors selectedColor;
+
+    switch (option) {
+      case Options.primaryColor:
+        selectedColor = WorkingColors.primaryColor;
+        break;
+
+      case Options.secondaryColor:
+        selectedColor = WorkingColors.secondaryColor;
+
+        break;
+
+      case Options.accentColor:
+        selectedColor = WorkingColors.accentColor;
+        break;
+
+      case Options.gradientFirstColor:
+        selectedColor = WorkingColors.gradientFirstColor;
+        break;
+
+      case Options.gradientSecondColor:
+        selectedColor = WorkingColors.gradientSecondColor;
+        break;
+
+      case Options.gradientThirdColor:
+        selectedColor = WorkingColors.gradientThirdColor;
+        break;
+
+      default:
+        selectedColor = WorkingColors.primaryColor;
+    }
+
+    displayColorPicker(context,
+        startingColor: workingColors[selectedColor],
+        blur: true, onColorTapped: (color) {
+      setState(() {
+        workingColors[selectedColor] = color;
+      });
+    }, onSave: (color) {
+      setState(() {
+        workingColors[selectedColor] = color;
+      });
+    });
   }
 
   Padding buildCoverPhoto() {
@@ -124,14 +533,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Cover Photo", style: homeTextStyleBold),
+                      Text("Background Photo", style: homeTextStyleBold),
                       Text("Suggested size: 750x350 px",
                           style: homeSubTextStyle),
                     ],
                   ),
                   Icon(
                     EvaIcons.plusCircleOutline,
-                    color: Colors.greenAccent,
+                    color: workingColors[WorkingColors.primaryColor],
                     size: 25.0,
                   )
                 ],
@@ -189,8 +598,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           alignment: Alignment.topLeft,
           children: [
             Positioned(
-              top: 0,
-              left: 0,
+              top: 5,
+              left: 5,
               child: Container(
                 height: 70,
                 width: 70,
@@ -254,7 +663,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   ),
                   Icon(
                     UniconsSolid.toggle_on,
-                    color: Colors.greenAccent,
+                    color: workingColors[WorkingColors.primaryColor],
                     size: 40.0,
                   )
                 ],
@@ -290,7 +699,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     ),
                     Icon(
                       EvaIcons.editOutline,
-                      color: Colors.greenAccent,
+                      color: workingColors[WorkingColors.primaryColor],
                       size: 25.0,
                     )
                   ],
@@ -328,7 +737,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   ),
                   Icon(
                     UniconsSolid.toggle_on,
-                    color: Colors.greenAccent,
+                    color: workingColors[WorkingColors.primaryColor],
                     size: 40.0,
                   )
                 ],
@@ -382,8 +791,12 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                 padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Title", style: homeSubTextStyle),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 5.0),
+                      child: Text("Title", style: homeSubTextStyle),
+                    ),
                     Container(
                       height: 35.0,
                       child: TextFormField(
@@ -415,7 +828,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     Widget widget = Stack(
       children: [
         headerBuilders['preview_background'](400.0,
-            MediaQuery.of(context).size.width - (memberViewPadding * 2.0)),
+            MediaQuery.of(context).size.width - (memberViewPadding * 2.0),
+            gradientFirstColor: workingColors[WorkingColors.gradientFirstColor],
+            gradientSecondColor:
+                workingColors[WorkingColors.gradientSecondColor]),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -430,8 +846,11 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               child: AbsorbPointer(
                 child: SizedBox(
                     height: 280.0,
-                    child: headerBuilders['header'](context,
-                        memberViewMode: true, sizeFactor: sizeFactor)),
+                    child: headerBuilders['header'](
+                      context,
+                      memberViewMode: true,
+                      sizeFactor: sizeFactor,
+                    )),
               ),
             )
           ],

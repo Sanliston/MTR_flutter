@@ -491,10 +491,7 @@ class _CustomReorderableListContentState
               alignment: Alignment.topLeft,
               // These constraints will limit the cross axis of the drawn widget.
               constraints: constraints,
-              child: Material(
-                elevation: 7.0, //HERE FUCKING HERE
-                child: toWrapWithSemantics,
-              ),
+              child: Container(child: toWrapWithSemantics),
             ),
             child: _dragging == toWrap.key
                 ? const SizedBox()

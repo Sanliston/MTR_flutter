@@ -761,7 +761,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
   Positioned buildPreviewHeaderBackground(
       double homeHeaderHeight, double screenWidth,
-      {bool memberViewMode = false}) {
+      {bool memberViewMode = false,
+      Color gradientFirstColor = gradientColor1,
+      Color gradientSecondColor = gradientColor2}) {
     backgroundStyles backgroundStyle =
         contentLayouts["header"][headerOptions.backgroundStyle];
     double heightFactor = 0.6;
@@ -843,8 +845,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               height: homeHeaderHeight * heightFactor,
               child: Container(
                 decoration: BoxDecoration(
-                    gradient: contentLayouts['header']
-                        [headerOptions.backgroundGradient]),
+                    gradient: LinearGradient(
+                  //maybe in future versions you can have an advanced tool for users to create gradients
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [gradientFirstColor, gradientSecondColor],
+                )),
               )),
         );
         break;

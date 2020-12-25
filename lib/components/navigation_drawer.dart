@@ -7,6 +7,7 @@ void displayNavigationDrawer(BuildContext context, Map params) {
   Widget body = Container(height: 1.0);
   Widget container = Container(height: 1.0);
   Color dividerColor = Colors.grey[200];
+  Color handleBarColor = Colors.grey[200]; //that little grey line at the top
   double blurSigmaX = 0;
   double blurSigmaY = 0;
 
@@ -151,6 +152,11 @@ void displayNavigationDrawer(BuildContext context, Map params) {
         });
   }
 
+  if (null != params["handle_bar_color"] &&
+      params["handle_bar_color"] is Color) {
+    handleBarColor = params["handle_bar_color"];
+  }
+
   container = Container(
       margin: const EdgeInsets.only(
           top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
@@ -165,7 +171,7 @@ void displayNavigationDrawer(BuildContext context, Map params) {
                   height: 5.0,
                   width: 45.0,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: handleBarColor,
                     borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10),
                         topRight: Radius.circular(10),

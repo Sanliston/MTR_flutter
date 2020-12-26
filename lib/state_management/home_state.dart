@@ -7,6 +7,10 @@ import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.d
 import 'package:MTR_flutter/screens/tabs/home/sections/UpcomingSection.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/contact_us_section.dart';
 
+/* 
+  TODO: Change enums to start with Capital letters
+*/
+
 //home tab tabs persistence when switching to messages or profile etc - init state gets called when you return to home after switching to messages or profile
 String selectedHomeTab = "home";
 
@@ -591,6 +595,57 @@ enum logoShape {
 //background gradient starting colors
 const Color gradientColor1 = primaryColor;
 const Color gradientColor2 = secondaryColor;
+
+enum GradientOrientations { horizontal, vertical, diagonal, radial }
+
+Gradient getGradient(
+    {Color gradientFirstColor = gradientColor1,
+    Color gradientSecondColor = gradientColor2,
+    Color gradientThirdColor,
+    GradientOrientations gradientOrientation = GradientOrientations.diagonal}) {
+  List<Color> colorsList = [gradientFirstColor, gradientSecondColor];
+  List<double> gradientStops = null;
+  if (null != gradientThirdColor) {
+    colorsList = [
+      gradientFirstColor,
+      gradientSecondColor,
+      gradientSecondColor,
+      gradientThirdColor
+    ];
+
+    gradientStops = [
+      0.00,
+      0.45,
+      0.55,
+      1.0,
+    ];
+  }
+
+  Gradient gradient = LinearGradient(
+      //maybe in future versions you can have an advanced tool for users to create gradients
+      begin: Alignment.centerLeft,
+      end: Alignment.centerRight,
+      stops: gradientStops,
+      colors: colorsList);
+
+  if (GradientOrientations.vertical == gradientOrientation) {
+    gradient = LinearGradient(
+        //maybe in future versions you can have an advanced tool for users to create gradients
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: gradientStops,
+        colors: colorsList);
+  } else if (GradientOrientations.diagonal == gradientOrientation) {
+    gradient = LinearGradient(
+        //maybe in future versions you can have an advanced tool for users to create gradients
+        begin: Alignment.bottomLeft,
+        end: Alignment.topRight,
+        stops: gradientStops,
+        colors: colorsList);
+  }
+
+  return gradient;
+}
 
 //This is immutable and should only be written to when settings are changed by user
 Map contentLayouts = {

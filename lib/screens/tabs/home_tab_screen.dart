@@ -763,7 +763,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       double homeHeaderHeight, double screenWidth,
       {bool memberViewMode = false,
       Color gradientFirstColor = gradientColor1,
-      Color gradientSecondColor = gradientColor2}) {
+      Color gradientSecondColor = gradientColor2,
+      Color gradientThirdColor,
+      GradientOrientations gradientOrientation =
+          GradientOrientations.diagonal}) {
     backgroundStyles backgroundStyle =
         contentLayouts["header"][headerOptions.backgroundStyle];
     double heightFactor = 0.6;
@@ -845,12 +848,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               height: homeHeaderHeight * heightFactor,
               child: Container(
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                  //maybe in future versions you can have an advanced tool for users to create gradients
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [gradientFirstColor, gradientSecondColor],
-                )),
+                    gradient: getGradient(
+                        gradientFirstColor: gradientFirstColor,
+                        gradientSecondColor: gradientSecondColor,
+                        gradientThirdColor: gradientThirdColor,
+                        gradientOrientation: gradientOrientation)),
               )),
         );
         break;

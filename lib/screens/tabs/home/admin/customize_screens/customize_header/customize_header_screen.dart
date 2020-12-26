@@ -1,4 +1,5 @@
 import 'package:MTR_flutter/blur_on_scroll.dart';
+import 'package:MTR_flutter/components/buttons.dart';
 import 'package:MTR_flutter/components/color_picker.dart';
 import 'package:MTR_flutter/core_overrides/custom_reorderable_list.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
@@ -51,6 +52,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Map<Options, Widget> colorPickerContainers;
   Map<Options, double> colorPickerContainerHeights;
   Map<WorkingColors, Color> workingColors;
+  bool gradientThirdColorEnabled = false;
 
   @override
   void initState() {
@@ -179,7 +181,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Padding buildGradientBackground() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
-      child: Container(
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
@@ -215,6 +218,21 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     textAlign: TextAlign.left),
               ),
               Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Divider(
+                  thickness: 1.0,
+                  color: workingColors[WorkingColors.gradientFirstColor]
+                      .withOpacity(0.15),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                child: Text(
+                  "Basic gradient options",
+                  style: homeSubTextStyleBold,
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.only(top: 10.0),
                 child: AnimatedContainer(
                   //turn this into animated container
@@ -223,15 +241,19 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   width:
                       MediaQuery.of(context).size.width - (sidePadding * 2.0),
                   decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        //maybe in future versions you can have an advanced tool for users to create gradients
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
-                        colors: [
-                          workingColors[WorkingColors.gradientFirstColor],
-                          workingColors[WorkingColors.gradientSecondColor],
-                        ],
-                      ),
+                      gradient: gradientThirdColorEnabled
+                          ? getGradient(
+                              gradientFirstColor: workingColors[
+                                  WorkingColors.gradientFirstColor],
+                              gradientSecondColor: workingColors[
+                                  WorkingColors.gradientSecondColor],
+                              gradientThirdColor: workingColors[
+                                  WorkingColors.gradientThirdColor])
+                          : getGradient(
+                              gradientFirstColor: workingColors[
+                                  WorkingColors.gradientFirstColor],
+                              gradientSecondColor: workingColors[
+                                  WorkingColors.gradientSecondColor]),
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
               ),
@@ -260,17 +282,86 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     colorPickerContainerHeights[Options.gradientSecondColor],
                 child: colorPickerContainers[Options.gradientSecondColor],
               ),
-              buildColorRow("Third Color (Optional)",
-                  workingColors[WorkingColors.gradientThirdColor],
-                  onTapCallback: () {
-                toggleColorEditor(Options.gradientThirdColor);
-              }, longpressCallback: () {
-                displayPopupColorEditor(Options.gradientThirdColor);
-              }),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 350),
-                height: colorPickerContainerHeights[Options.gradientThirdColor],
-                child: colorPickerContainers[Options.gradientThirdColor],
+              gradientThirdColorEnabled
+                  ? Container(height: 1.0)
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Center(
+                        child: SolidButton(
+                          text: "Add third color",
+                          width: 150,
+                          height: 30,
+                          iconData: EvaIcons.plusCircleOutline,
+                          onPressed: () {
+                            setState(() {
+                              gradientThirdColorEnabled = true;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+              gradientThirdColorEnabled
+                  ? buildColorRow("Third Color",
+                      workingColors[WorkingColors.gradientThirdColor],
+                      onTapCallback: () {
+                      toggleColorEditor(Options.gradientThirdColor);
+                    }, longpressCallback: () {
+                      displayPopupColorEditor(Options.gradientThirdColor);
+                    })
+                  : Container(height: 1.0),
+              gradientThirdColorEnabled
+                  ? AnimatedContainer(
+                      duration: Duration(milliseconds: 350),
+                      height: colorPickerContainerHeights[
+                          Options.gradientThirdColor],
+                      child: colorPickerContainers[Options.gradientThirdColor],
+                    )
+                  : Container(
+                      height: 1.0,
+                    ),
+              Padding(
+                padding: const EdgeInsets.only(top: 15.0),
+                child: Divider(
+                  thickness: 1.0,
+                  color: workingColors[WorkingColors.gradientFirstColor]
+                      .withOpacity(0.1),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                child: Text(
+                  "Advanced gradient options",
+                  style: homeSubTextStyleBold,
+                ),
+              ),
+              FlatButton(
+                onPressed: () {
+                  //toggle third color
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 0.0, bottom: 10.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 0),
+                            child: Text("Gradient orientation",
+                                style: homeSubTextStyle),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        UniconsSolid.toggle_on,
+                        color: workingColors[WorkingColors.primaryColor],
+                        size: 40.0,
+                      )
+                    ],
+                  ),
+                ),
               )
             ],
           ),
@@ -282,13 +373,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Widget buildColorRow(String text, Color color,
       {Function onTapCallback = dummyCB,
       Function longpressCallback = dummyCB}) {
-    return ElevatedButton(
+    return FlatButton(
       onPressed: onTapCallback,
       onLongPress: longpressCallback,
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-        elevation: MaterialStateProperty.all<double>(0.0),
-      ),
       child: Padding(
         padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
         child: Row(
@@ -305,7 +392,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(left: 15),
-                  child: Text(text, style: homeSubTextStyleBold),
+                  child: Text(text, style: homeSubTextStyle),
                 ),
               ],
             ),
@@ -464,7 +551,34 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         startingColor: workingColors[targetColor],
       );
 
-      colorPickerContainerHeights[currentOption] = 400;
+      if (currentOption == Options.gradientThirdColor) {
+        colorPickerContainers[currentOption] = Column(
+          children: [
+            Expanded(flex: 10, child: colorPickerContainers[currentOption]),
+            Flexible(
+              flex: 1,
+              child: Center(
+                child: SolidButton(
+                  text: "Remove third color",
+                  width: 180,
+                  height: 30,
+                  iconData: EvaIcons.minusCircleOutline,
+                  onPressed: () {
+                    toggleColorEditor(Options.gradientThirdColor);
+                    setState(() {
+                      gradientThirdColorEnabled = false;
+                    });
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+        colorPickerContainerHeights[currentOption] = 540;
+        colorEditorOpened = true;
+        return;
+      }
+      colorPickerContainerHeights[currentOption] = 490;
       colorEditorOpened = true;
     });
   }
@@ -825,13 +939,18 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   }
 
   Widget buildHeaderPreview(BuildContext context, double sizeFactor) {
+    Color thirdColor = gradientThirdColorEnabled
+        ? workingColors[WorkingColors.gradientThirdColor]
+        : null;
+
     Widget widget = Stack(
       children: [
         headerBuilders['preview_background'](400.0,
             MediaQuery.of(context).size.width - (memberViewPadding * 2.0),
             gradientFirstColor: workingColors[WorkingColors.gradientFirstColor],
             gradientSecondColor:
-                workingColors[WorkingColors.gradientSecondColor]),
+                workingColors[WorkingColors.gradientSecondColor],
+            gradientThirdColor: thirdColor),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

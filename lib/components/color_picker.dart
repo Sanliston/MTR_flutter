@@ -215,21 +215,45 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     Widget customBody = Padding(
       padding: EdgeInsets.only(
           top: 10.0, bottom: 10.0, left: padding, right: padding),
-      child: SizedBox(
-        height: height,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth > 600) {
-              return _buildColorGrid(onColorTapped, startingColor,
-                  crossAxisCount: 10);
-            } else if (constraints.maxWidth > 400) {
-              return _buildColorGrid(onColorTapped, startingColor);
-            } else {
-              return _buildColorGrid(onColorTapped, startingColor,
-                  crossAxisCount: 7);
-            }
-          },
-        ),
+      child: Column(
+        children: [
+          SizedBox(
+            height: height,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 600) {
+                  return _buildColorGrid(onColorTapped, startingColor,
+                      crossAxisCount: 10);
+                } else if (constraints.maxWidth > 400) {
+                  return _buildColorGrid(onColorTapped, startingColor);
+                } else {
+                  return _buildColorGrid(onColorTapped, startingColor,
+                      crossAxisCount: 7);
+                }
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 35.0),
+            child: TransparentButton(
+              text: "Custom Color",
+              width: 150,
+              height: 30,
+              iconData: EvaIcons.brush,
+              onPressed: () {
+                //open navigation drawer with custom color picker
+                displayColorPicker(context);
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0),
+            child: Divider(
+              thickness: 0.5,
+              color: startingColor.withOpacity(0.5),
+            ),
+          )
+        ],
       ),
     );
 

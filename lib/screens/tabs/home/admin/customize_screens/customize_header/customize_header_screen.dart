@@ -185,40 +185,49 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         duration: Duration(milliseconds: 300),
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(sidePadding),
+          padding: const EdgeInsets.only(top: sidePadding, bottom: sidePadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Gradient Background", style: homeTextStyleBold),
-                    ],
-                  ),
-                  Icon(
-                    UniconsSolid.toggle_on,
-                    color: workingColors[WorkingColors.primaryColor],
-                    size: 40.0,
-                  )
-                ],
-              ),
-              Container(
-                height: 50.0,
-                child: Text(
-                    "This changes the background of the header to a gradient of your chosen colors. Enabling this option automatically disables the Background Photo.",
-                    style: homeSubTextStyle,
-                    softWrap: true,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: sidePadding, right: sidePadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Gradient Background", style: homeTextStyleBold),
+                      ],
+                    ),
+                    Icon(
+                      UniconsSolid.toggle_on,
+                      color: workingColors[WorkingColors.primaryColor],
+                      size: 40.0,
+                    )
+                  ],
+                ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(
+                    left: sidePadding, right: sidePadding),
+                child: Container(
+                  height: 50.0,
+                  child: Text(
+                      "This changes the background of the header to a gradient of your chosen colors. Enabling this option automatically disables the Background Photo.",
+                      style: homeSubTextStyle,
+                      softWrap: true,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 8.0, left: sidePadding, right: sidePadding),
                 child: Divider(
                   thickness: 1.0,
                   color: workingColors[WorkingColors.gradientFirstColor]
@@ -226,14 +235,19 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                padding: EdgeInsets.only(
+                    top: 10.0,
+                    bottom: 5.0,
+                    left: sidePadding,
+                    right: sidePadding),
                 child: Text(
                   "Basic gradient options",
                   style: homeSubTextStyleBold,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 10.0),
+                padding: const EdgeInsets.only(
+                    top: 10.0, left: sidePadding, right: sidePadding),
                 child: AnimatedContainer(
                   //turn this into animated container
                   duration: Duration(milliseconds: 1500),
@@ -328,7 +342,11 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 10.0, bottom: 5.0),
+                padding: EdgeInsets.only(
+                    top: 10.0,
+                    bottom: 5.0,
+                    left: sidePadding,
+                    right: sidePadding),
                 child: Text(
                   "Advanced gradient options",
                   style: homeSubTextStyleBold,
@@ -377,7 +395,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       onPressed: onTapCallback,
       onLongPress: longpressCallback,
       child: Padding(
-        padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+        padding: const EdgeInsets.only(
+          top: 20.0,
+          bottom: 10.0,
+        ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -413,37 +434,45 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       child: Container(
         color: Colors.white,
         child: Padding(
-          padding: const EdgeInsets.all(sidePadding),
+          padding: const EdgeInsets.only(top: sidePadding, bottom: sidePadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Theme Colors", style: homeTextStyleBold),
-                    ],
-                  ),
-                  Icon(
-                    UniconsSolid.toggle_on,
-                    color: workingColors[WorkingColors.primaryColor],
-                    size: 40.0,
-                  )
-                ],
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: sidePadding, right: sidePadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Theme Colors", style: homeTextStyleBold),
+                      ],
+                    ),
+                    Icon(
+                      UniconsSolid.toggle_on,
+                      color: workingColors[WorkingColors.primaryColor],
+                      size: 40.0,
+                    )
+                  ],
+                ),
               ),
-              Container(
-                height: 40.0,
-                child: Text(
-                    "These are the colors used by buttons and links. When user clicks the color a color selection tool will popup",
-                    style: homeSubTextStyle,
-                    softWrap: true,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.left),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: sidePadding, right: sidePadding),
+                child: Container(
+                  height: 40.0,
+                  child: Text(
+                      "These are the colors used by buttons and links. When user clicks the color a color selection tool will popup",
+                      style: homeSubTextStyle,
+                      softWrap: true,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.left),
+                ),
               ),
               buildColorRow(
                   "Primary Color", workingColors[WorkingColors.primaryColor],
@@ -536,7 +565,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       }
 
       colorPickerContainers[currentOption] = SimpleColorPicker(
-        height: 300,
+        height: 200,
         onColorTapped: (color) {
           print("on color tapped called");
           setState(() {
@@ -549,6 +578,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           });
         },
         startingColor: workingColors[targetColor],
+        sidePadding: 0.0,
       );
 
       if (currentOption == Options.gradientThirdColor) {
@@ -574,11 +604,11 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             ),
           ],
         );
-        colorPickerContainerHeights[currentOption] = 540;
+        colorPickerContainerHeights[currentOption] = 440;
         colorEditorOpened = true;
         return;
       }
-      colorPickerContainerHeights[currentOption] = 490;
+      colorPickerContainerHeights[currentOption] = 400;
       colorEditorOpened = true;
     });
   }

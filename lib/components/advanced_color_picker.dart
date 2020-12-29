@@ -192,7 +192,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
             onPressed: () {
               //return the desired color;
 
-              onSave(selectedColor);
+              onSave(activeColor.toColor());
               //then pop context
               Navigator.pop(context);
             },

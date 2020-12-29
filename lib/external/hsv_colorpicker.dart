@@ -36,6 +36,8 @@ import "dart:math" as Math;
 
 //import "package:flutter/material.dart";
 
+Color workingColor = primaryColor;
+
 class SliderPicker extends StatefulWidget {
   final double min;
   final double max;
@@ -43,6 +45,7 @@ class SliderPicker extends StatefulWidget {
   final ValueChanged<double> onChanged;
   final List<Color> colors;
   final Widget child;
+  final Color initialColor;
 
   const SliderPicker({
     Key key,
@@ -52,6 +55,7 @@ class SliderPicker extends StatefulWidget {
     @required this.onChanged,
     this.colors,
     this.child,
+    this.initialColor = primaryColor,
   })  : assert(value != null),
         assert(value >= min && value <= max),
         super(key: key);
@@ -64,13 +68,34 @@ class _SliderPickerState extends State<SliderPicker> {
   double get value => super.widget.value;
   double get min => super.widget.min;
   double get max => super.widget.max;
-  Color currentColor;
 
   double getRatio() => ((value - min) / (max - min)).clamp(0.0, 1.0);
   void setRatio(double ratio) =>
       super.widget.onChanged((ratio * (max - min) + min).clamp(min, max));
 
   void onPanUpdate(DragUpdateDetails details, BoxConstraints box) {
+    RenderBox renderBox = super.context.findRenderObject();
+
+    Offset offset = renderBox.globalToLocal(details.globalPosition);
+    double ratio = offset.dx / box.maxWidth;
+
+    // print("offset: $offset");
+
+    super.setState(() => this.setRatio(ratio));
+  }
+
+  void onPanStart(DragStartDetails details, BoxConstraints box) {
+    RenderBox renderBox = super.context.findRenderObject();
+
+    Offset offset = renderBox.globalToLocal(details.globalPosition);
+    double ratio = offset.dx / box.maxWidth;
+
+    // print("offset: $offset");
+
+    super.setState(() => this.setRatio(ratio));
+  }
+
+  void onTapDown(TapDownDetails details, BoxConstraints box) {
     RenderBox renderBox = super.context.findRenderObject();
 
     Offset offset = renderBox.globalToLocal(details.globalPosition);
@@ -121,7 +146,9 @@ class _SliderPickerState extends State<SliderPicker> {
                     transform: new Matrix4.identity()
                       ..translate(
                           _ThumbPainter.getWidth(this.getRatio(), maxWidth)),
-                    child: new CustomPaint(painter: new _ThumbPainter()),
+                    child: new CustomPaint(
+                        painter: new _ThumbPainter(
+                            currentColor: widget.initialColor)),
                   )),
 
               //GestureContainer
@@ -131,10 +158,29 @@ class _SliderPickerState extends State<SliderPicker> {
             ]));
   }
 
+  /* Issue where there may be a slight delay before onPanupdate is called: Explanation - 
+  This is working as intended. When you have multiple gesture recognizers listening to pointer events at a certain location on the screen we need to disambiguate which gesture recognizer will win and process the gesture (details are described in https://flutter.dev/docs/development/ui/advanced/gestures#gesture-disambiguation). If the Pan gesture is competing with other gestures, it claims victory when the pointer has at least moved a distance of kPanSlop pixels (https://master-api.flutter.dev/flutter/gestures/kPanSlop-constant.html), which is currently defined to be 36 logical pixel. That's why you need to move further to recognize a Pan if you have competing gesture detectors.
+  
+  source: https://github.com/flutter/flutter/issues/54359*/
+
   Widget buildGestureDetector(BuildContext context, BoxConstraints box) {
     return new GestureDetector(
         child: new Container(color: const Color(0)),
-        onPanUpdate: (detail) => this.onPanUpdate(detail, box));
+        // onTapDown: (detail) {
+        //   print("onpan start");
+        //   this.onTapDown(detail, box);
+        // },
+        onPanStart: (detail) {
+          print("onpan start");
+          this.onPanStart(detail, box);
+        },
+        onTapDown: (details) {
+          this.onTapDown(details, box);
+        },
+        onPanUpdate: (detail) {
+          print("onpan update");
+          this.onPanUpdate(detail, box);
+        });
   }
 
   @override
@@ -177,7 +223,7 @@ class _SliderLayout extends MultiChildLayoutDelegate {
 
 /// Thumb
 class _ThumbPainter extends CustomPainter {
-  static double width = 7;
+  static double width = 8;
   static double trackWidth = 14;
   static double doubleTrackWidth = 28;
   static double getWidth(double value, double maxWidth) =>
@@ -206,12 +252,11 @@ class _ThumbPainter extends CustomPainter {
       ..color = darkNight.withOpacity(0.3)
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, 3);
     Path oval = Path()
-      ..addOval(
-          Rect.fromCircle(center: Offset.zero, radius: _ThumbPainter.width));
+      ..addOval(Rect.fromCircle(center: Offset.zero, radius: 12));
     canvas.drawPath(oval, paintShadow);
 
-    canvas.drawCircle(Offset.zero, _ThumbPainter.width - 4, paintWhite);
-    canvas.drawCircle(Offset.zero, _ThumbPainter.width - 10, paintColor);
+    canvas.drawCircle(Offset.zero, 8, paintWhite);
+    canvas.drawCircle(Offset.zero, 2, paintColor);
   }
 
   @override
@@ -551,8 +596,10 @@ class _HSVPickerState extends State<HSVPicker> {
       ];
 
   //Saturation
-  void saturationOnChange(double value) =>
-      super.widget.onChanged(this.color.withSaturation(value));
+  void saturationOnChange(double value) {
+    super.widget.onChanged(this.color.withSaturation(value));
+  }
+
   List<Color> get saturationColors => [
         this.color.withSaturation(0.0).toColor(),
         this.color.withSaturation(1.0).toColor()
@@ -568,7 +615,7 @@ class _HSVPickerState extends State<HSVPicker> {
 
   Widget buildTitle(String title, String text) {
     return new SizedBox(
-        height: 13.0,
+        height: 15.0,
         child: new Row(children: <Widget>[
           new Opacity(
               opacity: 0.5, child: new Text(title, style: homeSubTextStyle)),
@@ -596,6 +643,7 @@ class _HSVPickerState extends State<HSVPicker> {
           value: this.color.hue,
           min: 0.0,
           max: 360.0,
+          initialColor: color.toColor(),
           onChanged: this.hueOnChange,
           colors: this.hueColors),
 
@@ -605,6 +653,7 @@ class _HSVPickerState extends State<HSVPicker> {
           value: this.color.saturation,
           min: 0.0,
           max: 1.0,
+          initialColor: color.toColor(),
           onChanged: this.saturationOnChange,
           colors: this.saturationColors),
 
@@ -614,6 +663,7 @@ class _HSVPickerState extends State<HSVPicker> {
           value: this.color.value,
           min: 0.0,
           max: 1.0,
+          initialColor: color.toColor(),
           onChanged: this.valueOnChange,
           colors: this.valueColors)
     ]);

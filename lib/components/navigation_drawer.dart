@@ -17,6 +17,7 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
   Color handleBarColor = Colors.grey[200]; //that little grey line at the top
   double blurSigmaX = 0;
   double blurSigmaY = 0;
+  double navSidePadding = sidePadding;
   Widget header = Container(height: 1.0);
   Widget topDivider = Divider(
     thickness: 1.0,
@@ -169,14 +170,21 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
     );
   }
 
+  if (null != params['side_padding'] && params['side_padding'] is double) {
+    navSidePadding = params['side_padding'];
+  }
+
   container = GestureDetector(
     onTap: () {
       print("gesture detector called");
       FocusScope.of(context).requestFocus(new FocusNode());
     },
     child: Container(
-        margin: const EdgeInsets.only(
-            top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
+        margin: EdgeInsets.only(
+            top: 0.0,
+            left: navSidePadding,
+            right: navSidePadding,
+            bottom: 20.0),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
           child: Wrap(
@@ -197,7 +205,13 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
                     )),
               )),
               header,
-              topDivider,
+              null != params['side_padding'] && 0.0 == params['side_padding']
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                          left: sidePadding, right: sidePadding),
+                      child: topDivider,
+                    )
+                  : topDivider,
               body,
             ],
           ),

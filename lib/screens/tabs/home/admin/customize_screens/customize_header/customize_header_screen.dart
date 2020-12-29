@@ -1,6 +1,6 @@
 import 'package:MTR_flutter/blur_on_scroll.dart';
 import 'package:MTR_flutter/components/buttons.dart';
-import 'package:MTR_flutter/components/color_picker.dart';
+import 'package:MTR_flutter/components/simple_color_picker.dart';
 import 'package:MTR_flutter/core_overrides/custom_reorderable_list.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
@@ -616,7 +616,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         selectedColor = WorkingColors.primaryColor;
     }
 
-    displayColorPicker(context,
+    displaySimpleColorPicker(context,
         startingColor: workingColors[selectedColor],
         blur: true, onColorTapped: (color) {
       setState(() {

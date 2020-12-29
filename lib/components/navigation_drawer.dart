@@ -3,13 +3,27 @@ import 'package:MTR_flutter/state_management/home_state.dart';
 import 'dart:ui';
 
 void displayNavigationDrawer(BuildContext context, Map params) {
-  Widget header = Container(height: 1.0);
-  Widget body = Container(height: 1.0);
-  Widget container = Container(height: 1.0);
+  showModalBottomSheet(
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true, //stops max height being half screen
+      context: context,
+      builder: (BuildContext context) {
+        return builNavigationDrawer(context, params);
+      });
+}
+
+Widget builNavigationDrawer(BuildContext context, Map params) {
   Color dividerColor = Colors.grey[200];
   Color handleBarColor = Colors.grey[200]; //that little grey line at the top
   double blurSigmaX = 0;
   double blurSigmaY = 0;
+  Widget header = Container(height: 1.0);
+  Widget topDivider = Divider(
+    thickness: 1.0,
+    color: dividerColor,
+  );
+  Widget body = Container(height: 1.0);
+  Widget container = Container(height: 1.0);
 
   //This section will run if a custom_container value is set and exit out of the function before the next section
   if (modalBottomSheetBlur &&
@@ -21,18 +35,10 @@ void displayNavigationDrawer(BuildContext context, Map params) {
   if (null != params['custom_container']) {
     //means entire contents are custom
     container = params['custom_container'];
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true, //stops max height being half screen
-        context: context,
-        builder: (BuildContext context) {
-          //for blur effect
-          return new BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
-              child: container);
-        });
 
-    return;
+    return new BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
+        child: container);
   }
 
   //dart returns null if key doesnt exist in map -- unlike JS which returns 'undefined', ya'll be easy now
@@ -157,57 +163,60 @@ void displayNavigationDrawer(BuildContext context, Map params) {
     handleBarColor = params["handle_bar_color"];
   }
 
-  container = Container(
-      margin: const EdgeInsets.only(
-          top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 10.0),
-        child: Wrap(
-          children: <Widget>[
-            Center(
-                child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  height: 5.0,
-                  width: 45.0,
-                  decoration: BoxDecoration(
-                    color: handleBarColor,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(10)),
-                  )),
-            )),
-            header,
-            Divider(
-              thickness: 1.0,
-              color: dividerColor,
-            ),
-            body,
-          ],
-        ),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-            bottomLeft: Radius.circular(10),
-            bottomRight: Radius.circular(10)),
-      ));
+  if (null != params['top_divider'] && false == params["top_divider"]) {
+    topDivider = Container(
+      height: 0.0,
+    );
+  }
 
-  showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true, //stops max height being half screen
-      context: context,
-      builder: (BuildContext context) {
-        if (false == params["blur"]) {
-          return container;
-        }
-        //for blur effect
-        return new BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
-            child: container);
-      });
+  container = GestureDetector(
+    onTap: () {
+      print("gesture detector called");
+      FocusScope.of(context).requestFocus(new FocusNode());
+    },
+    child: Container(
+        margin: const EdgeInsets.only(
+            top: 0.0, left: sidePadding, right: sidePadding, bottom: 20.0),
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Wrap(
+            children: <Widget>[
+              Center(
+                  child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                    height: 5.0,
+                    width: 45.0,
+                    decoration: BoxDecoration(
+                      color: handleBarColor,
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                          bottomLeft: Radius.circular(10),
+                          bottomRight: Radius.circular(10)),
+                    )),
+              )),
+              header,
+              topDivider,
+              body,
+            ],
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(10),
+              topRight: Radius.circular(10),
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10)),
+        )),
+  );
+
+  if (false == params["blur"]) {
+    return container;
+  }
+  //for blur effect
+  return new BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
+      child: container);
 }

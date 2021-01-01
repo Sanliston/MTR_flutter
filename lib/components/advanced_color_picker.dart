@@ -118,6 +118,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
   Color selectedColor;
   HSVColor activeColor;
   String hexColor;
+  TextEditingController textInputController;
 
   _AdvancedColorPickerState(
       {@required this.onColorTapped,
@@ -133,11 +134,15 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
     super.initState();
 
     selectedColor = startingColor;
+
     activeColor = new HSVColor.fromColor(selectedColor);
     hexColor = (activeColor.toColor().value & 0xFFFFFF)
         .toRadixString(16)
         .padLeft(6, '0')
         .toUpperCase();
+
+    textInputController = new TextEditingController();
+    textInputController.text = hexColor;
   }
 
   @override
@@ -244,7 +249,8 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                       width: 70,
                       child: TextFormField(
                         key: new GlobalKey(),
-                        initialValue: hexColor,
+                        controller: textInputController,
+                        maxLength: 6,
                         textAlignVertical: TextAlignVertical.center,
                         style: GoogleFonts.heebo(
                             textStyle: TextStyle(
@@ -253,6 +259,12 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                                 letterSpacing: 4.0,
                                 color: Colors.white)),
                         decoration: InputDecoration(
+                            counterText: "",
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
                             prefixText: "#",
                             prefixStyle: GoogleFonts.heebo(
                                 textStyle: TextStyle(
@@ -261,8 +273,26 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                                     letterSpacing: 4.0,
                                     color: Colors.white)),
                             contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-                            border: InputBorder.none,
                             hintText: ""),
+                        onChanged: (text) {
+                          //see if text has 6 characters
+                          if (6 > text.length) {
+                            return;
+                          }
+
+                          String hexString = '#' + text;
+
+                          //convert text from hex to color -- return if not possible
+                          Color color = hexToColor(hexString);
+
+                          print("text obtained: $text, color obtained: $color");
+
+                          //set as selected color through setState
+                          setState(() {
+                            selectedColor = color;
+                            activeColor = new HSVColor.fromColor(selectedColor);
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -288,6 +318,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                       .toUpperCase();
 
                   print("hexColor: $hexColor");
+                  textInputController.text = hexColor;
                 });
               },
             ),

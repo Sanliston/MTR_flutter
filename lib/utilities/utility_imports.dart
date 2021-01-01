@@ -28,3 +28,19 @@ void rebuildMainScreen(BuildContext context) {
   Navigator.push(
       context, MaterialPageRoute(builder: (context) => MainScreen()));
 }
+
+String getColorHex(Color color) {
+  return '#${color.value.toRadixString(16).padLeft(8, '0')}';
+}
+
+String colorToHex(Color color) {
+  return '#${color.value.toRadixString(16).padLeft(8, '0')}';
+}
+
+Color getHexColor(String code) {
+  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+}
+
+Color hexToColor(String code) {
+  return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
+}

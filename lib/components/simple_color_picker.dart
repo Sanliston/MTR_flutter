@@ -145,19 +145,19 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     Color(0xFFFF4B2B),
     Color(0xFFFF4B2B),
     Color(0xFF2d82fe),
-    Colors.red,
-    Colors.red,
-    Colors.red,
-    Colors.blue,
-    Colors.blueAccent,
-    Colors.lightBlueAccent,
-    Colors.greenAccent,
-    Colors.lightGreenAccent,
-    Colors.blue,
-    Colors.blueAccent,
-    Colors.lightBlueAccent,
-    Colors.greenAccent,
-    Colors.lightGreenAccent,
+    Color(0xFFC06C84),
+    Color(0xFF263238),
+    Color(0xFF2d82fe),
+    Color(0xFF2d82fe),
+    Color(0xFFC06C84),
+    Color(0xFF263238),
+    Color(0xFF2d82fe),
+    Color(0xFF2d82fe),
+    Color(0xFFC06C84),
+    Color(0xFF263238),
+    Color(0xFF2d82fe),
+    Color(0xFF263238),
+    Color(0xFF2d82fe),
   ];
 
   static const List<Color> thirdSlideColorList = [
@@ -173,8 +173,8 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     Colors.red,
     Colors.red,
     Colors.blue,
-    Colors.blueAccent,
-    Colors.lightBlueAccent,
+    Colors.purple,
+    Colors.lightBlue,
     Colors.greenAccent,
     Colors.lightGreenAccent,
     Colors.blue,
@@ -240,6 +240,79 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     super.dispose();
 
     //free up any used resources here
+  }
+
+  void customColorOnLongPress(BuildContext context, int index, Color color) {
+    List options = [
+      {
+        "iconData": EvaIcons.brushOutline,
+        "title": "Change Color",
+        "onPressed": () {
+          Navigator.pop(context);
+
+          displayAdvancedColorPicker(context, startingColor: selectedColor,
+              onSave: (newColor) {
+            setState(() {
+              //for updating the customColorList and consequently the rest of the UI
+              customColorList[index] = newColor;
+
+              if (selectedColor == color) {
+                onColorTapped(newColor);
+                selectedColor = newColor;
+              }
+            });
+          });
+        }
+      },
+      {
+        "iconData": EvaIcons.trashOutline,
+        "title": "Remove Color",
+        "onPressed": () {
+          //remove index from customColorsList
+
+          setState(() {
+            customColorList.remove(color);
+          });
+
+          Navigator.pop(context);
+        }
+      },
+    ];
+
+    Widget customHeader = Padding(
+      padding: const EdgeInsets.only(
+          top: 0.0, bottom: 10.0, left: sidePadding, right: sidePadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: sidePadding),
+            child: Text("Edit Custom Color", style: homeTextStyleBold),
+          ),
+          //button which takes you to user profile
+
+          SizedBox(
+            height: 35,
+            width: 35,
+            child: AnimatedContainer(
+              duration: Duration(milliseconds: 300),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(25)),
+                  color: customColorList[index]),
+            ),
+          )
+        ],
+      ),
+    );
+
+    Map params = {
+      "custom_header": customHeader,
+      "context": context,
+      "options": options
+    };
+
+    displayNavigationDrawer(context, params);
   }
 
   Widget build(BuildContext context) {
@@ -373,10 +446,38 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(
-                top: 20.0, left: sidePadding, right: sidePadding),
-            child: Text("Custom Color", style: homeSubTextStyle),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 20.0, left: sidePadding, right: sidePadding),
+                child: Text("Custom Colors", style: homeSubTextStyle),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.only(top: 20.0, left: 0.0, right: 5.0),
+                child: Text("Hint",
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 12,
+                            color: primaryColor))),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: 20.0, left: 0.0, right: sidePadding),
+                child: Text(
+                    0 < customColorList.length
+                        ? "- Long press a custom color to edit it!"
+                        : "- Press the + Icon to add a new color!",
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.w200,
+                            fontSize: 12,
+                            color: Colors.black54))),
+              ),
+            ],
           ),
           Padding(
               padding: const EdgeInsets.only(
@@ -415,39 +516,48 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                                   ? customColorList.length
                                   : firstSlideColorList.length;
 
+                              int customColorLength = customColorList.length;
+                              String colorHex = getColorHex(color);
+
                               //remembering that the 4 color lists have same length. Only the custom list will be diff as it is defined by user
 
                               for (int i = 0; i < limit; i++) {
-                                if (null != customColorList[i] &&
-                                    customColorList[i] == color) {
+                                if (i < customColorLength &&
+                                    null != customColorList[i] &&
+                                    getColorHex(customColorList[i]) ==
+                                        colorHex) {
                                   //color matched, exit
 
                                   return null;
                                 }
 
                                 if (null != firstSlideColorList[i] &&
-                                    firstSlideColorList[i] == color) {
+                                    getColorHex(firstSlideColorList[i]) ==
+                                        colorHex) {
                                   //color matched, exit
 
                                   return null;
                                 }
 
                                 if (null != secondSlideColorList[i] &&
-                                    secondSlideColorList[i] == color) {
+                                    getColorHex(secondSlideColorList[i]) ==
+                                        colorHex) {
                                   //color matched, exit
 
                                   return null;
                                 }
 
                                 if (null != thirdSlideColorList[i] &&
-                                    thirdSlideColorList[i] == color) {
+                                    getColorHex(thirdSlideColorList[i]) ==
+                                        colorHex) {
                                   //color matched, exit
 
                                   return null;
                                 }
 
                                 if (null != fourthSlideColorList[i] &&
-                                    fourthSlideColorList[i] == color) {
+                                    getColorHex(fourthSlideColorList[i]) ==
+                                        colorHex) {
                                   //color matched, exit
 
                                   return null;
@@ -482,7 +592,7 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                             Widget colorWidget = Padding(
                               padding: EdgeInsets.only(left: 10, right: 10),
                               child: AnimatedContainer(
-                                  duration: Duration(milliseconds: 2000),
+                                  duration: Duration(milliseconds: 500),
                                   decoration: BoxDecoration(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(25)),
@@ -496,6 +606,10 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                                         setState(() {
                                           selectedColor = color;
                                         });
+                                      },
+                                      onLongPress: () {
+                                        customColorOnLongPress(
+                                            context, index, color);
                                       },
                                       child: Icon(
                                         EvaIcons.checkmarkOutline,

@@ -119,6 +119,8 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
   HSVColor activeColor;
   String hexColor;
   TextEditingController textInputController;
+  Brightness brightness;
+  Color textColor;
 
   _AdvancedColorPickerState(
       {@required this.onColorTapped,
@@ -143,6 +145,9 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
 
     textInputController = new TextEditingController();
     textInputController.text = hexColor;
+
+    brightness = ThemeData.estimateBrightnessForColor(startingColor);
+    textColor = Brightness.light == brightness ? Colors.black54 : Colors.white;
   }
 
   @override
@@ -257,7 +262,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                                 fontWeight: FontWeight.w800,
                                 fontSize: 18,
                                 letterSpacing: 4.0,
-                                color: Colors.white)),
+                                color: textColor)),
                         decoration: InputDecoration(
                             counterText: "",
                             border: InputBorder.none,
@@ -271,7 +276,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
                                     fontWeight: FontWeight.w800,
                                     fontSize: 18,
                                     letterSpacing: 4.0,
-                                    color: Colors.white)),
+                                    color: textColor)),
                             contentPadding: EdgeInsets.symmetric(vertical: 5.0),
                             hintText: ""),
                         onChanged: (text) {
@@ -319,6 +324,13 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
 
                   print("hexColor: $hexColor");
                   textInputController.text = hexColor;
+
+                  brightness =
+                      ThemeData.estimateBrightnessForColor(startingColor);
+
+                  textColor = Brightness.light == brightness
+                      ? Colors.black54
+                      : Colors.white;
                 });
               },
             ),
@@ -366,10 +378,17 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
     for (int i = 0, length = colorList.length; i < length; i++) {
       bool isSelected = selectedColor == colorList[i];
       Color color = colorList[i];
+
+      Brightness brightness = ThemeData.estimateBrightnessForColor(color);
+
+      Color selectedIconColor =
+          brightness == Brightness.light ? Colors.black54 : color2;
+
       Widget widget = AnimatedContainer(
           duration: Duration(milliseconds: 5000),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(25)),
+              border: Border.all(color: Colors.grey[400], width: 1.0),
               color: color),
           child: GestureDetector(
             onTap: () {
@@ -380,7 +399,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
             },
             child: Icon(
               EvaIcons.checkmarkOutline,
-              color: isSelected ? color2 : color,
+              color: isSelected ? selectedIconColor : color,
               size: 20.0,
             ),
           ));

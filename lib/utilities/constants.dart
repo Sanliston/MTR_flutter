@@ -95,6 +95,10 @@ final homeSubTextStyleLight = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
 
+final homeSubTextStyleFocused = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: primaryColor));
+
 final warningSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.normal, fontSize: 12, color: Colors.red));

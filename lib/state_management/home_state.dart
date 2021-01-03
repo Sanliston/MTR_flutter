@@ -596,13 +596,24 @@ enum logoShape {
 const Color gradientColor1 = primaryColor;
 const Color gradientColor2 = secondaryColor;
 
-enum GradientOrientations { horizontal, vertical, diagonal, radial }
+enum GradientOrientations {
+  horizontal,
+  vertical,
+  diagonal,
+  topLeft,
+  bottomLeft,
+  topRight,
+  bottomRight,
+  radial
+}
+
+const GradientOrientations gradientOrientation = GradientOrientations.diagonal;
 
 Gradient getGradient(
     {Color gradientFirstColor = gradientColor1,
     Color gradientSecondColor = gradientColor2,
     Color gradientThirdColor,
-    GradientOrientations gradientOrientation = GradientOrientations.diagonal}) {
+    GradientOrientations gradientOrientation = gradientOrientation}) {
   List<Color> colorsList = [gradientFirstColor, gradientSecondColor];
   List<double> gradientStops = null;
   if (null != gradientThirdColor) {
@@ -628,26 +639,68 @@ Gradient getGradient(
       stops: gradientStops,
       colors: colorsList);
 
-  if (GradientOrientations.vertical == gradientOrientation) {
-    gradient = LinearGradient(
-        //maybe in future versions you can have an advanced tool for users to create gradients
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        stops: gradientStops,
-        colors: colorsList);
-  } else if (GradientOrientations.diagonal == gradientOrientation) {
-    gradient = LinearGradient(
-        //maybe in future versions you can have an advanced tool for users to create gradients
-        begin: Alignment.bottomLeft,
-        end: Alignment.topRight,
-        stops: gradientStops,
-        colors: colorsList);
+  switch (gradientOrientation) {
+    case GradientOrientations.vertical:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.topLeft:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.topRight:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.bottomLeft:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.bottomRight:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.bottomRight,
+          end: Alignment.topLeft,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.radial:
+      gradient = RadialGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    default:
   }
 
   return gradient;
 }
 
 //This is immutable and should only be written to when settings are changed by user
+/*Maybe defined getters and setters for this to make life easier  - refactor later on*/
 Map contentLayouts = {
   "header": {
     headerOptions.tagLine: true,

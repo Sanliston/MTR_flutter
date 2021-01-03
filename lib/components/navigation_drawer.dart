@@ -2,6 +2,17 @@ import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'dart:ui';
 
+/*
+TODO: make function more accessible via input parameters with default values etc. 
+  I created this when I had just started learning flutter so I know it is a mess. At the time
+  I thought I could use Maps in the same way you use objects in javascript. and that's the approach
+  I took. 
+
+  expected params parameters are as follows:
+ 
+
+ */
+
 void displayNavigationDrawer(BuildContext context, Map params) {
   showModalBottomSheet(
       backgroundColor: Colors.transparent,
@@ -9,7 +20,11 @@ void displayNavigationDrawer(BuildContext context, Map params) {
       context: context,
       builder: (BuildContext context) {
         return builNavigationDrawer(context, params);
-      });
+      }).whenComplete(() {
+    if (null != params['on_close'] && params['on_close'] is Function) {
+      params['on_close']();
+    }
+  });
 }
 
 Widget builNavigationDrawer(BuildContext context, Map params) {
@@ -176,7 +191,6 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
 
   container = GestureDetector(
     onTap: () {
-      print("gesture detector called");
       FocusScope.of(context).requestFocus(new FocusNode());
     },
     child: Container(

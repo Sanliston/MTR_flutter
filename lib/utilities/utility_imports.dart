@@ -44,3 +44,7 @@ Color getHexColor(String code) {
 Color hexToColor(String code) {
   return new Color(int.parse(code.substring(1, 7), radix: 16) + 0xFF000000);
 }
+
+void unfocus(BuildContext context) {
+  FocusScope.of(context).requestFocus(new FocusNode());
+}

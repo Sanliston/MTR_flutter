@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   static List<Widget> _widgetOptions = <Widget>[
     HomeTabScreen(),
     Text(
-      'Index 1: Messages',
+      'Index 2: Personal',
       style: optionStyle,
     ),
     Text(

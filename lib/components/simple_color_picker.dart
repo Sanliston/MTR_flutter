@@ -129,7 +129,7 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     Colors.lightBlueAccent,
     Colors.greenAccent,
     Colors.lightGreenAccent,
-    Colors.blue,
+    Colors.white,
     Colors.blueAccent,
     Colors.lightBlueAccent,
     Colors.greenAccent,
@@ -367,7 +367,7 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
       ),
     );
 
-    double padding = sidePadding;
+    double padding = 0.0;
 
     if (widgetMode) {
       customHeader = customHeader = Padding(
@@ -384,7 +384,6 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
         ),
       );
       blur = false;
-      padding = 0.0;
     }
 
     //use layout builder to account for different screen sizes
@@ -395,9 +394,33 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            height: height,
+            height: widgetMode ? height : 300,
             child: LayoutBuilder(
               builder: (context, constraints) {
+                if (!widgetMode) {
+                  List<Widget> slides = _buildColorGrid(
+                      onColorTapped, startingColor,
+                      crossAxisCount: 6, spaceBetween: 20.0);
+
+                  Widget swiper = new Swiper(
+                    itemCount: slides.length,
+                    pagination: new SwiperPagination(
+                      alignment: Alignment.bottomCenter,
+                      builder: new DotSwiperPaginationBuilder(
+                          color: Colors.grey[200], activeColor: primaryColor),
+                    ),
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(
+                            left: sidePadding, right: sidePadding),
+                        child: slides[index],
+                      );
+                    },
+                  );
+
+                  return swiper;
+                }
+
                 if (constraints.maxWidth > 600) {
                   List<Widget> slides = _buildColorGrid(
                       onColorTapped, startingColor,
@@ -586,9 +609,22 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                           itemCount: customColorList.length,
                           itemBuilder: (context, index) {
                             Color color = customColorList[index];
+
                             bool isSelected =
                                 selectedColor == customColorList[index];
                             Color color2 = Colors.white;
+
+                            //get color brightness
+                            Brightness brightness =
+                                ThemeData.estimateBrightnessForColor(color);
+
+                            bool light = Brightness.light == brightness;
+
+                            Color selectedIconColor =
+                                brightness == Brightness.light
+                                    ? Colors.black54
+                                    : color2;
+
                             Widget colorWidget = Padding(
                               padding: EdgeInsets.only(left: 10, right: 10),
                               child: AnimatedContainer(
@@ -596,6 +632,11 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                                   decoration: BoxDecoration(
                                       borderRadius:
                                           BorderRadius.all(Radius.circular(25)),
+                                      border: Border.all(
+                                          color: light
+                                              ? Colors.grey[400]
+                                              : Colors.transparent,
+                                          width: 0.5),
                                       color: customColorList[index]),
                                   child: SizedBox(
                                     height: 35,
@@ -613,7 +654,9 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
                                       },
                                       child: Icon(
                                         EvaIcons.checkmarkOutline,
-                                        color: isSelected ? color2 : color,
+                                        color: isSelected
+                                            ? selectedIconColor
+                                            : color,
                                         size: 20.0,
                                       ),
                                     ),
@@ -653,8 +696,10 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
   }
 
   List<Widget> _buildColorGrid(Function onColorTapped, Color startingColor,
-      {int crossAxisCount = 6}) {
-    double spaceBetween = (MediaQuery.of(context).size.width / 7) * 0.4;
+      {int crossAxisCount = 6, double spaceBetween}) {
+    spaceBetween = null != spaceBetween
+        ? spaceBetween
+        : (MediaQuery.of(context).size.width / 7) * 0.4;
     List<Widget> colorWidgets =
         _buildColorWidgetList(onColorTapped, startingColor);
 
@@ -742,10 +787,20 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
 
       bool isSelected = selectedColor == colorList[i];
       Color color = colorList[i];
+      //get color brightness
+      Brightness brightness = ThemeData.estimateBrightnessForColor(color);
+      bool light = Brightness.light == brightness;
+
+      Color selectedIconColor =
+          brightness == Brightness.light ? Colors.black54 : color2;
+
       Widget widget = AnimatedContainer(
           duration: Duration(milliseconds: 2000),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(25)),
+              border: Border.all(
+                  color: light ? Colors.grey[400] : Colors.transparent,
+                  width: 1.0),
               color: color),
           child: SizedBox(
             height: 15,
@@ -759,7 +814,7 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
               },
               child: Icon(
                 EvaIcons.checkmarkOutline,
-                color: isSelected ? color2 : color,
+                color: isSelected ? selectedIconColor : color,
                 size: 20.0,
               ),
             ),
@@ -777,7 +832,8 @@ void displaySimpleColorPicker(BuildContext context,
     Function onSave = callback,
     bool blur = true,
     Color handleBarColor = Colors.white,
-    Color startingColor = Colors.red}) {
+    Color startingColor = Colors.red,
+    Color backgroundColor = Colors.white}) {
 /*returns the picked color by the user
     Optional onColorTapped(Color color) callback parameters gets called when user clicks on a color,
     this callback should be used to change any states etc for preview

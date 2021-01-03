@@ -765,10 +765,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientFirstColor = gradientColor1,
       Color gradientSecondColor = gradientColor2,
       Color gradientThirdColor,
-      GradientOrientations gradientOrientation =
-          GradientOrientations.diagonal}) {
-    backgroundStyles backgroundStyle =
-        contentLayouts["header"][headerOptions.backgroundStyle];
+      GradientOrientations gradientOrientation = GradientOrientations.diagonal,
+      backgroundStyles backgroundStyle}) {
+    backgroundStyle = null != backgroundStyle
+        ? backgroundStyle
+        : contentLayouts["header"][headerOptions.backgroundStyle];
     double heightFactor = 0.6;
 
     //default background style
@@ -863,6 +864,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
+  //TODO: update this with all the changes to match the previewHeaderBackground function
   Positioned buildHeaderBackground(
     double homeHeaderHeight,
     double screenWidth,
@@ -1001,7 +1003,33 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   Padding buildHeader(BuildContext context,
-      {bool memberViewMode = false, double sizeFactor = 1.0}) {
+      {bool memberViewMode = false,
+      double sizeFactor = 1.0,
+      bool placeLogo,
+      bool tagLine,
+      bool memberPreview,
+      bool customButton,
+      bool inviteButton}) {
+    placeLogo = null != placeLogo
+        ? placeLogo
+        : contentLayouts['header'][headerOptions.placeLogo];
+
+    tagLine = null != tagLine
+        ? tagLine
+        : contentLayouts['header'][headerOptions.tagLine];
+
+    memberPreview = null != memberPreview
+        ? memberPreview
+        : contentLayouts['header'][headerOptions.memberPreview];
+
+    customButton = null != customButton
+        ? customButton
+        : contentLayouts['header'][headerOptions.customButton];
+
+    inviteButton = null != inviteButton
+        ? inviteButton
+        : contentLayouts['header'][headerOptions.inviteButton];
+
     double paddingTop = 90.0 * sizeFactor;
     double paddingLeft = 20.0 * sizeFactor;
     double paddingRight = 20.0 * sizeFactor;
@@ -1013,7 +1041,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     double titleFontSize = 22.0 * sizeFactor;
     double titleSpacing = 1.5 * sizeFactor;
 
-    if (contentLayouts['header'][headerOptions.placeLogo]) {
+    if (placeLogo) {
       return Padding(
         padding: EdgeInsets.only(
             top: paddingTop,
@@ -1052,18 +1080,18 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                   flex: 1,
                                 ),
                                 headerBuilders['tagline'](
-                                    sizeFactor: sizeFactor),
+                                    sizeFactor: sizeFactor, tagLine: tagLine),
                                 Expanded(
-                                  flex: 10,
-                                  child: headerBuilders['member_preview'](
-                                      context,
-                                      sizeFactor: sizeFactor),
-                                )
+                                    flex: 10,
+                                    child: headerBuilders['member_preview'](
+                                        context,
+                                        sizeFactor: sizeFactor,
+                                        memberPreview: memberPreview))
                               ]),
                         ),
                       ),
                       headerBuilders['place_logo'](context,
-                          sizeFactor: sizeFactor)
+                          sizeFactor: sizeFactor, placeLogo: placeLogo)
                     ],
                   ),
                 ),
@@ -1076,9 +1104,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           headerBuilders['invite_button'](
-                              sizeFactor: sizeFactor),
+                              sizeFactor: sizeFactor,
+                              inviteButton: inviteButton),
                           headerBuilders['custom_button'](
-                              sizeFactor: sizeFactor)
+                              sizeFactor: sizeFactor,
+                              customButton: customButton)
                         ],
                       ),
                     ),
@@ -1114,7 +1144,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               child: Text(
                                 "More than Rubies",
                                 style: TextStyle(
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   letterSpacing: titleSpacing,
                                   fontSize: titleFontSize,
                                   fontWeight: FontWeight.bold,
@@ -1124,11 +1154,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           Spacer(
                             flex: 1,
                           ),
-                          headerBuilders['tagline'](sizeFactor: sizeFactor),
+                          headerBuilders['tagline'](
+                              sizeFactor: sizeFactor, tagLine: tagLine),
                           Expanded(
                             flex: 10,
                             child: headerBuilders['member_preview'](context,
-                                sizeFactor: sizeFactor),
+                                sizeFactor: sizeFactor,
+                                memberPreview: memberPreview),
                           )
                         ]),
                   ),
@@ -1142,9 +1174,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           headerBuilders['invite_button'](
-                              sizeFactor: sizeFactor),
+                              sizeFactor: sizeFactor,
+                              inviteButton: inviteButton),
                           headerBuilders['custom_button'](
-                              sizeFactor: sizeFactor)
+                              sizeFactor: sizeFactor,
+                              customButton: customButton)
                         ],
                       ),
                     ),
@@ -1158,10 +1192,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
   }
 
-  Widget buildHeaderTagLine({sizeFactor: 1.0}) {
+  Widget buildHeaderTagLine({sizeFactor: 1.0, bool tagLine}) {
+    tagLine = null != tagLine
+        ? tagLine
+        : contentLayouts['header'][headerOptions.tagLine];
     Widget widget = Container(height: 1.0, width: 2.0);
 
-    if (contentLayouts['header'][headerOptions.tagLine]) {
+    if (tagLine) {
       widget = Padding(
         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Text(
@@ -1179,10 +1216,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderCustomButton({sizeFactor: 1.0}) {
+  Widget buildHeaderCustomButton({sizeFactor: 1.0, bool customButton}) {
+    customButton = null != customButton
+        ? customButton
+        : contentLayouts['header'][headerOptions.customButton];
     Widget widget = Container(height: 1.0, width: 1.0);
 
-    if (contentLayouts['header'][headerOptions.customButton]) {
+    if (customButton) {
       widget = SizedBox(
         height: 25.0 * sizeFactor,
         child: FlatButton(
@@ -1231,10 +1271,14 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderInviteButton({sizeFactor: 1.0}) {
+  Widget buildHeaderInviteButton({sizeFactor: 1.0, bool inviteButton}) {
+    inviteButton = null != inviteButton
+        ? inviteButton
+        : contentLayouts['header'][headerOptions.inviteButton];
+
     Widget widget = Container(height: 1.0, width: 1.0);
 
-    if (contentLayouts['header'][headerOptions.inviteButton]) {
+    if (inviteButton) {
       widget = Padding(
         padding: EdgeInsets.only(right: 20.0 * sizeFactor),
         child: SizedBox(
@@ -1290,7 +1334,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderPlaceLogo(BuildContext context, {sizeFactor: 1.0}) {
+  Widget buildHeaderPlaceLogo(BuildContext context,
+      {sizeFactor: 1.0, bool placeLogo}) {
+    placeLogo = null != placeLogo
+        ? placeLogo
+        : contentLayouts['header'][headerOptions.placeLogo];
     Widget widget = Container();
 
     double radius = 8.0;
@@ -1305,7 +1353,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       default:
     }
 
-    if (contentLayouts['header'][headerOptions.placeLogo]) {
+    if (placeLogo) {
       widget = Expanded(
         child: Padding(
           padding:
@@ -1337,10 +1385,14 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderMemberPreview(BuildContext context, {sizeFactor: 1.0}) {
+  Widget buildHeaderMemberPreview(BuildContext context,
+      {sizeFactor: 1.0, bool memberPreview}) {
+    memberPreview = null != memberPreview
+        ? memberPreview
+        : contentLayouts['header'][headerOptions.memberPreview];
     Widget widget = Container(height: 1.0, width: 1.0);
 
-    if (contentLayouts['header'][headerOptions.memberPreview]) {
+    if (memberPreview) {
       widget = FlatButton(
         onPressed: () {
           Navigator.push(

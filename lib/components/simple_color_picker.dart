@@ -316,7 +316,6 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
   }
 
   Widget build(BuildContext context) {
-    print("color picker called");
     return buildColorPicker(context, onColorTapped, onSave,
         widgetMode: widgetMode, height: height);
   }
@@ -368,11 +367,12 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
     );
 
     double padding = 0.0;
+    double bottomPadding = 10.0;
 
     if (widgetMode) {
       customHeader = customHeader = Padding(
         padding: const EdgeInsets.only(
-            top: 0.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+            top: 0.0, bottom: 0.0, left: sidePadding, right: sidePadding),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -384,12 +384,13 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
         ),
       );
       blur = false;
+      bottomPadding = 0.0;
     }
 
     //use layout builder to account for different screen sizes
     Widget customBody = Padding(
       padding: EdgeInsets.only(
-          top: 10.0, bottom: 10.0, left: padding, right: padding),
+          top: 10.0, bottom: bottomPadding, left: padding, right: padding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -687,10 +688,11 @@ class _SimpleColorPickerState extends State<SimpleColorPicker> {
       "custom_body": customBody,
       "blur": blur,
       "handle_bar_color": handleBarColor,
-      "side_padding": widget.sidePadding
+      "side_padding": widget.sidePadding,
+      "bottom_padding": widgetMode ? 0.0 : null
     };
 
-    Widget navigationDrawerContents = builNavigationDrawer(context, params);
+    Widget navigationDrawerContents = buildNavigationDrawer(context, params);
 
     return navigationDrawerContents;
   }

@@ -557,7 +557,9 @@ List<String> homeAdminTabList = <String>[
 //tabs with custom layouts
 //NOTE: tab names here have to match those in homeTabList (excluding header and default)
 enum headerOptions {
+  titleColor,
   tagLine,
+  tagLineColor,
   placeLogo,
   memberPreview,
   inviteButton,
@@ -570,7 +572,8 @@ enum headerOptions {
   shadowHeight, //0.0 will represent no shadow,
   tabBarColor,
   appBarColor,
-  backgroundGradient
+  backgroundGradient,
+  fullscreenMode
 }
 
 enum backgroundStyles {
@@ -578,7 +581,8 @@ enum backgroundStyles {
   image,
   solid,
   gradient,
-  gradientDiagonalLine
+  gradientDiagonalLine,
+  video
 }
 
 enum headerLayouts {
@@ -703,7 +707,10 @@ Gradient getGradient(
 /*Maybe defined getters and setters for this to make life easier  - refactor later on*/
 Map contentLayouts = {
   "header": {
+    headerOptions.fullscreenMode: false,
+    headerOptions.titleColor: Colors.white,
     headerOptions.tagLine: true,
+    headerOptions.tagLineColor: Colors.white,
     headerOptions.placeLogo: true,
     headerOptions.memberPreview: true,
     headerOptions.inviteButton: true,
@@ -714,7 +721,7 @@ Map contentLayouts = {
 
     headerOptions.logoShape: logoShape.circle,
     headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.gradient,
+    headerOptions.backgroundStyle: backgroundStyles.diagonalLine,
     headerOptions.backgroundGradient: LinearGradient(
       //maybe in future versions you can have an advanced tool for users to create gradients
       begin: Alignment.centerLeft,
@@ -726,7 +733,7 @@ Map contentLayouts = {
     ),
     headerOptions.shadowHeight: 0.0, //default should be 4.0
     headerOptions.appBarColor: primaryColor,
-    headerOptions.tabBarColor: primaryColor
+    headerOptions.tabBarColor: primaryColor,
   },
   "default": [
     sections.announcements,
@@ -775,7 +782,7 @@ Map customTabScrollSettings = {
   CTS.appBarBackgroundImage:
       false, //should appbar be solid(false) or show background image(true) -- overrides dynamic diagonal bar if true
   CTS.dynamicDiagnonalBar:
-      true //should diagonal effect fade in (true) or be consistent (false)
+      false //should diagonal effect fade in (true) or be consistent (false)
 };
 
 //function holder for home header build functions

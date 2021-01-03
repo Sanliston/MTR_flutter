@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
 
 /*Used this to make the fade easier with sliver
@@ -45,6 +46,8 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     _minOffset = widget.scrollController.position.minScrollExtent;
     widget.scrollController.addListener(_setOffset);
     widget.scrollController.position.isScrollingNotifier.addListener(snap);
+
+    diagonalLine = true;
   }
 
   @override
@@ -154,8 +157,12 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     double tabBarOpacity = customTabScrollSettings[CTS.tabBackgroundImage]
         ? 1.0
         : calculatedOpacity;
+
     double dynamicBarOpacity =
         customTabScrollSettings[CTS.dynamicDiagnonalBar] ? barOpacity : 1.0;
+
+    print("dynamic bar opacity: $dynamicBarOpacity");
+    print("bar opacity: $barOpacity");
 
     if (!diagonalLine) {
       return widget.child;
@@ -164,27 +171,27 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     return Stack(
       overflow: Overflow.clip,
       children: <Widget>[
-        // Positioned(
-        //   bottom: 50.0 + bottomOffset,
-        //   child: Opacity(
-        //     opacity: barOpacity,
-        //     child: ConstrainedBox(
-        //       constraints: BoxConstraints(
-        //         minHeight: 300.0,
-        //         maxWidth: MediaQuery.of(context).size.width,
-        //       ),
-        //       child: Transform(
-        //         alignment: Alignment.topRight,
-        //         transform: Matrix4.skewY(rotateAngle),
-        //         child: Container(
-        //           width: MediaQuery.of(context).size.width,
-        //           height: 100.0,
-        //           color: Colors.red,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
+        Positioned(
+          bottom: 50.0 + bottomOffset,
+          child: Opacity(
+            opacity: barOpacity,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: 300.0,
+                maxWidth: MediaQuery.of(context).size.width,
+              ),
+              child: Transform(
+                alignment: Alignment.topRight,
+                transform: Matrix4.skewY(rotateAngle),
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100.0,
+                  color: Colors.red,
+                ),
+              ),
+            ),
+          ),
+        ),
         Positioned.fill(
           child: Opacity(
             opacity: tabBarOpacity,
@@ -206,7 +213,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: 100.0,
-                  color: Colors.teal,
+                  color: primaryColor,
                 ),
               ),
             ),

@@ -401,7 +401,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     var minimumHeaderHeight =
-        340.0; //this can be set by the user in settings - to add a full screen effect to the header
+        340.0; //default value: 340.0, this can be set by the user in settings - to add a full screen effect to the header
     var screenHeightFactor =
         0.5; //can also be set by the user -- when screen height factor > 0.7 or 0.8 then the header will have a different layout
     var homeHeaderHeight =
@@ -865,14 +865,25 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   //TODO: update this with all the changes to match the previewHeaderBackground function
+  /*What's the difference between the two?
+  
+  The preview header has no snap functionality and no scroll events 
+  
+  The diagonal line has no CustomTabScroll parent in preview,
+  
+  So you'll need to be careful when updating headerBackground to match preview background*/
   Positioned buildHeaderBackground(
     double homeHeaderHeight,
     double screenWidth,
   ) {
+    print(
+        "Build Header background called ***********************************************************************************");
     homeHeaderHeight = MediaQuery.of(context).size.height * 0.5;
     backgroundStyles backgroundStyle =
         contentLayouts["header"][headerOptions.backgroundStyle];
     double heightFactor = 0.6;
+
+    print("background style: $backgroundStyle");
 
     //default background style
     Positioned widget = Positioned.fill(
@@ -1009,7 +1020,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       bool tagLine,
       bool memberPreview,
       bool customButton,
-      bool inviteButton}) {
+      bool inviteButton,
+      Color titleColor,
+      Color tagLineColor}) {
     placeLogo = null != placeLogo
         ? placeLogo
         : contentLayouts['header'][headerOptions.placeLogo];
@@ -1029,6 +1042,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     inviteButton = null != inviteButton
         ? inviteButton
         : contentLayouts['header'][headerOptions.inviteButton];
+
+    titleColor = null != titleColor
+        ? titleColor
+        : contentLayouts['header'][headerOptions.titleColor];
+    tagLineColor = null != tagLineColor
+        ? tagLineColor
+        : contentLayouts['header'][headerOptions.tagLineColor];
 
     double paddingTop = 90.0 * sizeFactor;
     double paddingLeft = 20.0 * sizeFactor;
@@ -1069,7 +1089,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                     child: Text(
                                       "More than Rubies",
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: titleColor,
                                         letterSpacing: titleSpacing,
                                         fontSize: titleFontSize,
                                         fontWeight: FontWeight.bold,
@@ -1080,7 +1100,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                   flex: 1,
                                 ),
                                 headerBuilders['tagline'](
-                                    sizeFactor: sizeFactor, tagLine: tagLine),
+                                    sizeFactor: sizeFactor,
+                                    tagLine: tagLine,
+                                    color: tagLineColor),
                                 Expanded(
                                     flex: 10,
                                     child: headerBuilders['member_preview'](
@@ -1155,7 +1177,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             flex: 1,
                           ),
                           headerBuilders['tagline'](
-                              sizeFactor: sizeFactor, tagLine: tagLine),
+                              sizeFactor: sizeFactor,
+                              tagLine: tagLine,
+                              color: tagLineColor),
                           Expanded(
                             flex: 10,
                             child: headerBuilders['member_preview'](context,
@@ -1192,7 +1216,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
   }
 
-  Widget buildHeaderTagLine({sizeFactor: 1.0, bool tagLine}) {
+  Widget buildHeaderTagLine({sizeFactor: 1.0, bool tagLine, Color color}) {
     tagLine = null != tagLine
         ? tagLine
         : contentLayouts['header'][headerOptions.tagLine];
@@ -1209,7 +1233,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               textStyle: TextStyle(
                   fontWeight: FontWeight.normal,
                   fontSize: 11 * sizeFactor,
-                  color: Colors.white)),
+                  color: color)),
         ),
       );
     }

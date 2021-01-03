@@ -19,7 +19,7 @@ void displayNavigationDrawer(BuildContext context, Map params) {
       isScrollControlled: true, //stops max height being half screen
       context: context,
       builder: (BuildContext context) {
-        return builNavigationDrawer(context, params);
+        return buildNavigationDrawer(context, params);
       }).whenComplete(() {
     if (null != params['on_close'] && params['on_close'] is Function) {
       params['on_close']();
@@ -27,7 +27,7 @@ void displayNavigationDrawer(BuildContext context, Map params) {
   });
 }
 
-Widget builNavigationDrawer(BuildContext context, Map params) {
+Widget buildNavigationDrawer(BuildContext context, Map params) {
   Color dividerColor = Colors.grey[200];
   Color handleBarColor = Colors.grey[200]; //that little grey line at the top
   double blurSigmaX = 0;
@@ -40,6 +40,7 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
   );
   Widget body = Container(height: 1.0);
   Widget container = Container(height: 1.0);
+  double bottomPadding = 20.0;
 
   //This section will run if a custom_container value is set and exit out of the function before the next section
   if (modalBottomSheetBlur &&
@@ -189,6 +190,10 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
     navSidePadding = params['side_padding'];
   }
 
+  if (null != params['bottom_padding'] && params['bottom_padding'] is double) {
+    bottomPadding = params['bottom_padding'];
+  }
+
   container = GestureDetector(
     onTap: () {
       FocusScope.of(context).requestFocus(new FocusNode());
@@ -198,7 +203,7 @@ Widget builNavigationDrawer(BuildContext context, Map params) {
             top: 0.0,
             left: navSidePadding,
             right: navSidePadding,
-            bottom: 20.0),
+            bottom: bottomPadding),
         child: Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
           child: Wrap(

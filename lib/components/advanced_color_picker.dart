@@ -348,7 +348,7 @@ class _AdvancedColorPickerState extends State<AdvancedColorPicker> {
       "top_divider": false
     };
 
-    Widget navigationDrawerContents = builNavigationDrawer(context, params);
+    Widget navigationDrawerContents = buildNavigationDrawer(context, params);
 
     return navigationDrawerContents;
   }

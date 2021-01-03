@@ -9,6 +9,8 @@ import 'package:flutter/rendering.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 enum Options {
+  titleColor,
+  tagLineColor,
   primaryColor,
   secondaryColor,
   accentColor,
@@ -18,6 +20,8 @@ enum Options {
 }
 
 enum WorkingColors {
+  titleColor,
+  tagLineColor,
   primaryColor,
   secondaryColor,
   accentColor,
@@ -36,6 +40,10 @@ class CustomizeHeaderScreen extends StatefulWidget {
 class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   ScrollController mainScrollController = new ScrollController();
   List list;
+
+  Color workingTitleColor;
+  Color workingTagLineColor;
+
   Color workingPrimaryColor;
   Color workingSecondaryColor;
   Color workingAccentColor;
@@ -49,6 +57,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Widget dormantWidget = Container(height: 1.0);
   double containerHeight = 1.0;
   bool colorEditorOpened = false;
+
+  Options activeColorEditor;
 
   WorkingColors targetColor;
   Options currentOption;
@@ -91,6 +101,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     ];
 
     workingColors = {
+      WorkingColors.titleColor: contentLayouts['header']
+          [headerOptions.titleColor],
+      WorkingColors.tagLineColor: contentLayouts['header']
+          [headerOptions.tagLineColor],
       WorkingColors.primaryColor: primaryColor,
       WorkingColors.secondaryColor: secondaryColor,
       WorkingColors.accentColor: accentColor,
@@ -102,6 +116,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     targetColor = null;
 
     colorPickerContainers = {
+      Options.titleColor: dormantWidget,
+      Options.tagLineColor: dormantWidget,
       Options.primaryColor: dormantWidget,
       Options.secondaryColor: dormantWidget,
       Options.accentColor: dormantWidget,
@@ -111,6 +127,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     };
 
     colorPickerContainerHeights = {
+      Options.titleColor: 1.0,
+      Options.tagLineColor: 1.0,
       Options.primaryColor: 1.0,
       Options.secondaryColor: 1.0,
       Options.accentColor: 1.0,
@@ -257,6 +275,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
   List _buildList() {
     List<Widget> listItems = [
+      buildLandingPageMode(),
       buildPlaceName(),
       buildTagLine(),
       buildPlaceLogo(),
@@ -721,11 +740,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               }, longpressCallback: () {
                 displayPopupColorEditor(Options.gradientFirstColor);
               }),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 350),
-                height: colorPickerContainerHeights[Options.gradientFirstColor],
-                child: colorPickerContainers[Options.gradientFirstColor],
-              ),
+              AnimatedCrossFade(
+                  duration: Duration(milliseconds: 500),
+                  firstChild: colorPickerContainers[Options.gradientFirstColor],
+                  secondChild: Container(height: 0.0),
+                  crossFadeState:
+                      Options.gradientFirstColor == activeColorEditor
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond),
               buildColorRow("Second Color",
                   workingColors[WorkingColors.gradientSecondColor],
                   onTapCallback: () {
@@ -739,8 +761,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                       colorPickerContainers[Options.gradientSecondColor],
                   secondChild: Container(height: 0.0),
                   crossFadeState:
-                      colorPickerContainers[Options.gradientSecondColor]
-                              is SimpleColorPicker
+                      Options.gradientSecondColor == activeColorEditor
                           ? CrossFadeState.showFirst
                           : CrossFadeState.showSecond),
               AnimatedCrossFade(
@@ -778,16 +799,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   crossFadeState: gradientThirdColorEnabled
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond),
-              gradientThirdColorEnabled
-                  ? AnimatedContainer(
-                      duration: Duration(milliseconds: 350),
-                      height: colorPickerContainerHeights[
-                          Options.gradientThirdColor],
-                      child: colorPickerContainers[Options.gradientThirdColor],
-                    )
-                  : Container(
-                      height: 1.0,
-                    ),
+              AnimatedCrossFade(
+                  duration: Duration(milliseconds: 500),
+                  firstChild: colorPickerContainers[Options.gradientThirdColor],
+                  secondChild: Container(height: 0.0),
+                  crossFadeState:
+                      Options.gradientThirdColor == activeColorEditor
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond),
               Padding(
                 padding: const EdgeInsets.only(top: 15.0),
                 child: Divider(
@@ -1092,11 +1111,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               }, longpressCallback: () {
                 displayPopupColorEditor(Options.primaryColor);
               }),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 350),
-                height: colorPickerContainerHeights[Options.primaryColor],
-                child: colorPickerContainers[Options.primaryColor],
-              ),
+              AnimatedCrossFade(
+                  duration: Duration(milliseconds: 500),
+                  firstChild: colorPickerContainers[Options.primaryColor],
+                  secondChild: Container(height: 0.0),
+                  crossFadeState: Options.primaryColor == activeColorEditor
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
               buildColorRow("Secondary Color",
                   workingColors[WorkingColors.secondaryColor],
                   onTapCallback: () {
@@ -1104,11 +1125,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               }, longpressCallback: () {
                 displayPopupColorEditor(Options.secondaryColor);
               }),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 350),
-                height: colorPickerContainerHeights[Options.secondaryColor],
-                child: colorPickerContainers[Options.secondaryColor],
-              ),
+              AnimatedCrossFade(
+                  duration: Duration(milliseconds: 500),
+                  firstChild: colorPickerContainers[Options.secondaryColor],
+                  secondChild: Container(height: 0.0),
+                  crossFadeState: Options.secondaryColor == activeColorEditor
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
               buildColorRow(
                   "Accent Color", workingColors[WorkingColors.accentColor],
                   onTapCallback: () {
@@ -1116,11 +1139,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               }, longpressCallback: () {
                 displayPopupColorEditor(Options.accentColor);
               }),
-              AnimatedContainer(
-                duration: Duration(milliseconds: 350),
-                height: colorPickerContainerHeights[Options.accentColor],
-                child: colorPickerContainers[Options.accentColor],
-              )
+              AnimatedCrossFade(
+                  duration: Duration(milliseconds: 500),
+                  firstChild: colorPickerContainers[Options.accentColor],
+                  secondChild: Container(height: 0.0),
+                  crossFadeState: Options.accentColor == activeColorEditor
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
             ],
           ),
         ),
@@ -1132,6 +1157,15 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     Options previousOption = currentOption;
     currentOption = option;
     switch (option) {
+      case Options.titleColor:
+        targetColor = WorkingColors.titleColor;
+        break;
+
+      case Options.tagLineColor:
+        targetColor = WorkingColors.tagLineColor;
+
+        break;
+
       case Options.primaryColor:
         targetColor = WorkingColors.primaryColor;
         break;
@@ -1163,16 +1197,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
     setState(() {
       if (colorEditorOpened && currentOption == previousOption) {
-        colorPickerContainers[previousOption] = Container(height: 1.0);
-        colorPickerContainerHeights[previousOption] = 1.0;
+        activeColorEditor = null;
         colorEditorOpened = false;
 
         return;
       }
 
-      if (previousOption != currentOption) {
-        colorPickerContainers[previousOption] = Container(height: 1.0);
-        colorPickerContainerHeights[previousOption] = 1.0;
+      if (previousOption != currentOption || null == activeColorEditor) {
+        activeColorEditor = currentOption;
       }
 
       colorPickerContainers[currentOption] = SimpleColorPicker(
@@ -1193,33 +1225,36 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       );
 
       if (currentOption == Options.gradientThirdColor) {
-        colorPickerContainers[currentOption] = Column(
-          children: [
-            Expanded(flex: 10, child: colorPickerContainers[currentOption]),
-            Flexible(
-              flex: 1,
-              child: Center(
-                child: SolidButton(
-                  text: "Remove third color",
-                  width: 180,
-                  height: 30,
-                  iconData: EvaIcons.minusCircleOutline,
-                  onPressed: () {
-                    toggleColorEditor(Options.gradientThirdColor);
-                    setState(() {
-                      gradientThirdColorEnabled = false;
-                    });
-                  },
+        colorPickerContainers[currentOption] = SizedBox(
+          height: 440,
+          child: Column(
+            children: [
+              Expanded(flex: 10, child: colorPickerContainers[currentOption]),
+              Flexible(
+                flex: 1,
+                child: Center(
+                  child: SolidButton(
+                    text: "Remove third color",
+                    width: 180,
+                    height: 30,
+                    iconData: EvaIcons.minusCircleOutline,
+                    onPressed: () {
+                      toggleColorEditor(Options.gradientThirdColor);
+                      setState(() {
+                        gradientThirdColorEnabled = false;
+                      });
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
-        colorPickerContainerHeights[currentOption] = 440;
+        colorPickerContainerHeights[currentOption] = 440; //deprecated ?
         colorEditorOpened = true;
         return;
       }
-      colorPickerContainerHeights[currentOption] = 400;
+      colorPickerContainerHeights[currentOption] = 400; //deprecated ?
       colorEditorOpened = true;
     });
   }
@@ -1228,6 +1263,15 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     WorkingColors selectedColor;
 
     switch (option) {
+      case Options.titleColor:
+        selectedColor = WorkingColors.titleColor;
+        break;
+
+      case Options.tagLineColor:
+        selectedColor = WorkingColors.tagLineColor;
+
+        break;
+
       case Options.primaryColor:
         selectedColor = WorkingColors.primaryColor;
         break;
@@ -1564,7 +1608,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                                   ? 16
                                   : 12,
                               color: taglineFocusNode.hasFocus
-                                  ? workingColors[WorkingColors.primaryColor]
+                                  ? workingColors[WorkingColors.tagLineColor]
                                   : Colors.black54)),
                       alignLabelWithHint: true, //stops it being so high
                       border: new UnderlineInputBorder(
@@ -1574,7 +1618,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                       ),
                       focusedBorder: UnderlineInputBorder(
                         borderSide: BorderSide(
-                            color: workingColors[WorkingColors.primaryColor]),
+                            color: workingColors[WorkingColors.tagLineColor]),
                       ),
                       hintText: 'Enter a tagline',
                       hintStyle: GoogleFonts.heebo(
@@ -1590,9 +1634,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               padding: const EdgeInsets.only(bottom: sidePadding),
               child: buildColorRow(
                 "Tagline text Color",
-                workingColors[WorkingColors.primaryColor],
+                workingColors[WorkingColors.tagLineColor],
                 onTapCallback: () {
-                  displayPopupColorEditor(Options.primaryColor);
+                  displayPopupColorEditor(Options.tagLineColor);
                 },
               ),
             ),
@@ -1683,13 +1727,56 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               padding: const EdgeInsets.only(bottom: sidePadding),
               child: buildColorRow(
                 "Title text Color",
-                workingColors[WorkingColors.primaryColor],
+                workingColors[WorkingColors.titleColor],
                 onTapCallback: () {
-                  displayPopupColorEditor(Options.primaryColor);
+                  toggleColorEditor(Options.titleColor);
                 },
               ),
             ),
+            AnimatedCrossFade(
+                duration: Duration(milliseconds: 500),
+                firstChild: colorPickerContainers[Options.titleColor],
+                secondChild: Container(height: 0.0),
+                crossFadeState: Options.titleColor == activeColorEditor
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond),
           ],
+        ),
+      ),
+    );
+  }
+
+  Padding buildLandingPageMode() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(sidePadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("Landing Page Mode", style: homeTextStyleBold),
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    workingInviteButtonActive = !workingInviteButtonActive;
+                  });
+                },
+                icon: Icon(
+                  workingInviteButtonActive
+                      ? UniconsSolid.toggle_on
+                      : UniconsSolid.toggle_off,
+                  color: workingInviteButtonActive
+                      ? workingColors[WorkingColors.primaryColor]
+                      : Colors.grey[400],
+                  size: 40.0,
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -1731,7 +1818,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                         tagLine: workingTaglineActive,
                         memberPreview: workingMemberPreviewActive,
                         customButton: workingCustomButtonActive,
-                        inviteButton: workingInviteButtonActive)),
+                        inviteButton: workingInviteButtonActive,
+                        tagLineColor: workingColors[WorkingColors.tagLineColor],
+                        titleColor: workingColors[WorkingColors.titleColor])),
               ),
             )
           ],

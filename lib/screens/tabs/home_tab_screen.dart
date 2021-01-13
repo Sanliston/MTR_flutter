@@ -1,6 +1,11 @@
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:MTR_flutter/components/navigation_drawer.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.dart';
+import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
@@ -10,6 +15,7 @@ import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
 import "dart:math";
 import 'package:MTR_flutter/utilities/utility_imports.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 /*This screen will have several tabs:
   Home
@@ -49,6 +55,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   Animation forumInsertAnimation;
   List<String> _tabs;
   Color unselectedLabelColor;
+  bool landingPage;
 
   List<Widget> buildTab(BuildContext context, String tab) {
     /*List will hold certain information:
@@ -74,191 +81,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     return widgets;
-  }
-
-  void displayNavigationDrawer(Map params) {
-    Widget header = Container(height: 1.0);
-
-    Color dividerColor = Colors.grey[200];
-    double blurSigmaX = 0;
-    double blurSigmaY = 0;
-
-    //dart returns null if key doesnt exist in map -- unlike JS which returns 'undefined', ya'll be easy now
-    if (null == params['title'] &&
-        null == params['description'] &&
-        null == params["custom_header"]) {
-      dividerColor = Colors.white;
-    }
-
-    if (null != params['title'] &&
-        null == params['description'] &&
-        null == params["custom_header"]) {
-      header = Padding(
-        padding: const EdgeInsets.only(
-            top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
-        child: Text(
-          params['title'],
-          style: homeTextStyleBold,
-          overflow: TextOverflow.visible,
-        ),
-      );
-    }
-
-    if (null == params['title'] &&
-        null != params['description'] &&
-        null == params["custom_header"]) {
-      header = Padding(
-        padding: const EdgeInsets.only(
-            top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
-        child: Text(
-          params['description'],
-          style: homeSubTextStyle,
-          overflow: TextOverflow.visible,
-        ),
-      );
-    }
-
-    if (null != params['title'] &&
-        null != params['description'] &&
-        null == params["custom_header"]) {
-      header = Padding(
-        padding: const EdgeInsets.only(
-            top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              params['title'],
-              style: homeTextStyleBold,
-              overflow: TextOverflow.visible,
-            ),
-            Text(
-              params['description'],
-              style: homeSubTextStyle,
-              overflow: TextOverflow.visible,
-            )
-          ],
-        ),
-      );
-    }
-
-    if (null != params['custom_header']) {
-      header = params['custom_header'];
-    }
-
-    if (modalBottomSheetBlur) {
-      blurSigmaX = mbsSigmaX;
-      blurSigmaY = mbsSigmaY;
-    }
-
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true, //stops max height being half screen
-        context: context,
-        builder: (BuildContext context) {
-          Widget container = Container(
-              margin: const EdgeInsets.only(
-                  top: 0.0,
-                  left: sidePadding,
-                  right: sidePadding,
-                  bottom: 20.0),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Wrap(
-                  children: <Widget>[
-                    Center(
-                        child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                          height: 5.0,
-                          width: 45.0,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                                topRight: Radius.circular(10),
-                                bottomLeft: Radius.circular(10),
-                                bottomRight: Radius.circular(10)),
-                          )),
-                    )),
-                    header,
-                    Divider(
-                      thickness: 1.0,
-                      color: dividerColor,
-                    ),
-                    ListView.builder(
-                        itemCount: params['options'].length,
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          String optionTitle =
-                              params['options'][index]['title'];
-
-                          if (null != params['options'][index]['type'] &&
-                              'subtitle' == params['options'][index]['type']) {
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                left: sidePadding,
-                                right: sidePadding,
-                                top: 15.0,
-                              ),
-                              child: Text(optionTitle,
-                                  style: homeSubTextStyle,
-                                  overflow: TextOverflow.visible),
-                            );
-                          }
-
-                          Widget icon = Container(
-                            width: 1.0,
-                            height: 1.0,
-                          ); //placeholder empty space
-                          Function onPressed =
-                              params['options'][index]['onPressed'];
-                          IconData iconData =
-                              params['options'][index]['iconData'];
-
-                          if (null != iconData) {
-                            icon = Padding(
-                              padding: const EdgeInsets.only(right: 15.0),
-                              child: Icon(
-                                iconData,
-                                color: Colors.black,
-                              ),
-                            );
-                          }
-
-                          print("iconData: $iconData");
-
-                          return FlatButton(
-                            onPressed:
-                                onPressed, //passing function definition onPressed and not invoking onPressed().
-                            child: Row(
-                              children: <Widget>[
-                                icon,
-                                Text(optionTitle,
-                                    style: homeTextStyleBold,
-                                    overflow: TextOverflow.visible)
-                              ],
-                            ),
-                          );
-                        })
-                  ],
-                ),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10)),
-              ));
-
-          //for blur effect
-          return new BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
-              child: container);
-        });
   }
 
   //function shared by widget nodes stemming from this widget
@@ -294,7 +116,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       "options": options
     };
 
-    sharedStateManagement['display_navigation_drawer'](params);
+    displayNavigationDrawer(context, params);
   }
 
   void onTabTap() {}
@@ -386,6 +208,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     headerBuilders['member_preview'] = buildHeaderMemberPreview;
     headerBuilders['invite_button'] = buildHeaderInviteButton;
     headerBuilders['custom_button'] = buildHeaderCustomButton;
+
+    landingPage = contentLayouts['header'][headerOptions.landingPageMode]
+        [landingPageMode.active];
   }
 
   @override
@@ -394,16 +219,24 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     stateCallback[screen.homeTab] = null;
     controller.removeListener(indexChangeListener);
     scrollController.removeListener(scrollControllerHandler);
+
+    controller.dispose();
+    scrollController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
-    var minimumHeaderHeight =
-        340.0; //default value: 340.0, this can be set by the user in settings - to add a full screen effect to the header
-    var screenHeightFactor =
-        0.5; //can also be set by the user -- when screen height factor > 0.7 or 0.8 then the header will have a different layout
+    double landingPageHeight =
+        persistentNavBar ? screenHeight : screenHeight + 58;
+
+    var minimumHeaderHeight = landingPage
+        ? landingPageHeight
+        : 340.0; //default value: 340.0, this can be set by the user in settings - to add a full screen effect to the header
+    var screenHeightFactor = landingPage
+        ? 1.0
+        : 0.5; //can also be set by the user -- when screen height factor > 0.7 or 0.8 then the header will have a different layout
     var homeHeaderHeight =
         minimumHeaderHeight > screenHeight * screenHeightFactor
             ? minimumHeaderHeight
@@ -417,6 +250,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         child: NestedScrollView(
           controller: scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            //store context so it can be used in customFunctions that want it
+            sharedStateManagement['screenHeight'] = screenHeight;
             // These are the slivers that show up in the "outer" scroll view.
             return <Widget>[
               SliverOverlapAbsorber(
@@ -436,7 +271,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     },
                     title: FadeOnScroll(
                         scrollController: scrollController,
-                        fullOpacityOffset: homeHeaderHeight * 0.3,
+                        fullOpacityOffset: landingPage
+                            ? homeHeaderHeight * 0.6
+                            : homeHeaderHeight * 0.3,
                         zeroOpacityOffset: 0,
                         child: Text("More Than Rubies")),
                     pinned: true,
@@ -596,8 +433,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             "options": options
                           };
 
-                          sharedStateManagement['display_navigation_drawer'](
-                              params);
+                          displayNavigationDrawer(context, params);
                         },
                       )
                     ],
@@ -608,9 +444,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           collapseMode: CollapseMode.pin,
                           background: FadeOnScroll(
                             scrollController: scrollController,
-                            zeroOpacityOffset: 50,
+                            zeroOpacityOffset: landingPage ? 300 : 50,
                             fullOpacityOffset: 0,
-                            child: buildHeader(context),
+                            child: landingPage
+                                ? buildExpHeader(context)
+                                : buildHeader(
+                                    context), //Just proof of concept that you can have a swiper here
                           ),
                         ),
                       ],
@@ -622,6 +461,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           body: TabBarView(
             // These are the contents of the tab views, below the tabs.
             controller: controller,
+            physics: BouncingScrollPhysics(),
             children: _tabs.map((String name) {
               return SafeArea(
                 top: false,
@@ -643,6 +483,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         // it allows the list to remember its scroll position when
                         // the tab view is not on the screen.
                         key: PageStorageKey<String>(name),
+                        physics: BouncingScrollPhysics(),
                         slivers: <Widget>[
                           SliverOverlapInjector(
                             // This is the flip side of the SliverOverlapAbsorber above.
@@ -674,9 +515,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
                                   //here we return the corresponding view depending on the given index, so we need to create an array of views to return
                                   /*The array of views will vary depending on the current active tab
-                                  tab index is decided by: name 
-                                  So we create a map containing the arrays and the views for the relevant tab
-                                  And then we index that map using the value of the name variable*/
+                                tab index is decided by: name 
+                                So we create a map containing the arrays and the views for the relevant tab
+                                And then we index that map using the value of the name variable*/
                                   return buildTab(context, name)[index];
                                 },
                                 // The childCount of the SliverChildBuilderDelegate
@@ -698,6 +539,138 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ),
       ),
     );
+  }
+
+  Widget buildExpHeader(BuildContext context) {
+    //this is like this for demonstration
+    //actual Exp header will be built using a builder of some sort
+    //this will allow the user to configure what elements they want etc
+    //like with the tabs
+    List<Widget> slides = [
+      Center(
+        child: Padding(
+          padding: const EdgeInsets.only(
+              top: 100.0, left: sidePadding, right: sidePadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(UniconsLine.cloud_computing, color: Colors.white, size: 200),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text("Welcome",
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 44,
+                            color: Colors.white))),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+                child: Text(
+                    "Make yourself at home. This is your landing page, your space. You can turn it into whatever you want. Swipe left, swipe up, or swipe right. The possibilities are endless.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                            color: Colors.white))),
+              )
+            ],
+          ),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 40.0, top: 90),
+        child: Column(
+          children: [
+            Flexible(
+                child: Padding(
+              padding: const EdgeInsets.all(sidePadding),
+              child: new Center(
+                child: new ClipRect(
+                  child: new BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    child: SizedBox(
+                      height: 350,
+                      child: new Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey.shade200.withOpacity(0.2)),
+                        child: buildHeader(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )),
+          ],
+        ),
+      ),
+      // Stack(
+      //   children: <Widget>[
+      //     Image.asset(
+      //       "assets/images/home_background.jpg",
+      //       height: MediaQuery.of(context).size.height + 100,
+      //       width: MediaQuery.of(context).size.width,
+      //       fit: BoxFit.cover,
+      //     ),
+      //     Container(
+      //       decoration: BoxDecoration(
+      //           gradient: LinearGradient(
+      //         colors: [
+      //           Colors.black38,
+      //           Colors.transparent,
+      //         ],
+      //         begin: Alignment.topRight,
+      //         end: Alignment.bottomRight,
+      //         stops: [0.0, 0.4],
+      //         tileMode: TileMode.clamp,
+      //       )),
+      //     ),
+      //     new Center(
+      //       child: new ClipRect(
+      //         child: new BackdropFilter(
+      //           filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+      //           child: new Container(
+      //             width: 300.0,
+      //             height: 200.0,
+      //             decoration: new BoxDecoration(
+      //                 borderRadius: BorderRadius.circular(10),
+      //                 color: Colors.grey.shade200.withOpacity(0.1)),
+      //             child: new Center(
+      //               child: Padding(
+      //                 padding: const EdgeInsets.all(8.0),
+      //                 child: new Text(
+      //                   'This is an example of an announcement or something.',
+      //                   style: homeTextStyleBoldWhite,
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     )
+      //   ],
+      // ),
+      // buildHeader(context),
+    ];
+
+    Widget swiper = Padding(
+        padding: EdgeInsets.only(bottom: 80),
+        child: new Swiper(
+          itemCount: slides.length,
+          pagination: new SwiperPagination(
+            alignment: Alignment.bottomCenter,
+            builder: new DotSwiperPaginationBuilder(
+                color: Colors.grey[300].withOpacity(0.3),
+                activeColor: primaryColor),
+          ),
+          itemBuilder: (context, index) {
+            return slides[index];
+          },
+        ));
+
+    return swiper;
   }
 
   TabBar buildTabBar(BuildContext context) {
@@ -765,12 +738,63 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientFirstColor = gradientColor1,
       Color gradientSecondColor = gradientColor2,
       Color gradientThirdColor,
+      Color diagonalBarColor,
       GradientOrientations gradientOrientation = GradientOrientations.diagonal,
-      backgroundStyles backgroundStyle}) {
+      backgroundStyles backgroundStyle,
+      bool diagonalBarShadow,
+      double diagonalBarShadowBlurRadius,
+      double diagonalBarShadowLift,
+      double diagonalMaxOpacity,
+      bool topLeftBar,
+      bool topRightBar,
+      bool bottomLeftBar,
+      bool bottomRightBar}) {
     backgroundStyle = null != backgroundStyle
         ? backgroundStyle
         : contentLayouts["header"][headerOptions.backgroundStyle];
+    diagonalBarColor = null != diagonalBarColor
+        ? diagonalBarColor
+        : contentLayouts["header"][headerOptions.diagonalBarColor];
     double heightFactor = 0.6;
+
+    diagonalBarShadow = null != diagonalBarShadow
+        ? diagonalBarShadow
+        : contentLayouts["header"][headerOptions.diagonalBarShadow];
+
+    diagonalBarShadowBlurRadius = null != diagonalBarShadowBlurRadius
+        ? diagonalBarShadowBlurRadius
+        : contentLayouts["header"][headerOptions.diagonalBarShadowBlurRadius];
+    diagonalBarShadowLift = null != diagonalBarShadowLift
+        ? diagonalBarShadowLift
+        : contentLayouts["header"][headerOptions.diagonalBarShadowLift];
+
+    diagonalMaxOpacity = null != diagonalMaxOpacity
+        ? diagonalMaxOpacity
+        : contentLayouts["header"][headerOptions.diagonalMaxOpacity];
+
+    topLeftBar = null != topLeftBar
+        ? topLeftBar
+        : contentLayouts["header"][headerOptions.topLeftBar];
+
+    topRightBar = null != topRightBar
+        ? topRightBar
+        : contentLayouts["header"][headerOptions.topRightBar];
+
+    bottomLeftBar = null != bottomLeftBar
+        ? bottomLeftBar
+        : contentLayouts["header"][headerOptions.bottomLeftBar];
+
+    bottomRightBar = null != bottomRightBar
+        ? bottomRightBar
+        : contentLayouts["header"][headerOptions.bottomRightBar];
+
+    //setting default bars until when i create the landing page settings page
+    if (landingPage) {
+      topLeftBar = true;
+      topRightBar = true;
+      bottomLeftBar = true;
+      bottomRightBar = true;
+    }
 
     //default background style
     Positioned widget = Positioned.fill(
@@ -780,6 +804,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         child: Container(color: primaryColor),
       ),
     );
+
+    homeHeaderHeight = null != homeHeaderHeight
+        ? homeHeaderHeight
+        : MediaQuery.of(context).size.height * heightFactor;
+
+    print("preview header background style: $backgroundStyle");
 
     switch (backgroundStyle) {
       case backgroundStyles.diagonalLine:
@@ -842,6 +872,53 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.imageDiagonalLine:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            child: SizedBox(
+              width: screenWidth,
+              child: Stack(
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/home_background.jpg",
+                    height: homeHeaderHeight * 1.1,
+                    width: screenWidth,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      colors: [
+                        Colors.black38,
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 0.4],
+                      tileMode: TileMode.clamp,
+                    )),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        break;
+
       case backgroundStyles.gradient:
         widget = Positioned.fill(
           child: SizedBox(
@@ -855,6 +932,54 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         gradientThirdColor: gradientThirdColor,
                         gradientOrientation: gradientOrientation)),
               )),
+        );
+        break;
+
+      case backgroundStyles.gradientDiagonalLine:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                    width: screenWidth,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          gradient: getGradient(
+                              gradientFirstColor: gradientFirstColor,
+                              gradientSecondColor: gradientSecondColor,
+                              gradientThirdColor: gradientThirdColor,
+                              gradientOrientation: gradientOrientation)),
+                    )),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
         );
         break;
 
@@ -872,16 +997,75 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   The diagonal line has no CustomTabScroll parent in preview,
   
   So you'll need to be careful when updating headerBackground to match preview background*/
-  Positioned buildHeaderBackground(
-    double homeHeaderHeight,
-    double screenWidth,
-  ) {
+  Positioned buildHeaderBackground(double homeHeaderHeight, double screenWidth,
+      {bool memberViewMode = false,
+      Color gradientFirstColor = gradientColor1,
+      Color gradientSecondColor = gradientColor2,
+      Color gradientThirdColor,
+      Color diagonalBarColor,
+      GradientOrientations gradientOrientation = GradientOrientations.diagonal,
+      backgroundStyles backgroundStyle,
+      bool diagonalBarShadow,
+      double diagonalBarShadowBlurRadius,
+      double diagonalBarShadowLift,
+      double diagonalMaxOpacity,
+      bool topLeftBar,
+      bool topRightBar,
+      bool bottomLeftBar,
+      bool bottomRightBar}) {
+    backgroundStyle = null != backgroundStyle
+        ? backgroundStyle
+        : contentLayouts["header"][headerOptions.backgroundStyle];
+    diagonalBarColor = null != diagonalBarColor
+        ? diagonalBarColor
+        : contentLayouts["header"][headerOptions.diagonalBarColor];
+    double heightFactor = 0.6;
+
+    diagonalBarShadow = null != diagonalBarShadow
+        ? diagonalBarShadow
+        : contentLayouts["header"][headerOptions.diagonalBarShadow];
+
+    diagonalBarShadowBlurRadius = null != diagonalBarShadowBlurRadius
+        ? diagonalBarShadowBlurRadius
+        : contentLayouts["header"][headerOptions.diagonalBarShadowBlurRadius];
+    diagonalBarShadowLift = null != diagonalBarShadowLift
+        ? diagonalBarShadowLift
+        : contentLayouts["header"][headerOptions.diagonalBarShadowLift];
+
+    diagonalMaxOpacity = null != diagonalMaxOpacity
+        ? diagonalMaxOpacity
+        : contentLayouts["header"][headerOptions.diagonalMaxOpacity];
+
+    topLeftBar = null != topLeftBar
+        ? topLeftBar
+        : contentLayouts["header"][headerOptions.topLeftBar];
+
+    topRightBar = null != topRightBar
+        ? topRightBar
+        : contentLayouts["header"][headerOptions.topRightBar];
+
+    bottomLeftBar = null != bottomLeftBar
+        ? bottomLeftBar
+        : contentLayouts["header"][headerOptions.bottomLeftBar];
+
+    bottomRightBar = null != bottomRightBar
+        ? bottomRightBar
+        : contentLayouts["header"][headerOptions.bottomRightBar];
+
+    //setting default bars until when i create the landing page settings page
+    if (landingPage) {
+      topLeftBar = true;
+      topRightBar = true;
+      bottomLeftBar = true;
+      bottomRightBar = true;
+    }
+
     print(
         "Build Header background called ***********************************************************************************");
-    homeHeaderHeight = MediaQuery.of(context).size.height * 0.5;
-    backgroundStyles backgroundStyle =
-        contentLayouts["header"][headerOptions.backgroundStyle];
-    double heightFactor = 0.6;
+
+    homeHeaderHeight = null != homeHeaderHeight
+        ? homeHeaderHeight
+        : MediaQuery.of(context).size.height * 0.5;
 
     print("background style: $backgroundStyle");
 
@@ -900,6 +1084,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             scrollController: scrollController,
             zeroOpacityOffset: homeHeaderHeight * heightFactor,
             fullOpacityOffset: 0,
+            diagonalLine: true,
             child: Stack(
               children: <Widget>[
                 Image.asset(
@@ -959,6 +1144,49 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.imageDiagonalLine:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: false,
+            blurBackground: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            child: SizedBox(
+              width: screenWidth,
+              child: Stack(
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/home_background.jpg",
+                    height: homeHeaderHeight * 1.1,
+                    width: screenWidth,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      colors: [
+                        Colors.black38,
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 0.4],
+                      tileMode: TileMode.clamp,
+                    )),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        break;
+
       case backgroundStyles.gradient:
         Widget gradient = Positioned.fill(
           child: SizedBox(
@@ -988,6 +1216,50 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 [headerOptions.backgroundGradient]),
                       )),
                 ),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
+      case backgroundStyles.gradientDiagonalLine:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                    width: screenWidth,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          gradient: getGradient(
+                              gradientFirstColor: gradientFirstColor,
+                              gradientSecondColor: gradientSecondColor,
+                              gradientThirdColor: gradientThirdColor,
+                              gradientOrientation: gradientOrientation)),
+                    )),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(

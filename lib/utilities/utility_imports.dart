@@ -25,6 +25,7 @@ void rebuildMainScreen(BuildContext context) {
   Navigator.pop(context);
 
   //reopens the main screen again as a new screen - so back button goes back to login screen now
+  //hopefully this gets updated values from home_state
   Navigator.push(
       context, MaterialPageRoute(builder: (context) => MainScreen()));
 }

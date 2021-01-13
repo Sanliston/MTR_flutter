@@ -11,9 +11,21 @@ const double sidePadding = 15.0;
 // const Color secondaryColor = Color(0xFFFF4B2B);
 // const Color accentColor = Color(0xFFFF4B2B);
 
-const Color primaryColor = Color(0xFFbc4e9c);
-const Color secondaryColor = Color(0xFFf80759);
-const Color accentColor = Color(0xFFC06C84);
+//the best blue gradient yet
+// const Color primaryColor = Color(0xFF3494E6);
+// const Color secondaryColor = Color(0xFFEC6EAD);
+// const Color accentColor = Color(0xFF3494E6);
+// const Color iconColor = primaryColor;
+
+//passion red gradient
+// const Color primaryColor = Color(0xFF200122);
+// const Color secondaryColor = Color(0xFF6f0000);
+// const Color accentColor = primaryColor;
+// const Color iconColor = primaryColor;
+
+const Color primaryColor = Color(0xFF556270);
+const Color secondaryColor = Color(0xFFFF6B6B);
+const Color accentColor = primaryColor;
 const Color iconColor = primaryColor;
 
 //Global Colors -- for dev -- future colors will be set in a themes file

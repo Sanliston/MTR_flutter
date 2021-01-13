@@ -1,3 +1,5 @@
+import 'package:MTR_flutter/components/cached_blur.dart';
+import 'package:MTR_flutter/custom_tab_scroll.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'dart:ui';
@@ -14,6 +16,7 @@ TODO: make function more accessible via input parameters with default values etc
  */
 
 void displayNavigationDrawer(BuildContext context, Map params) {
+  print("display navigation drawer called");
   showModalBottomSheet(
       backgroundColor: Colors.transparent,
       isScrollControlled: true, //stops max height being half screen
@@ -248,7 +251,12 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
   if (false == params["blur"]) {
     return container;
   }
+
+  print("sigmaX: $blurSigmaX, sigmaY: $blurSigmaY");
   //for blur effect
+  // return CachedFrostedBox(
+  //     sigmaX: blurSigmaX, sigmaY: blurSigmaY, child: container);
+
   return new BackdropFilter(
       filter: ImageFilter.blur(sigmaX: blurSigmaX, sigmaY: blurSigmaY),
       child: container);

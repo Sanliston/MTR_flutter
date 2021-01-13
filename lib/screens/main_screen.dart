@@ -1,4 +1,5 @@
 import 'package:MTR_flutter/external/hsv_colorpicker.dart';
+import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
@@ -66,6 +67,26 @@ class _MainScreenState extends State<MainScreen> {
     bottomIcons[2]["normal"]
   ];
 
+  bool navBarVisible = persistentNavBar;
+
+  navBar({bool visible, int index}) {
+    index = null != index ? index : 0;
+
+    if (persistentNavBar || (1 == index || 2 == index)) {
+      return;
+    }
+
+    visible = null != visible ? visible : !navBarVisible;
+
+    if (visible == navBarVisible) {
+      return;
+    }
+
+    setState(() {
+      navBarVisible = visible;
+    });
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       mainScreenState[mainScreen.selectedIndex] = index;
@@ -80,6 +101,8 @@ class _MainScreenState extends State<MainScreen> {
 
       indexedPageIcons[index] = bottomIcons[index]["selected"];
     });
+
+    toggleNavBar(visible: false, index: index);
   }
 
   @override
@@ -97,31 +120,42 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    toggleNavBar = navBar;
+
     return Scaffold(
       body: Center(
         child:
             _widgetOptions.elementAt(mainScreenState[mainScreen.selectedIndex]),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
-        showUnselectedLabels: false,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(indexedPageIcons[0]),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(indexedPageIcons[1]),
-            label: 'Inbox',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(indexedPageIcons[2]),
-            label: 'Personal',
-          ),
-        ],
-        currentIndex: mainScreenState[mainScreen.selectedIndex],
-        selectedItemColor: primaryColor,
-        onTap: _onItemTapped,
+      bottomNavigationBar: AnimatedCrossFade(
+        firstChild: BottomNavigationBar(
+          backgroundColor: Colors.white,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[0]),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[1]),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[2]),
+              label: 'Personal',
+            ),
+          ],
+          currentIndex: mainScreenState[mainScreen.selectedIndex],
+          selectedItemColor: primaryColor,
+          onTap: _onItemTapped,
+        ),
+        secondChild:
+            Container(height: 0.0, width: 0.0, color: Colors.transparent),
+        duration: Duration(milliseconds: 200),
+        crossFadeState: navBarVisible
+            ? CrossFadeState.showFirst
+            : CrossFadeState.showSecond,
       ),
     );
   }

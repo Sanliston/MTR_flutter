@@ -94,6 +94,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
                         ),
                       ),
                       body: TabBarView(
+                        physics: BouncingScrollPhysics(),
                         children: myTabs.map((Tab tab) {
                           //place relevant tab widgets here
                           final String label = tab.text;

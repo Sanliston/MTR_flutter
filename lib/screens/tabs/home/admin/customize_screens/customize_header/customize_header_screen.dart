@@ -16,7 +16,9 @@ enum Options {
   accentColor,
   gradientFirstColor,
   gradientSecondColor,
-  gradientThirdColor
+  gradientThirdColor,
+  solidBGColor,
+  diagonalColor
 }
 
 enum WorkingColors {
@@ -27,7 +29,23 @@ enum WorkingColors {
   accentColor,
   gradientFirstColor,
   gradientSecondColor,
-  gradientThirdColor
+  gradientThirdColor,
+  solidBGColor,
+  diagonalColor,
+}
+
+enum WorkingBackGroundOptions {
+  diagonalLine,
+  image,
+  imageDiagonalLine,
+  solid,
+  solidDiagonalLine,
+  gradient,
+  gradientDiagonalLine,
+  video,
+  videoDiagonalLine,
+  animated,
+  animetedDiagonalLine
 }
 
 void dummyCB() {}
@@ -51,6 +69,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Color workingFirstGradientColor;
   Color workingSecondGradientColor;
   Color workingThirdGradientColor;
+
+  Color workingSolidBGColor;
 
   GradientOrientations workingGradientOrientation;
 
@@ -84,8 +104,28 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   bool workingMemberPreviewActive;
   bool workingInviteButtonActive;
   bool workingCustomButtonActive;
+  bool workingDiagonalBarActive;
+  bool workingDiagonalBarShadow;
+  bool workingCoverMultiPhoto;
+  bool workingLandingPageMode;
+
+  double workingDiagonalBarShadowBlurRadius;
+  double workingDiagonalBarShadowLift;
+  double workingDBMaxOpacity;
+
+  List<backgroundStyles> diagonalStyles = [
+    backgroundStyles.diagonalLine,
+    backgroundStyles.imageDiagonalLine,
+    backgroundStyles.solidDiagonalLine,
+    backgroundStyles.gradientDiagonalLine,
+    backgroundStyles.videoDiagonalLine,
+    backgroundStyles.animatedDiagonalLine
+  ];
 
   backgroundStyles workingBackgroundStyle;
+  Map<backgroundStyles, bool> backgroundToggleStates;
+
+  Duration crossFadeDuration = Duration(milliseconds: 300);
 
   @override
   void initState() {
@@ -105,6 +145,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           [headerOptions.titleColor],
       WorkingColors.tagLineColor: contentLayouts['header']
           [headerOptions.tagLineColor],
+      WorkingColors.diagonalColor: contentLayouts['header']
+          [headerOptions.diagonalBarColor],
       WorkingColors.primaryColor: primaryColor,
       WorkingColors.secondaryColor: secondaryColor,
       WorkingColors.accentColor: accentColor,
@@ -123,7 +165,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.accentColor: dormantWidget,
       Options.gradientFirstColor: dormantWidget,
       Options.gradientSecondColor: dormantWidget,
-      Options.gradientThirdColor: dormantWidget
+      Options.gradientThirdColor: dormantWidget,
+      Options.diagonalColor: dormantWidget
     };
 
     colorPickerContainerHeights = {
@@ -151,9 +194,19 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         contentLayouts['header'][headerOptions.inviteButton];
     workingCustomButtonActive =
         contentLayouts['header'][headerOptions.customButton];
+    workingDiagonalBarShadow =
+        contentLayouts['header'][headerOptions.diagonalBarShadow];
+    workingDiagonalBarShadowBlurRadius =
+        contentLayouts['header'][headerOptions.diagonalBarShadowBlurRadius];
+    workingDiagonalBarShadowLift =
+        contentLayouts['header'][headerOptions.diagonalBarShadowLift];
 
     workingBackgroundStyle =
         contentLayouts['header'][headerOptions.backgroundStyle];
+    workingDBMaxOpacity =
+        contentLayouts['header'][headerOptions.diagonalMaxOpacity];
+    workingLandingPageMode = contentLayouts['header']
+        [headerOptions.landingPageMode][landingPageMode.active];
 
     customButtonFocusNode = new FocusNode();
     customButtonActionFocusNode = new FocusNode();
@@ -170,6 +223,23 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     customButtonActionFocusNode.canRequestFocus =
         false; //we don't want to actually be able to write in this one -- this doesnt seem to work
     gradientOFocusNode.canRequestFocus = false;
+
+    backgroundToggleStates = {
+      backgroundStyles.diagonalLine: false,
+      backgroundStyles.image: false,
+      backgroundStyles.imageDiagonalLine: false,
+      backgroundStyles.solid: false,
+      backgroundStyles.solidDiagonalLine: false,
+      backgroundStyles.gradient: false,
+      backgroundStyles.gradientDiagonalLine: false,
+      backgroundStyles.video: false,
+      backgroundStyles.videoDiagonalLine: false,
+      backgroundStyles.animated: false,
+      backgroundStyles.animatedDiagonalLine: false
+    };
+
+    selectWorkingBGOption(
+        contentLayouts['header'][headerOptions.backgroundStyle]);
 
     //to stop certain focus nodes from getting focus -- this actually works
     gradientOFocusNode.addListener(() {
@@ -208,9 +278,110 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     });
   }
 
+  void selectWorkingBGOption(backgroundStyles selectedOption) {
+    //function that updates the workingBackgroundStyle depending on which background switch is on
+    bool atleastOneIsTrue = false;
+
+    //toggle all other options off
+    for (var backgroundStyle in backgroundStyles.values) {
+      if (backgroundStyle == selectedOption) {
+        setState(() {
+          backgroundToggleStates[selectedOption] =
+              !backgroundToggleStates[selectedOption];
+        });
+
+        workingDiagonalBarActive = diagonalStyles.contains(selectedOption);
+
+        continue;
+      }
+
+      backgroundToggleStates[backgroundStyle] = false;
+    }
+
+    if (backgroundToggleStates[selectedOption]) {
+      atleastOneIsTrue = true;
+    }
+
+    if (!atleastOneIsTrue) {
+      //set a default one to true
+
+      setState(() {
+        backgroundToggleStates[backgroundStyles.solid] = true;
+      });
+    }
+  }
+
+  backgroundStyles getWorkingBGOption() {
+    //function that finds the current active background style and returns it
+    for (var backgroundStyle in backgroundStyles.values) {
+      if (backgroundToggleStates[backgroundStyle]) {
+        return backgroundStyle;
+      }
+    }
+
+    return null;
+  }
+
+  void toggleDiagonal() {
+    //get current background option
+    backgroundStyles currentStyle = getWorkingBGOption();
+    backgroundStyles newStyle;
+
+    //this changes the working background depending on if diagonal is selected or not
+    switch (currentStyle) {
+      case backgroundStyles.diagonalLine:
+        newStyle = backgroundStyles.diagonalLine;
+        break;
+
+      case backgroundStyles.image:
+        newStyle = backgroundStyles.imageDiagonalLine;
+        break;
+
+      case backgroundStyles.imageDiagonalLine:
+        newStyle = backgroundStyles.image;
+        break;
+
+      case backgroundStyles.solid:
+        newStyle = backgroundStyles.solidDiagonalLine;
+        break;
+
+      case backgroundStyles.solidDiagonalLine:
+        newStyle = backgroundStyles.solid;
+        break;
+
+      case backgroundStyles.gradient:
+        newStyle = backgroundStyles.gradientDiagonalLine;
+        break;
+
+      case backgroundStyles.gradientDiagonalLine:
+        newStyle = backgroundStyles.gradient;
+        break;
+
+      case backgroundStyles.video:
+        newStyle = backgroundStyles.videoDiagonalLine;
+        break;
+
+      case backgroundStyles.videoDiagonalLine:
+        newStyle = backgroundStyles.video;
+        break;
+
+      case backgroundStyles.animated:
+        newStyle = backgroundStyles.animatedDiagonalLine;
+        break;
+
+      case backgroundStyles.animatedDiagonalLine:
+        newStyle = backgroundStyles.animated;
+        break;
+    }
+
+    selectWorkingBGOption(newStyle);
+  }
+
   _CustomizeHeaderScreenState(); //constructor call
 
   Widget build(BuildContext context) {
+    double expandedHeight =
+        workingLandingPageMode ? MediaQuery.of(context).size.height * 0.9 : 305;
     return MaterialApp(
       home: GestureDetector(
         onTap: () {
@@ -241,7 +412,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             controller: mainScrollController,
             slivers: <Widget>[
               SliverAppBar(
-                expandedHeight: 305.0,
+                expandedHeight: expandedHeight,
                 floating: false,
                 pinned: false,
                 snap: false,
@@ -275,20 +446,221 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
   List _buildList() {
     List<Widget> listItems = [
+      buildBGDiagonalLine(),
       buildLandingPageMode(),
       buildPlaceName(),
       buildTagLine(),
       buildPlaceLogo(),
-      buildCoverPhoto(),
       buildThemeColors(),
+      buildCoverPhoto(),
       buildGradientBackground(),
       buildShowMemberList(),
       buildShowInviteButton(),
       buildShowCustomButton(),
-      Container(height: 200, color: Colors.white)
+      Container(height: 100, color: Colors.transparent)
     ];
 
     return listItems;
+  }
+
+  Padding buildBGDiagonalLine() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 500),
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.only(
+              top: sidePadding, bottom: sidePadding, left: 0, right: 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Show Background Diagonal Bar",
+                            style: homeTextStyleBold),
+                        //should be displayed only if custom button is enabled
+                      ],
+                    ),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        setState(() {
+                          toggleDiagonal();
+                        });
+                      },
+                      icon: Icon(
+                        workingDiagonalBarActive
+                            ? UniconsSolid.toggle_on
+                            : UniconsSolid.toggle_off,
+                        color: workingDiagonalBarActive
+                            ? workingColors[WorkingColors.primaryColor]
+                            : Colors.grey[400],
+                        size: 40.0,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              AnimatedCrossFade(
+                  duration: crossFadeDuration,
+                  firstChild: _buildDiagonalBarBody(),
+                  secondChild: Container(height: 0.0),
+                  crossFadeState: workingDiagonalBarActive
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDiagonalBarBody() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Divider(
+            thickness: 1.0,
+            color: Colors.grey[400].withOpacity(0.2),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Diagonal Bar Shadow", style: homeSubTextStyle),
+                  //should be displayed only if custom button is enabled
+                ],
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    workingDiagonalBarShadow = !workingDiagonalBarShadow;
+                  });
+                },
+                icon: Icon(
+                  workingDiagonalBarShadow
+                      ? UniconsSolid.toggle_on
+                      : UniconsSolid.toggle_off,
+                  color: workingDiagonalBarShadow
+                      ? workingColors[WorkingColors.primaryColor]
+                      : Colors.grey[400],
+                  size: 40.0,
+                ),
+              )
+            ],
+          ),
+        ),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: Padding(
+              padding: EdgeInsets.symmetric(horizontal: sidePadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Shadow Blur Radius: ", style: homeSubTextStyle),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Slider(
+                      value: workingDiagonalBarShadowBlurRadius,
+                      activeColor: workingColors[WorkingColors.primaryColor],
+                      inactiveColor: Colors.grey[400],
+                      min: 0,
+                      max: 30,
+                      divisions: null,
+                      label:
+                          workingDiagonalBarShadowBlurRadius.round().toString(),
+                      onChanged: (double value) {
+                        setState(() {
+                          workingDiagonalBarShadowBlurRadius = value;
+                        });
+                      },
+                    ),
+                  ),
+                  Text("Shadow Lift: ", style: homeSubTextStyle),
+                  Slider(
+                    value: workingDiagonalBarShadowLift,
+                    activeColor: workingColors[WorkingColors.primaryColor],
+                    inactiveColor: Colors.grey[400],
+                    min: 0,
+                    max: 20,
+                    divisions: null,
+                    label: workingDiagonalBarShadowLift.toStringAsFixed(1),
+                    onChanged: (double value) {
+                      setState(() {
+                        workingDiagonalBarShadowLift = value;
+                      });
+                    },
+                  )
+                ],
+              ),
+            ),
+            secondChild: Container(height: 0.0),
+            crossFadeState: workingDiagonalBarShadow
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Divider(
+            thickness: 1.0,
+            color: Colors.grey[400].withOpacity(0.2),
+          ),
+        ),
+        buildColorRow("Bar Color", workingColors[WorkingColors.diagonalColor],
+            onTapCallback: () {
+          toggleColorEditor(Options.diagonalColor);
+        }, longpressCallback: () {
+          displayPopupColorEditor(Options.diagonalColor);
+        }),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: colorPickerContainers[Options.diagonalColor],
+            secondChild: Container(height: 0.0),
+            crossFadeState: Options.diagonalColor == activeColorEditor
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        Padding(
+          padding: const EdgeInsets.only(
+              top: sidePadding, left: sidePadding, right: sidePadding),
+          child: Text("Bar Max Opacity: ", style: homeSubTextStyle),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+              bottom: 8.0, left: sidePadding, right: sidePadding),
+          child: Slider(
+            value: workingDBMaxOpacity,
+            activeColor: workingColors[WorkingColors.primaryColor],
+            inactiveColor: Colors.grey[400],
+            min: 0,
+            max: 1,
+            divisions: 10,
+            label: workingDBMaxOpacity.toStringAsFixed(1),
+            onChanged: (double value) {
+              setState(() {
+                workingDBMaxOpacity = value;
+              });
+            },
+          ),
+        ),
+      ],
+    );
   }
 
   Padding buildShowCustomButton() {
@@ -639,6 +1011,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   }
 
   Padding buildGradientBackground() {
+    bool gradientActive = backgroundToggleStates[backgroundStyles.gradient] ||
+        backgroundToggleStates[backgroundStyles.gradientDiagonalLine];
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: AnimatedContainer(
@@ -663,354 +1037,360 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                         Text("Gradient Background", style: homeTextStyleBold),
                       ],
                     ),
-                    Icon(
-                      UniconsSolid.toggle_on,
-                      color: workingColors[WorkingColors.primaryColor],
-                      size: 40.0,
+                    IconButton(
+                      onPressed: () {
+                        selectWorkingBGOption(backgroundStyles.gradient);
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        gradientActive
+                            ? UniconsSolid.toggle_on
+                            : UniconsSolid.toggle_off,
+                        color: gradientActive
+                            ? workingColors[WorkingColors.primaryColor]
+                            : Colors.grey[400],
+                        size: 40.0,
+                      ),
                     )
                   ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: sidePadding, right: sidePadding),
-                child: Container(
-                  height: 50.0,
-                  child: Text(
-                      "This changes the background of the header to a gradient of your chosen colors. Enabling this background style automatically disables any other specified background style.",
-                      style: homeSubTextStyle,
-                      softWrap: true,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.left),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 8.0, left: sidePadding, right: sidePadding),
-                child: Divider(
-                  thickness: 1.0,
-                  color: workingColors[WorkingColors.gradientFirstColor]
-                      .withOpacity(0.15),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: 10.0,
-                    bottom: 5.0,
-                    left: sidePadding,
-                    right: sidePadding),
-                child: Text(
-                  "Gradient Colors",
-                  style: homeSubTextStyleBold,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    top: 10.0, left: sidePadding, right: sidePadding),
-                child: AnimatedContainer(
-                  //turn this into animated container
-                  duration: Duration(milliseconds: 1500),
-                  height: 200,
-                  width:
-                      MediaQuery.of(context).size.width - (sidePadding * 2.0),
-                  decoration: BoxDecoration(
-                      gradient: gradientThirdColorEnabled
-                          ? getGradient(
-                              gradientFirstColor: workingColors[
-                                  WorkingColors.gradientFirstColor],
-                              gradientSecondColor: workingColors[
-                                  WorkingColors.gradientSecondColor],
-                              gradientThirdColor: workingColors[
-                                  WorkingColors.gradientThirdColor],
-                              gradientOrientation: workingGradientOrientation)
-                          : getGradient(
-                              gradientFirstColor: workingColors[
-                                  WorkingColors.gradientFirstColor],
-                              gradientSecondColor: workingColors[
-                                  WorkingColors.gradientSecondColor],
-                              gradientOrientation: workingGradientOrientation),
-                      borderRadius: BorderRadius.all(Radius.circular(5))),
-                ),
-              ),
-              buildColorRow("First Color",
-                  workingColors[WorkingColors.gradientFirstColor],
-                  onTapCallback: () {
-                toggleColorEditor(Options.gradientFirstColor);
-              }, longpressCallback: () {
-                displayPopupColorEditor(Options.gradientFirstColor);
-              }),
               AnimatedCrossFade(
-                  duration: Duration(milliseconds: 500),
-                  firstChild: colorPickerContainers[Options.gradientFirstColor],
-                  secondChild: Container(height: 0.0),
-                  crossFadeState:
-                      Options.gradientFirstColor == activeColorEditor
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond),
-              buildColorRow("Second Color",
-                  workingColors[WorkingColors.gradientSecondColor],
-                  onTapCallback: () {
-                toggleColorEditor(Options.gradientSecondColor);
-              }, longpressCallback: () {
-                displayPopupColorEditor(Options.gradientSecondColor);
-              }),
-              AnimatedCrossFade(
-                  duration: Duration(milliseconds: 500),
-                  firstChild:
-                      colorPickerContainers[Options.gradientSecondColor],
-                  secondChild: Container(height: 0.0),
-                  crossFadeState:
-                      Options.gradientSecondColor == activeColorEditor
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond),
-              AnimatedCrossFade(
-                  duration: Duration(milliseconds: 200),
-                  firstChild: Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
-                    child: Center(
-                      child: SolidButton(
-                        text: "Add third color",
-                        width: 150,
-                        height: 30,
-                        iconData: EvaIcons.plusCircleOutline,
-                        onPressed: () {
-                          setState(() {
-                            gradientThirdColorEnabled = true;
-                          });
-                        },
-                      ),
-                    ),
-                  ),
-                  secondChild: Container(height: 0.0),
-                  crossFadeState: gradientThirdColorEnabled
+                  firstChild: Container(),
+                  secondChild: buildGBContent(),
+                  crossFadeState: gradientActive
                       ? CrossFadeState.showSecond
-                      : CrossFadeState.showFirst),
-              AnimatedCrossFade(
-                  duration: Duration(milliseconds: 500),
-                  firstChild: buildColorRow("Third Color",
-                      workingColors[WorkingColors.gradientThirdColor],
-                      onTapCallback: () {
-                    toggleColorEditor(Options.gradientThirdColor);
-                  }, longpressCallback: () {
-                    displayPopupColorEditor(Options.gradientThirdColor);
-                  }),
-                  secondChild: Container(height: 0.0),
-                  crossFadeState: gradientThirdColorEnabled
-                      ? CrossFadeState.showFirst
-                      : CrossFadeState.showSecond),
-              AnimatedCrossFade(
-                  duration: Duration(milliseconds: 500),
-                  firstChild: colorPickerContainers[Options.gradientThirdColor],
-                  secondChild: Container(height: 0.0),
-                  crossFadeState:
-                      Options.gradientThirdColor == activeColorEditor
-                          ? CrossFadeState.showFirst
-                          : CrossFadeState.showSecond),
-              Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: Divider(
-                  thickness: 1.0,
-                  color: workingColors[WorkingColors.gradientFirstColor]
-                      .withOpacity(0.1),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: 10.0,
-                    bottom: 5.0,
-                    left: sidePadding,
-                    right: sidePadding),
-                child: Text(
-                  "Gradient Orientation",
-                  style: homeSubTextStyleBold,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: sidePadding, right: sidePadding, top: 10.0),
-                child: Container(
-                  height: 70.0,
-                  child: TextFormField(
-                    focusNode: gradientOFocusNode,
-                    controller: gradientOController,
-                    maxLength: 15,
-                    style: homeSubTextStyle,
-                    showCursor: false,
-                    enableInteractiveSelection: false,
-                    onTap: () {
-                      //_requestFocus(customButtonFocusNode);
-                      unfocus(context);
-
-                      //open botton navigation drawer:
-                      List options = [
-                        {
-                          "iconData": EvaIcons.arrowForwardOutline,
-                          "title": "Horizontal",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.horizontal;
-
-                            gradientOController.text = "Horizontal";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.arrowDownwardOutline,
-                          "title": "Vertical",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.vertical;
-
-                            gradientOController.text = "Vertical";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.diagonalArrowRightDownOutline,
-                          "title": "Diagonal from Top Left",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.topLeft;
-
-                            gradientOController.text = "Diagonal from Top Left";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.diagonalArrowLeftDown,
-                          "title": "Diagonal from Top Right",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.topRight;
-
-                            gradientOController.text =
-                                "Diagonal from Top Right";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.diagonalArrowRightUp,
-                          "title": "Diagonal from Bottom Left",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.bottomLeft;
-
-                            gradientOController.text =
-                                "Diagonal from Bottom Left";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.diagonalArrowLeftUp,
-                          "title": "Diagonal from Bottom Right",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.bottomRight;
-
-                            gradientOController.text =
-                                "Diagonal from Bottom Right";
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                        {
-                          "iconData": EvaIcons.loaderOutline,
-                          "title": "Radial",
-                          "onPressed": () {
-                            workingGradientOrientation =
-                                GradientOrientations.radial;
-
-                            //take care of logic here
-
-                            //close drawer
-                            Navigator.pop(context);
-                          }
-                        },
-                      ];
-
-                      Map params = {
-                        "context": context,
-                        "title": "Choose a Gradient Orientation",
-                        "options": options,
-                        "on_close": () {
-                          //remove focus from text field
-                          print("on_close function called ");
-                        }
-                      };
-
-                      displayNavigationDrawer(context, params);
-                    },
-                    decoration: InputDecoration(
-                        suffixIcon: Icon(
-                          EvaIcons.arrowDownOutline,
-                          color: Colors.grey[400],
-                          size: 22,
-                        ),
-                        contentPadding: EdgeInsets.only(top: 0.0, bottom: 5.0),
-                        floatingLabelBehavior: FloatingLabelBehavior.auto,
-                        labelText: gradientOController.text.isEmpty
-                            ? 'Select gradient orientation'
-                            : 'Selected Gradient Orientation:',
-                        labelStyle: GoogleFonts.heebo(
-                            textStyle: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: gradientOFocusNode.hasFocus ||
-                                        gradientOController.text.isNotEmpty
-                                    ? 16
-                                    : 12,
-                                color: gradientOFocusNode.hasFocus
-                                    ? workingColors[WorkingColors.primaryColor]
-                                    : Colors.black54)),
-                        alignLabelWithHint: true, //stops it being so high
-                        border: new UnderlineInputBorder(
-                            borderSide:
-                                new BorderSide(color: Colors.grey[300])),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey[300]),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                              color: workingColors[WorkingColors.primaryColor]),
-                        ),
-                        counterText: "",
-                        hintText: '',
-                        hintStyle: GoogleFonts.heebo(
-                            textStyle: TextStyle(
-                                height: 2.5,
-                                fontWeight: FontWeight.normal,
-                                fontSize: 12,
-                                color: Colors.black54))),
-                  ),
-                ),
-              )
+                      : CrossFadeState.showFirst,
+                  duration: crossFadeDuration)
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildGBContent() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: sidePadding, right: sidePadding),
+          child: Container(
+            height: 50.0,
+            child: Text(
+                "This changes the background of the header to a gradient of your chosen colors. Enabling this background style automatically disables any other specified background style.",
+                style: homeSubTextStyle,
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+              top: 8.0, left: sidePadding, right: sidePadding),
+          child: Divider(
+            thickness: 1.0,
+            color: workingColors[WorkingColors.gradientFirstColor]
+                .withOpacity(0.15),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+              top: 10.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+          child: Text(
+            "Gradient Colors",
+            style: homeSubTextStyleBold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+              top: 10.0, left: sidePadding, right: sidePadding),
+          child: AnimatedContainer(
+            //turn this into animated container
+            duration: Duration(milliseconds: 1500),
+            height: 200,
+            width: MediaQuery.of(context).size.width - (sidePadding * 2.0),
+            decoration: BoxDecoration(
+                gradient: gradientThirdColorEnabled
+                    ? getGradient(
+                        gradientFirstColor:
+                            workingColors[WorkingColors.gradientFirstColor],
+                        gradientSecondColor:
+                            workingColors[WorkingColors.gradientSecondColor],
+                        gradientThirdColor:
+                            workingColors[WorkingColors.gradientThirdColor],
+                        gradientOrientation: workingGradientOrientation)
+                    : getGradient(
+                        gradientFirstColor:
+                            workingColors[WorkingColors.gradientFirstColor],
+                        gradientSecondColor:
+                            workingColors[WorkingColors.gradientSecondColor],
+                        gradientOrientation: workingGradientOrientation),
+                borderRadius: BorderRadius.all(Radius.circular(5))),
+          ),
+        ),
+        buildColorRow(
+            "First Color", workingColors[WorkingColors.gradientFirstColor],
+            onTapCallback: () {
+          toggleColorEditor(Options.gradientFirstColor);
+        }, longpressCallback: () {
+          displayPopupColorEditor(Options.gradientFirstColor);
+        }),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: colorPickerContainers[Options.gradientFirstColor],
+            secondChild: Container(height: 0.0),
+            crossFadeState: Options.gradientFirstColor == activeColorEditor
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        buildColorRow(
+            "Second Color", workingColors[WorkingColors.gradientSecondColor],
+            onTapCallback: () {
+          toggleColorEditor(Options.gradientSecondColor);
+        }, longpressCallback: () {
+          displayPopupColorEditor(Options.gradientSecondColor);
+        }),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: colorPickerContainers[Options.gradientSecondColor],
+            secondChild: Container(height: 0.0),
+            crossFadeState: Options.gradientSecondColor == activeColorEditor
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Center(
+                child: SolidButton(
+                  text: "Add third color",
+                  width: 150,
+                  height: 30,
+                  iconData: EvaIcons.plusCircleOutline,
+                  onPressed: () {
+                    setState(() {
+                      gradientThirdColorEnabled = true;
+                    });
+                  },
+                ),
+              ),
+            ),
+            secondChild: Container(height: 0.0),
+            crossFadeState: gradientThirdColorEnabled
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: buildColorRow(
+                "Third Color", workingColors[WorkingColors.gradientThirdColor],
+                onTapCallback: () {
+              toggleColorEditor(Options.gradientThirdColor);
+            }, longpressCallback: () {
+              displayPopupColorEditor(Options.gradientThirdColor);
+            }),
+            secondChild: Container(height: 0.0),
+            crossFadeState: gradientThirdColorEnabled
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: colorPickerContainers[Options.gradientThirdColor],
+            secondChild: Container(height: 0.0),
+            crossFadeState: Options.gradientThirdColor == activeColorEditor
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+        Padding(
+          padding: const EdgeInsets.only(top: 15.0),
+          child: Divider(
+            thickness: 1.0,
+            color: workingColors[WorkingColors.gradientFirstColor]
+                .withOpacity(0.1),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.only(
+              top: 10.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+          child: Text(
+            "Gradient Orientation",
+            style: homeSubTextStyleBold,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+              left: sidePadding, right: sidePadding, top: 10.0),
+          child: Container(
+            height: 70.0,
+            child: TextFormField(
+              focusNode: gradientOFocusNode,
+              controller: gradientOController,
+              maxLength: 15,
+              style: homeSubTextStyle,
+              showCursor: false,
+              enableInteractiveSelection: false,
+              onTap: () {
+                //_requestFocus(customButtonFocusNode);
+                unfocus(context);
+
+                //open botton navigation drawer:
+                List options = [
+                  {
+                    "iconData": EvaIcons.arrowForwardOutline,
+                    "title": "Horizontal",
+                    "onPressed": () {
+                      workingGradientOrientation =
+                          GradientOrientations.horizontal;
+
+                      gradientOController.text = "Horizontal";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.arrowDownwardOutline,
+                    "title": "Vertical",
+                    "onPressed": () {
+                      workingGradientOrientation =
+                          GradientOrientations.vertical;
+
+                      gradientOController.text = "Vertical";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.diagonalArrowRightDownOutline,
+                    "title": "Diagonal from Top Left",
+                    "onPressed": () {
+                      workingGradientOrientation = GradientOrientations.topLeft;
+
+                      gradientOController.text = "Diagonal from Top Left";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.diagonalArrowLeftDown,
+                    "title": "Diagonal from Top Right",
+                    "onPressed": () {
+                      workingGradientOrientation =
+                          GradientOrientations.topRight;
+
+                      gradientOController.text = "Diagonal from Top Right";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.diagonalArrowRightUp,
+                    "title": "Diagonal from Bottom Left",
+                    "onPressed": () {
+                      workingGradientOrientation =
+                          GradientOrientations.bottomLeft;
+
+                      gradientOController.text = "Diagonal from Bottom Left";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.diagonalArrowLeftUp,
+                    "title": "Diagonal from Bottom Right",
+                    "onPressed": () {
+                      workingGradientOrientation =
+                          GradientOrientations.bottomRight;
+
+                      gradientOController.text = "Diagonal from Bottom Right";
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                  {
+                    "iconData": EvaIcons.loaderOutline,
+                    "title": "Radial",
+                    "onPressed": () {
+                      workingGradientOrientation = GradientOrientations.radial;
+
+                      //take care of logic here
+
+                      //close drawer
+                      Navigator.pop(context);
+                    }
+                  },
+                ];
+
+                Map params = {
+                  "context": context,
+                  "title": "Choose a Gradient Orientation",
+                  "options": options,
+                  "on_close": () {
+                    //remove focus from text field
+                    print("on_close function called ");
+                  }
+                };
+
+                displayNavigationDrawer(context, params);
+              },
+              decoration: InputDecoration(
+                  suffixIcon: Icon(
+                    EvaIcons.arrowDownOutline,
+                    color: Colors.grey[400],
+                    size: 22,
+                  ),
+                  contentPadding: EdgeInsets.only(top: 0.0, bottom: 5.0),
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  labelText: gradientOController.text.isEmpty
+                      ? 'Select gradient orientation'
+                      : 'Selected Gradient Orientation:',
+                  labelStyle: GoogleFonts.heebo(
+                      textStyle: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: gradientOFocusNode.hasFocus ||
+                                  gradientOController.text.isNotEmpty
+                              ? 16
+                              : 12,
+                          color: gradientOFocusNode.hasFocus
+                              ? workingColors[WorkingColors.primaryColor]
+                              : Colors.black54)),
+                  alignLabelWithHint: true, //stops it being so high
+                  border: new UnderlineInputBorder(
+                      borderSide: new BorderSide(color: Colors.grey[300])),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.grey[300]),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                        color: workingColors[WorkingColors.primaryColor]),
+                  ),
+                  counterText: "",
+                  hintText: '',
+                  hintStyle: GoogleFonts.heebo(
+                      textStyle: TextStyle(
+                          height: 2.5,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          color: Colors.black54))),
+            ),
+          ),
+        )
+      ],
     );
   }
 
@@ -1191,6 +1571,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         targetColor = WorkingColors.gradientThirdColor;
         break;
 
+      case Options.diagonalColor:
+        targetColor = WorkingColors.diagonalColor;
+        break;
+
       default:
         targetColor = WorkingColors.primaryColor;
     }
@@ -1315,6 +1699,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   }
 
   Padding buildCoverPhoto() {
+    bool coverPhotoActive = backgroundToggleStates[backgroundStyles.image] ||
+        backgroundToggleStates[backgroundStyles.imageDiagonalLine];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
@@ -1332,15 +1719,25 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Background Photo", style: homeTextStyleBold),
+                      Text("Background Cover Photo", style: homeTextStyleBold),
                       Text("Suggested size: 750x350 px",
                           style: homeSubTextStyle),
                     ],
                   ),
-                  Icon(
-                    EvaIcons.plusCircleOutline,
-                    color: workingColors[WorkingColors.primaryColor],
-                    size: 25.0,
+                  IconButton(
+                    onPressed: () {
+                      selectWorkingBGOption(backgroundStyles.image);
+                    },
+                    padding: EdgeInsets.zero,
+                    icon: Icon(
+                      coverPhotoActive
+                          ? UniconsSolid.toggle_on
+                          : UniconsSolid.toggle_off,
+                      color: coverPhotoActive
+                          ? workingColors[WorkingColors.primaryColor]
+                          : Colors.grey[400],
+                      size: 40.0,
+                    ),
                   )
                 ],
               ),
@@ -1762,14 +2159,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                 padding: EdgeInsets.zero,
                 onPressed: () {
                   setState(() {
-                    workingInviteButtonActive = !workingInviteButtonActive;
+                    workingLandingPageMode = !workingLandingPageMode;
                   });
                 },
                 icon: Icon(
-                  workingInviteButtonActive
+                  workingLandingPageMode
                       ? UniconsSolid.toggle_on
                       : UniconsSolid.toggle_off,
-                  color: workingInviteButtonActive
+                  color: workingLandingPageMode
                       ? workingColors[WorkingColors.primaryColor]
                       : Colors.grey[400],
                   size: 40.0,
@@ -1787,16 +2184,28 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         ? workingColors[WorkingColors.gradientThirdColor]
         : null;
 
+    double headerBackgroundHeight = workingLandingPageMode
+        ? MediaQuery.of(context).size.height * sizeFactor
+        : 400;
+    double headerHeight = workingLandingPageMode
+        ? MediaQuery.of(context).size.height * sizeFactor
+        : 280;
+
     Widget widget = Stack(
       children: [
-        headerBuilders['preview_background'](400.0,
+        headerBuilders['preview_background'](headerBackgroundHeight,
             MediaQuery.of(context).size.width - (memberViewPadding * 2.0),
             gradientFirstColor: workingColors[WorkingColors.gradientFirstColor],
             gradientSecondColor:
                 workingColors[WorkingColors.gradientSecondColor],
             gradientThirdColor: thirdColor,
             gradientOrientation: workingGradientOrientation,
-            backgroundStyle: workingBackgroundStyle),
+            backgroundStyle: getWorkingBGOption(),
+            diagonalBarColor: workingColors[WorkingColors.diagonalColor],
+            diagonalBarShadow: workingDiagonalBarShadow,
+            diagonalBarShadowBlurRadius: workingDiagonalBarShadowBlurRadius,
+            diagonalBarShadowLift: workingDiagonalBarShadowLift,
+            diagonalMaxOpacity: workingDBMaxOpacity),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -573,16 +573,36 @@ enum headerOptions {
   tabBarColor,
   appBarColor,
   backgroundGradient,
-  fullscreenMode
+  fullscreenMode,
+  diagonalBarColor,
+  diagonalBarShadow,
+  diagonalBarShadowBlurRadius,
+  diagonalBarShadowLift,
+  diagonalMaxOpacity,
+  landingPageMode,
+  topLeftBar,
+  topRightBar,
+  bottomLeftBar,
+  bottomRightBar
 }
 
 enum backgroundStyles {
   diagonalLine,
   image,
+  imageDiagonalLine,
   solid,
+  solidDiagonalLine,
   gradient,
   gradientDiagonalLine,
-  video
+  video,
+  videoDiagonalLine,
+  animated,
+  animatedDiagonalLine
+}
+
+enum landingPageMode {
+  active,
+  background,
 }
 
 enum headerLayouts {
@@ -721,7 +741,7 @@ Map contentLayouts = {
 
     headerOptions.logoShape: logoShape.circle,
     headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.diagonalLine,
+    headerOptions.backgroundStyle: backgroundStyles.gradient,
     headerOptions.backgroundGradient: LinearGradient(
       //maybe in future versions you can have an advanced tool for users to create gradients
       begin: Alignment.centerLeft,
@@ -734,6 +754,16 @@ Map contentLayouts = {
     headerOptions.shadowHeight: 0.0, //default should be 4.0
     headerOptions.appBarColor: primaryColor,
     headerOptions.tabBarColor: primaryColor,
+    headerOptions.diagonalBarColor: primaryColor,
+    headerOptions.diagonalBarShadow: true,
+    headerOptions.diagonalBarShadowBlurRadius: 15.0,
+    headerOptions.diagonalBarShadowLift: 0.75,
+    headerOptions.diagonalMaxOpacity: 1.0,
+    headerOptions.topLeftBar: false,
+    headerOptions.topRightBar: true,
+    headerOptions.bottomLeftBar: false,
+    headerOptions.bottomRightBar: false,
+    headerOptions.landingPageMode: {landingPageMode.active: true}
   },
   "default": [
     sections.announcements,
@@ -765,8 +795,8 @@ Map contentLayouts = {
 
 //modalBottomSheet blur settings
 bool modalBottomSheetBlur = true;
-double mbsSigmaX = 5.0;
-double mbsSigmaY = 5.0;
+double mbsSigmaX = 7.0;
+double mbsSigmaY = 7.0;
 
 //custom scroll settings
 enum CTS {
@@ -775,7 +805,7 @@ enum CTS {
   dynamicDiagnonalBar,
 }
 
-//only active when headerOptions.backgroundStyle: backgroundStyles.diagonalLine is set
+//only active when headerOptions.backgroundStyle is a diagonal style
 Map customTabScrollSettings = {
   CTS.tabBackgroundImage:
       false, //should tabbar be solid(false) or show background image (true)
@@ -787,3 +817,7 @@ Map customTabScrollSettings = {
 
 //function holder for home header build functions
 Map<String, Function> headerBuilders = {};
+
+//for toggling main navbar visiblity
+Function toggleNavBar = () {};
+bool persistentNavBar = false; //whether bottom navbar is always visible?

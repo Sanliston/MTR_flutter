@@ -21,6 +21,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
   String currentTab;
   Widget contentSection;
   final ValueNotifier<int> _currentIndex = ValueNotifier<int>(0);
+  bool landingPage;
 
   @override
   void initState() {
@@ -31,8 +32,12 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     );
 
     int length = _tabs.length;
+    landingPage = contentLayouts['header'][headerOptions.landingPageMode]
+        [landingPageMode.active];
 
     print("tab length: $length");
+
+    super.initState();
   }
 
   List<Widget> buildPreview(BuildContext context, String tab) {
@@ -61,13 +66,16 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     return widgets;
   }
 
-  Widget buildHeaderPreview(BuildContext context) {
+  Widget buildHeaderPreview(BuildContext context, {double headerHeight = 400}) {
     Widget widget = Stack(
       children: [
-        headerBuilders['preview_background'](400.0,
+        headerBuilders['preview_background'](headerHeight,
             MediaQuery.of(context).size.width - (memberViewPadding * 2.0)),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: landingPage
+              ? MainAxisAlignment.spaceBetween
+              : MainAxisAlignment.start,
           children: [
             FlatButton(
               onPressed: () {
@@ -344,24 +352,31 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
 
   @override
   Widget build(BuildContext context) {
-    double headerHeight = 290;
+    double headerHeight =
+        landingPage ? MediaQuery.of(context).size.height * sizeFactor : 290;
     double smallButtonHeight = 24.0;
 
     return Container(
       color: darkNight,
-      child: ListView(shrinkWrap: true, children: [
-        buildFirstSection(smallButtonHeight, headerHeight, context),
-        ValueListenableBuilder(
-          builder: (BuildContext context, int value, Widget child) {
-            // This builder will only get called when the _counter
-            // is updated.
-            String currentTab = homeTabList[_currentIndex.value];
-            return buildContentSection(
-                context, currentTab, headerHeight, smallButtonHeight);
-          },
-          valueListenable: _currentIndex,
-        )
-      ]),
+      child: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: ListView(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            children: [
+              buildFirstSection(smallButtonHeight, headerHeight, context),
+              ValueListenableBuilder(
+                builder: (BuildContext context, int value, Widget child) {
+                  // This builder will only get called when the _counter
+                  // is updated.
+                  String currentTab = homeTabList[_currentIndex.value];
+                  return buildContentSection(
+                      context, currentTab, headerHeight, smallButtonHeight);
+                },
+                valueListenable: _currentIndex,
+              )
+            ]),
+      ),
     );
   }
 
@@ -378,7 +393,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           child: Container(
             height: headerHeight + 30.0,
             color: Colors.white,
-            child: buildHeaderPreview(context),
+            child: buildHeaderPreview(context, headerHeight: headerHeight),
           ),
         ),
         SizedBox(

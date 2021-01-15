@@ -38,7 +38,7 @@ class CustomTabScroll extends StatefulWidget {
       this.fullOpacityOffset = 0,
       this.diagonalLine = false,
       this.fixedMode = false,
-      this.color = primaryColor,
+      this.color,
       this.shadow = false,
       this.shadowBlurRadius = 15.0,
       this.shadowLift: 0.75,

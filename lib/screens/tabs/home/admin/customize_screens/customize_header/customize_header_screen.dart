@@ -180,9 +180,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.gradientThirdColor: 1.0
     };
 
-    workingGradientOrientation = gradientOrientation;
+    workingGradientOrientation = currentGradientOrientation;
 
     //state stuff here
+
     workingTaglineActive = contentLayouts['header'][headerOptions.tagLine];
     workingPlaceLogoActive = contentLayouts['header'][headerOptions.placeLogo];
     workingBGGradientActive = contentLayouts['header']
@@ -377,6 +378,52 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     selectWorkingBGOption(newStyle);
   }
 
+  void saveChanges() {
+    /*
+    Missing:
+      -solid background color, currently primary color
+      -
+     */
+    //This function overrides the home state with all changes
+    String header = 'header';
+    contentLayouts[header][headerOptions.titleColor] =
+        workingColors[WorkingColors.titleColor];
+    contentLayouts[header][headerOptions.tagLineColor] =
+        workingColors[WorkingColors.tagLineColor];
+
+    primaryColor = workingColors[WorkingColors.primaryColor];
+    secondaryColor = workingColors[WorkingColors.secondaryColor];
+    accentColor = workingColors[WorkingColors.accentColor];
+
+    gradientColor1 = workingColors[WorkingColors.gradientFirstColor];
+    gradientColor2 = workingColors[WorkingColors.gradientSecondColor];
+    gradientColor3 = workingColors[WorkingColors.gradientThirdColor];
+    currentGradientOrientation = workingGradientOrientation;
+
+    contentLayouts[header][headerOptions.tagLine] = workingTaglineActive;
+    contentLayouts[header][headerOptions.placeLogo] = workingPlaceLogoActive;
+    contentLayouts[header][headerOptions.backgroundStyle] =
+        getWorkingBGOption();
+    contentLayouts[header][headerOptions.memberPreview] =
+        workingMemberPreviewActive;
+    contentLayouts[header][headerOptions.inviteButton] =
+        workingInviteButtonActive;
+    contentLayouts[header][headerOptions.customButton] =
+        workingCustomButtonActive;
+    contentLayouts[header][headerOptions.diagonalBarShadow] =
+        workingDiagonalBarShadow;
+    contentLayouts[header][headerOptions.diagonalBarShadowBlurRadius] =
+        workingDiagonalBarShadowBlurRadius;
+    contentLayouts[header][headerOptions.diagonalBarShadowLift] =
+        workingDiagonalBarShadowLift;
+    contentLayouts[header][headerOptions.diagonalMaxOpacity] =
+        workingDBMaxOpacity;
+    contentLayouts[header][headerOptions.landingPageMode]
+        [landingPageMode.active] = workingLandingPageMode;
+
+    print("Saved backgroundStyle: $workingBackgroundStyle");
+  }
+
   _CustomizeHeaderScreenState(); //constructor call
 
   Widget build(BuildContext context) {
@@ -396,7 +443,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               leading: IconButton(
                 icon: const Icon(EvaIcons.closeOutline),
                 onPressed: () {
-                  Navigator.pop(context);
+                  rebuildHomeCustomizeScreen(context);
                 },
               ),
               actions: <Widget>[
@@ -404,6 +451,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     padding: EdgeInsets.zero,
                     onPressed: () {
                       //call controller to make changes to home_state
+                      saveChanges();
+                      Navigator.pop(context);
                     },
                     child:
                         Center(child: Text('Save', style: homeTextStyleWhite))),

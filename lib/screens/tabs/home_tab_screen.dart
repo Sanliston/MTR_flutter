@@ -735,8 +735,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   Positioned buildPreviewHeaderBackground(
       double homeHeaderHeight, double screenWidth,
       {bool memberViewMode = false,
-      Color gradientFirstColor = gradientColor1,
-      Color gradientSecondColor = gradientColor2,
+      Color gradientFirstColor,
+      Color gradientSecondColor,
       Color gradientThirdColor,
       Color diagonalBarColor,
       GradientOrientations gradientOrientation = GradientOrientations.diagonal,
@@ -999,8 +999,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   So you'll need to be careful when updating headerBackground to match preview background*/
   Positioned buildHeaderBackground(double homeHeaderHeight, double screenWidth,
       {bool memberViewMode = false,
-      Color gradientFirstColor = gradientColor1,
-      Color gradientSecondColor = gradientColor2,
+      Color gradientFirstColor,
+      Color gradientSecondColor,
       Color gradientThirdColor,
       Color diagonalBarColor,
       GradientOrientations gradientOrientation = GradientOrientations.diagonal,

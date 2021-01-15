@@ -1,5 +1,6 @@
 /* This is not my code. It was obtained from: https://github.com/fluttercandies/flutter_hsvcolor_picker/blob/master/lib/flutter_hsvcolor_picker.dart
 Took the approach of extracting the files as opposed to getting the package so I could modify it*/
+
 /// HSV color picker
 ///
 /// [SliderPicker]
@@ -21,6 +22,7 @@ Took the approach of extracting the files as opposed to getting the package so I
 ///
 
 import 'package:MTR_flutter/utilities/constants.dart';
+import 'package:MTR_flutter/state_management/home_state.dart';
 import "package:flutter/cupertino.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
@@ -55,7 +57,7 @@ class SliderPicker extends StatefulWidget {
     @required this.onChanged,
     this.colors,
     this.child,
-    this.initialColor = primaryColor,
+    @required this.initialColor,
   })  : assert(value != null),
         assert(value >= min && value <= max),
         super(key: key);
@@ -231,7 +233,7 @@ class _ThumbPainter extends CustomPainter {
 
   Color currentColor;
 
-  _ThumbPainter({this.currentColor = primaryColor});
+  _ThumbPainter({this.currentColor});
 
   @override
   void paint(Canvas canvas, Size size) {

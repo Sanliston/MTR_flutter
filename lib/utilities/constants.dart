@@ -23,13 +23,7 @@ const double sidePadding = 15.0;
 // const Color accentColor = primaryColor;
 // const Color iconColor = primaryColor;
 
-const Color primaryColor = Color(0xFF556270);
-const Color secondaryColor = Color(0xFFFF6B6B);
-const Color accentColor = primaryColor;
-const Color iconColor = primaryColor;
-
 //Global Colors -- for dev -- future colors will be set in a themes file
-const Color darkNight = Color(0xFF263238);
 
 //login screen parameters and styles
 

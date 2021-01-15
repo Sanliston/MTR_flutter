@@ -454,11 +454,13 @@ final double scrollerRadius = 12;
 
 class _SliderIndicatorPainter extends CustomPainter {
   final double position;
-  final Color scrollColor;
+  Color scrollColor;
 
-  _SliderIndicatorPainter(this.position, {this.scrollColor = primaryColor});
+  _SliderIndicatorPainter(this.position, {this.scrollColor});
   @override
   void paint(Canvas canvas, Size size) {
+    scrollColor = null != scrollColor ? scrollColor : primaryColor;
+
     // print("Paint passed position: $position");
     Offset center = Offset(position, size.height / 2);
 

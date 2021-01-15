@@ -467,6 +467,13 @@ List<Map> groupsList = [
   }
 ];
 
+//core colors
+Color primaryColor = Color(0xFF556270);
+Color secondaryColor = Color(0xFFFF6B6B);
+Color accentColor = primaryColor;
+Color iconColor = primaryColor;
+Color darkNight = Color(0xFF263238);
+
 //functions to build sections
 Widget buildHomeAnnouncements() {
   return new AnnoucementsSection(
@@ -617,8 +624,9 @@ enum logoShape {
 }
 
 //background gradient starting colors
-const Color gradientColor1 = primaryColor;
-const Color gradientColor2 = secondaryColor;
+Color gradientColor1 = primaryColor;
+Color gradientColor2 = secondaryColor;
+Color gradientColor3 = accentColor;
 
 enum GradientOrientations {
   horizontal,
@@ -631,13 +639,21 @@ enum GradientOrientations {
   radial
 }
 
-const GradientOrientations gradientOrientation = GradientOrientations.diagonal;
+GradientOrientations currentGradientOrientation = GradientOrientations.diagonal;
 
 Gradient getGradient(
-    {Color gradientFirstColor = gradientColor1,
-    Color gradientSecondColor = gradientColor2,
+    {Color gradientFirstColor,
+    Color gradientSecondColor,
     Color gradientThirdColor,
-    GradientOrientations gradientOrientation = gradientOrientation}) {
+    GradientOrientations gradientOrientation}) {
+  gradientFirstColor =
+      null != gradientFirstColor ? gradientFirstColor : gradientColor1;
+  gradientSecondColor =
+      null != gradientSecondColor ? gradientSecondColor : gradientColor2;
+  gradientOrientation = null != gradientOrientation
+      ? gradientOrientation
+      : currentGradientOrientation;
+
   List<Color> colorsList = [gradientFirstColor, gradientSecondColor];
   List<double> gradientStops = null;
   if (null != gradientThirdColor) {
@@ -743,6 +759,7 @@ Map contentLayouts = {
     headerOptions.logoRadius: 4.0,
     headerOptions.backgroundStyle: backgroundStyles.gradient,
     headerOptions.backgroundGradient: LinearGradient(
+      //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
@@ -821,3 +838,5 @@ Map<String, Function> headerBuilders = {};
 //for toggling main navbar visiblity
 Function toggleNavBar = () {};
 bool persistentNavBar = false; //whether bottom navbar is always visible?
+
+//Homestate object containing values

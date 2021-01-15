@@ -92,14 +92,20 @@ class TransparentButton extends StatelessWidget {
       this.iconSize = 18.0,
       this.onPressed,
       this.backgroundColor = Colors.transparent,
-      this.borderColor = primaryColor,
-      this.fontColor = primaryColor,
-      this.iconColor = primaryColor,
+      this.borderColor,
+      this.fontColor,
+      this.iconColor,
       @required this.text})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    //set default color values to non constant color
+    Color resultingBorderColor =
+        null != borderColor ? borderColor : primaryColor;
+    Color resultingFontColor = null != fontColor ? fontColor : primaryColor;
+    Color resultingIconColor = null != iconColor ? iconColor : primaryColor;
+
     Widget icon = Container(width: 1.0);
 
     if (null != iconData) {
@@ -107,7 +113,7 @@ class TransparentButton extends StatelessWidget {
         padding: const EdgeInsets.only(right: 5.0),
         child: Icon(
           iconData,
-          color: iconColor,
+          color: resultingIconColor,
           size: iconSize,
         ),
       );
@@ -128,7 +134,7 @@ class TransparentButton extends StatelessWidget {
             EdgeInsets.only(top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: borderColor,
+            color: resultingBorderColor,
             width: 1.0,
           ),
           borderRadius: BorderRadius.circular(30.0),
@@ -144,7 +150,7 @@ class TransparentButton extends StatelessWidget {
                 textStyle: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
-                    color: fontColor),
+                    color: resultingFontColor),
               ),
             )
           ],
@@ -173,8 +179,8 @@ class SolidButton extends StatelessWidget {
       this.iconData,
       this.iconSize = 18.0,
       this.onPressed,
-      this.backgroundColor = primaryColor,
-      this.borderColor = primaryColor,
+      this.backgroundColor,
+      this.borderColor,
       this.fontColor = Colors.white,
       this.iconColor = Colors.white,
       @required this.text})
@@ -182,6 +188,12 @@ class SolidButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //set default color values to non constant color
+    Color resultingBorderColor =
+        null != borderColor ? borderColor : primaryColor;
+    Color resultingBackgroundColor =
+        null != backgroundColor ? backgroundColor : primaryColor;
+
     Widget icon = Container(width: 1.0);
 
     if (null != iconData) {
@@ -210,12 +222,12 @@ class SolidButton extends StatelessWidget {
             EdgeInsets.only(top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
         shape: RoundedRectangleBorder(
           side: BorderSide(
-            color: borderColor,
+            color: resultingBorderColor,
             width: 1.0,
           ),
           borderRadius: BorderRadius.circular(30.0),
         ),
-        color: backgroundColor,
+        color: resultingBackgroundColor,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

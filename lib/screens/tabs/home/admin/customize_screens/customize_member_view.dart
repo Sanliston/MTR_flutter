@@ -67,6 +67,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
   }
 
   Widget buildHeaderPreview(BuildContext context, {double headerHeight = 400}) {
+    print("header preview being rebuilt in member view, ");
     Widget widget = Stack(
       children: [
         headerBuilders['preview_background'](headerHeight,
@@ -80,9 +81,17 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
             FlatButton(
               onPressed: () {
                 Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => CustomizeHeaderScreen()));
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => CustomizeHeaderScreen()))
+                    .then((value) => setState(() {
+                          print(
+                              "set state called in customize member view, landingPage value $landingPage");
+                          landingPage = contentLayouts['header'][
+                              headerOptions
+                                  .landingPageMode][landingPageMode
+                              .active]; //setting this as this value doesn't seem to auto update after return
+                        }));
               },
               padding: EdgeInsets.zero,
               child: AbsorbPointer(

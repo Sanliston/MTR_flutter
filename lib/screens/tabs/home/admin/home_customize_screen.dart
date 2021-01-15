@@ -33,6 +33,7 @@ class _HomeCustomizeScreenState extends State<HomeCustomizeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("home customize screen being rebuilt");
     return Scaffold(
       body: Container(
         color: darkNight,

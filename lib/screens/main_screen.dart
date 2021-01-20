@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:MTR_flutter/external/hsv_colorpicker.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
@@ -67,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
     bottomIcons[2]["normal"]
   ];
 
-  bool navBarVisible = persistentNavBar;
+  bool navBarVisible = true;
 
   navBar({bool visible, int index}) {
     index = null != index ? index : 0;
@@ -122,41 +124,79 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     toggleNavBar = navBar;
 
-    return Scaffold(
-      body: Center(
+    return Stack(children: [
+      Center(
         child:
             _widgetOptions.elementAt(mainScreenState[mainScreen.selectedIndex]),
       ),
-      bottomNavigationBar: AnimatedCrossFade(
-        firstChild: BottomNavigationBar(
-          backgroundColor: Colors.white,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(indexedPageIcons[0]),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(indexedPageIcons[1]),
-              label: 'Inbox',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(indexedPageIcons[2]),
-              label: 'Personal',
-            ),
-          ],
-          currentIndex: mainScreenState[mainScreen.selectedIndex],
-          selectedItemColor: primaryColor,
-          onTap: _onItemTapped,
+      Positioned.fill(
+          child: Align(
+        alignment: Alignment.bottomCenter,
+        child: AnimatedCrossFade(
+          firstChild: Container(
+            width: MediaQuery.of(context).size.width - 20,
+            height: 0.0,
+            color: secondaryColor,
+          ),
+          secondChild: Container(
+            width: MediaQuery.of(context).size.width - 20,
+            height: 0.0,
+            color: Colors.transparent,
+          ),
+          duration: Duration(milliseconds: 200),
+          crossFadeState: navBarVisible
+              ? CrossFadeState.showFirst
+              : CrossFadeState.showSecond,
         ),
-        secondChild:
-            Container(height: 0.0, width: 0.0, color: Colors.transparent),
-        duration: Duration(milliseconds: 200),
-        crossFadeState: navBarVisible
-            ? CrossFadeState.showFirst
-            : CrossFadeState.showSecond,
+      )),
+      Positioned.fill(
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: AnimatedCrossFade(
+            firstChild: Container(
+              decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(
+                          color: secondaryColor.withOpacity(0.0), width: 0.5))),
+              child: ClipRect(
+                child: new BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: BottomNavigationBar(
+                    elevation: 0.0,
+                    backgroundColor: Colors.grey[300].withOpacity(0.4),
+                    showSelectedLabels: false,
+                    showUnselectedLabels: false,
+                    items: <BottomNavigationBarItem>[
+                      BottomNavigationBarItem(
+                        icon: Icon(indexedPageIcons[0]),
+                        label: 'Home',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(indexedPageIcons[1]),
+                        label: 'Inbox',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(indexedPageIcons[2]),
+                        label: 'Personal',
+                      ),
+                    ],
+                    currentIndex: mainScreenState[mainScreen.selectedIndex],
+                    selectedItemColor: primaryColor,
+                    unselectedItemColor: Colors.black38,
+                    onTap: _onItemTapped,
+                  ),
+                ),
+              ),
+            ),
+            secondChild:
+                Container(height: 0.0, width: 0.0, color: Colors.transparent),
+            duration: Duration(milliseconds: 200),
+            crossFadeState: navBarVisible
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+          ),
+        ),
       ),
-    );
+    ]);
   }
 }

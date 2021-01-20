@@ -189,10 +189,11 @@ class SolidButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //set default color values to non constant color
-    Color resultingBorderColor =
-        null != borderColor ? borderColor : primaryColor;
+
     Color resultingBackgroundColor =
         null != backgroundColor ? backgroundColor : primaryColor;
+    Color resultingBorderColor =
+        null != borderColor ? borderColor : resultingBackgroundColor;
 
     Widget icon = Container(width: 1.0);
 

@@ -468,11 +468,15 @@ List<Map> groupsList = [
 ];
 
 //core colors
-Color primaryColor = Color(0xFF556270);
-Color secondaryColor = Color(0xFFFF6B6B);
+Color primaryColor = Color(0xFF4568DC);
+Color secondaryColor = Color(0xFFB06AB3);
+
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;
 Color darkNight = Color(0xFF263238);
+
+//default background Image
+String defaultBackgroundImage;
 
 //functions to build sections
 Widget buildHomeAnnouncements() {
@@ -565,6 +569,8 @@ List<String> homeAdminTabList = <String>[
 //NOTE: tab names here have to match those in homeTabList (excluding header and default)
 enum headerOptions {
   titleColor,
+  headerFontColor,
+  toolBarIconColor,
   tagLine,
   tagLineColor,
   placeLogo,
@@ -573,6 +579,7 @@ enum headerOptions {
   customButton,
   layout,
   blurEffect,
+  blurredAppBar,
   logoShape,
   logoRadius,
   backgroundStyle,
@@ -583,6 +590,7 @@ enum headerOptions {
   fullscreenMode,
   diagonalBarColor,
   diagonalBarShadow,
+  diagonalBarShadowColor,
   diagonalBarShadowBlurRadius,
   diagonalBarShadowLift,
   diagonalMaxOpacity,
@@ -590,7 +598,11 @@ enum headerOptions {
   topLeftBar,
   topRightBar,
   bottomLeftBar,
-  bottomRightBar
+  bottomRightBar,
+  topLeftBarColor,
+  topRightBarColor,
+  bottomLeftBarColor,
+  bottomRightBarColor
 }
 
 enum backgroundStyles {
@@ -654,6 +666,8 @@ Gradient getGradient(
       ? gradientOrientation
       : currentGradientOrientation;
 
+  print("get gradient called, orientation: $gradientOrientation");
+
   List<Color> colorsList = [gradientFirstColor, gradientSecondColor];
   List<double> gradientStops = null;
   if (null != gradientThirdColor) {
@@ -687,6 +701,16 @@ Gradient getGradient(
           end: Alignment.bottomCenter,
           stops: gradientStops,
           colors: colorsList);
+      break;
+
+    case GradientOrientations.diagonal:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          stops: gradientStops,
+          colors: colorsList);
+
       break;
 
     case GradientOrientations.topLeft:
@@ -743,8 +767,11 @@ Gradient getGradient(
 /*Maybe defined getters and setters for this to make life easier  - refactor later on*/
 Map contentLayouts = {
   "header": {
-    headerOptions.fullscreenMode: false,
+    headerOptions.fullscreenMode: false, // deprecated, use landingPageMode
     headerOptions.titleColor: Colors.white,
+    headerOptions.headerFontColor: Colors.grey[100],
+    headerOptions.toolBarIconColor: Colors.white,
+    headerOptions.blurredAppBar: true,
     headerOptions.tagLine: true,
     headerOptions.tagLineColor: Colors.white,
     headerOptions.placeLogo: true,
@@ -757,7 +784,7 @@ Map contentLayouts = {
 
     headerOptions.logoShape: logoShape.circle,
     headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.gradient,
+    headerOptions.backgroundStyle: backgroundStyles.gradientDiagonalLine,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
@@ -773,14 +800,19 @@ Map contentLayouts = {
     headerOptions.tabBarColor: primaryColor,
     headerOptions.diagonalBarColor: primaryColor,
     headerOptions.diagonalBarShadow: true,
+    headerOptions.diagonalBarShadowColor: Colors.black54,
     headerOptions.diagonalBarShadowBlurRadius: 15.0,
     headerOptions.diagonalBarShadowLift: 0.75,
     headerOptions.diagonalMaxOpacity: 1.0,
-    headerOptions.topLeftBar: false,
+    headerOptions.topLeftBar: true,
     headerOptions.topRightBar: true,
     headerOptions.bottomLeftBar: false,
     headerOptions.bottomRightBar: false,
-    headerOptions.landingPageMode: {landingPageMode.active: true}
+    headerOptions.topLeftBarColor: primaryColor,
+    headerOptions.topRightBarColor: primaryColor,
+    headerOptions.bottomLeftBarColor: primaryColor,
+    headerOptions.bottomRightBarColor: primaryColor,
+    headerOptions.landingPageMode: {landingPageMode.active: false}
   },
   "default": [
     sections.announcements,
@@ -810,6 +842,49 @@ Map contentLayouts = {
   ]
 };
 
+Map headerSettings = contentLayouts['header'];
+
+//decided to start handling settings outside of the Map above, which tbh is a monstrosity
+
+enum TabBarStyle {
+  halfRound,
+  fullRound,
+  traditional,
+  bubble,
+  square,
+  dot,
+  hoverLine,
+  inverseHalfRound,
+  border
+}
+
+//These are the expanded tabbar , i.e default
+TabBarStyle selectedTabBarStyle = TabBarStyle.halfRound;
+TabBarStyle unselectedTabBarStyle = TabBarStyle
+    .traditional; //this will just overlap under the selected style -- doesnt disappear
+Color selectedTabBarColor = Colors.white;
+Color unselectedTabBarColor = primaryColor;
+Color tabBarSelectedFontColor = primaryColor;
+Color tabBarUnselectedFontColor = Colors.grey[200];
+Color tabBarGlowColor = primaryColor;
+bool tabBarBlurGlow = true;
+bool tabBarLabelGlow = false;
+bool tabBarBlurHue = false;
+bool tabBarSolidAppBar = true;
+Color tabBarBlurOverlayColor = Colors.grey[300];
+double tabBarBlurOverlayOpacity = 0.4;
+double tabBarBlurSigma = 7.0;
+
+//these are the collapsed tabbar styles
+TabBarStyle cSelectedTabBarStyle = TabBarStyle.bubble;
+TabBarStyle cUnselectedTabBarStyle = TabBarStyle
+    .dot; //this will just overlap under the selected style -- doesnt disappear
+Color cSelectedTabBarColor = primaryColor;
+Color cUnselectedTabBarColor = primaryColor;
+Color cTabBarSelectedFontColor = Colors.white;
+Color cTabBarUnselectedFontColor = primaryColor;
+Color cTabBarGlowColor = primaryColor;
+
 //modalBottomSheet blur settings
 bool modalBottomSheetBlur = true;
 double mbsSigmaX = 7.0;
@@ -838,5 +913,8 @@ Map<String, Function> headerBuilders = {};
 //for toggling main navbar visiblity
 Function toggleNavBar = () {};
 bool persistentNavBar = false; //whether bottom navbar is always visible?
+
+//for toggling appToolBarIconColors
+Function toggleTBIconColors = () {};
 
 //Homestate object containing values

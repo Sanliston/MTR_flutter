@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:MTR_flutter/blur_on_scroll.dart';
 import 'package:MTR_flutter/components/buttons.dart';
 import 'package:MTR_flutter/components/navigation_drawer.dart';
@@ -58,6 +60,10 @@ class CustomizeHeaderScreen extends StatefulWidget {
 class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   ScrollController mainScrollController = new ScrollController();
   List list;
+  List
+      backgroundImageList; //linkedhashmap not necessary as we access using keys so order is dictated by us at access time
+
+  List selectedBackgroundImageList;
 
   Color workingTitleColor;
   Color workingTagLineColor;
@@ -140,6 +146,17 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       "assets/images/home_background.jpg",
     ];
 
+    backgroundImageList = [
+      "assets/images/home_background.jpg",
+      "assets/images/home_background_2.jpg",
+      "assets/images/home_background_3.jpg",
+    ];
+
+    selectedBackgroundImageList = [
+      "assets/images/home_background.jpg",
+      "assets/images/home_background_3.jpg",
+    ];
+
     workingColors = {
       WorkingColors.titleColor: contentLayouts['header']
           [headerOptions.titleColor],
@@ -150,9 +167,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       WorkingColors.primaryColor: primaryColor,
       WorkingColors.secondaryColor: secondaryColor,
       WorkingColors.accentColor: accentColor,
-      WorkingColors.gradientFirstColor: primaryColor,
-      WorkingColors.gradientSecondColor: secondaryColor,
-      WorkingColors.gradientThirdColor: accentColor
+      WorkingColors.gradientFirstColor: gradientColor1,
+      WorkingColors.gradientSecondColor: gradientColor2,
+      WorkingColors.gradientThirdColor: gradientColor3
     };
 
     targetColor = null;
@@ -241,6 +258,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
     selectWorkingBGOption(
         contentLayouts['header'][headerOptions.backgroundStyle]);
+    validateWorkingBGOption();
 
     //to stop certain focus nodes from getting focus -- this actually works
     gradientOFocusNode.addListener(() {
@@ -283,6 +301,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     //function that updates the workingBackgroundStyle depending on which background switch is on
     bool atleastOneIsTrue = false;
 
+    //validate style
+    validateWorkingBGOption(backgroundStyle: selectedOption);
+
     //toggle all other options off
     for (var backgroundStyle in backgroundStyles.values) {
       if (backgroundStyle == selectedOption) {
@@ -321,6 +342,34 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     }
 
     return null;
+  }
+
+  void validateWorkingBGOption({backgroundStyles backgroundStyle}) {
+    //checks if current bg option is still valid if not sets default
+    backgroundStyle =
+        null != backgroundStyle ? backgroundStyle : getWorkingBGOption();
+
+    //if current background is Image check if backgroundImageList is empty, if empty, set other background style
+    if (backgroundStyle == backgroundStyles.image ||
+        backgroundStyle == backgroundStyles.imageDiagonalLine) {
+      //check if backgroundImageList is empty
+      bool imageIsEmpty = backgroundImageList.isEmpty;
+      // bool selectedImageIsEmpty = selectedBackgroundImageList.isEmpty;
+
+      if (imageIsEmpty) {
+        //insert default backgroundImage into list
+        setState(() {
+          backgroundImageList.add(defaultBackgroundImage);
+        });
+      }
+
+      // if (selectedImageIsEmpty) {
+      //   setState(() {
+      //     print("selected Image is empty, setting state");
+      //     selectedBackgroundImageList.add(defaultBackgroundImage);
+      //   });
+      // }
+    }
   }
 
   void toggleDiagonal() {
@@ -384,6 +433,11 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       -solid background color, currently primary color
       -
      */
+
+    //validate options before saving so there aren't any null states
+    //such as background image without background images being set
+    validateWorkingBGOption();
+
     //This function overrides the home state with all changes
     String header = 'header';
     contentLayouts[header][headerOptions.titleColor] =
@@ -421,6 +475,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     contentLayouts[header][headerOptions.landingPageMode]
         [landingPageMode.active] = workingLandingPageMode;
 
+    contentLayouts[header][headerOptions.appBarColor] =
+        workingColors[WorkingColors.primaryColor];
+
     print("Saved backgroundStyle: $workingBackgroundStyle");
   }
 
@@ -443,7 +500,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               leading: IconButton(
                 icon: const Icon(EvaIcons.closeOutline),
                 onPressed: () {
-                  rebuildHomeCustomizeScreen(context);
+                  //rebuildHomeCustomizeScreen(context);
+                  Navigator.pop(context);
                 },
               ),
               actions: <Widget>[
@@ -1790,33 +1848,47 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   )
                 ],
               ),
-              SizedBox(
-                height: 150,
-                width: MediaQuery.of(context).size.width - (sidePadding * 2.0),
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                  child: CustomReorderableListView(
-                      padding: EdgeInsets.only(right: 25.0),
-                      scrollDirection: Axis.horizontal,
-                      children: buildPhotoList(),
-                      onReorder: (oldIndex, newIndex) {
-                        String old = list[oldIndex];
-                        if (oldIndex > newIndex) {
-                          for (int i = oldIndex; i > newIndex; i--) {
-                            list[i] = list[i - 1];
-                          }
-                          list[newIndex] = old;
-                        } else {
-                          for (int i = oldIndex; i < newIndex - 1; i++) {
-                            list[i] = list[i + 1];
-                          }
-                          list[newIndex - 1] = old;
-                        }
-                        setState(() {});
-                      }),
+              AnimatedCrossFade(
+                firstChild: Column(
+                  children: [
+                    SizedBox(
+                      height: 150,
+                      width: MediaQuery.of(context).size.width -
+                          (sidePadding * 2.0),
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                        child: CustomReorderableListView(
+                            padding: EdgeInsets.only(right: 25.0),
+                            scrollDirection: Axis.horizontal,
+                            children: buildPhotoList(),
+                            onReorder: (oldIndex, newIndex) {
+                              String old = backgroundImageList[oldIndex];
+                              if (oldIndex > newIndex) {
+                                for (int i = oldIndex; i > newIndex; i--) {
+                                  backgroundImageList[i] =
+                                      backgroundImageList[i - 1];
+                                }
+                                backgroundImageList[newIndex] = old;
+                              } else {
+                                for (int i = oldIndex; i < newIndex - 1; i++) {
+                                  backgroundImageList[i] = list[i + 1];
+                                }
+                                backgroundImageList[newIndex - 1] = old;
+                              }
+                              setState(() {});
+                            }),
+                      ),
+                    ),
+                    Text("Tap, hold and drag to reorder",
+                        style: homeSubTextStyle)
+                  ],
                 ),
+                secondChild: Container(),
+                crossFadeState: backgroundImageList.isNotEmpty
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                duration: Duration(milliseconds: 300),
               ),
-              Text("Tap, hold and drag to reorder", style: homeSubTextStyle)
             ],
           ),
         ),
@@ -1827,53 +1899,192 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   List<Widget> buildPhotoList() {
     List<Widget> photoList = [];
     Widget temp;
+    int length = backgroundImageList.length;
 
-    for (var i = 0; i < list.length; i++) {
-      temp = Container(
+    for (int i = 0; i < length; i++) {
+      String image = backgroundImageList[i];
+      bool selected = selectedBackgroundImageList.contains(image);
+
+      temp = GestureDetector(
         key: GlobalKey(),
-        height: 70,
-        margin: EdgeInsets.only(left: 0, right: 0),
-        width: 70,
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          alignment: Alignment.topLeft,
-          children: [
-            Positioned(
-              top: 5,
-              left: 5,
-              child: Container(
-                height: 70,
-                width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(0)),
-                  image: DecorationImage(
-                    image: AssetImage(list[i]),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: null /* add child content here */,
-              ),
-            ),
-            Container(
-                height: 15,
-                width: 15,
-                child: IconButton(
-                    padding: EdgeInsets.zero,
-                    icon: Icon(
-                      EvaIcons.closeOutline,
-                      color: Colors.white,
-                      size: 15.0,
+        onTap: () {
+          backgroundStyles workingBGOption = getWorkingBGOption();
+
+          setState(() {
+            //if previously no selected images and diff background style, enable image background
+            if (selectedBackgroundImageList.isEmpty &&
+                (workingBGOption != backgroundStyles.image ||
+                    workingBGOption != backgroundStyles.imageDiagonalLine)) {
+              selectWorkingBGOption(backgroundStyles.image);
+            }
+
+            if (selected) {
+              selectedBackgroundImageList.remove(image);
+            } else {
+              selectedBackgroundImageList.add(image);
+            }
+
+            //if no image selected, set new bg option
+            if (selectedBackgroundImageList.isEmpty &&
+                (workingBGOption == backgroundStyles.image ||
+                    workingBGOption == backgroundStyles.imageDiagonalLine)) {
+              selectWorkingBGOption(backgroundStyles.gradient);
+            }
+          });
+
+          //validate
+          validateWorkingBGOption(backgroundStyle: backgroundStyles.image);
+        },
+        child: Container(
+          height: 70,
+          margin: EdgeInsets.only(left: 0, right: 0),
+          width: 70,
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            alignment: Alignment.topLeft,
+            children: [
+              Positioned(
+                top: 5,
+                left: 5,
+                child: Container(
+                  height: 70,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    image: DecorationImage(
+                      image: AssetImage(image),
+                      fit: BoxFit.cover,
                     ),
-                    onPressed: null),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.4),
-                  borderRadius: BorderRadius.all(Radius.circular(35)),
-                )),
-          ],
+                  ),
+                  child: null /* add child content here */,
+                ),
+              ),
+              Positioned(
+                top: 5.0,
+                left: 5.0,
+                child: AnimatedCrossFade(
+                    firstChild: Container(
+                      height: 70,
+                      width: 70,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          color: Colors.black.withOpacity(0.6)),
+                      child: Icon(EvaIcons.checkmarkOutline,
+                          color: Colors.white) /* add child content here */,
+                    ),
+                    secondChild: Container(),
+                    crossFadeState: selected
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: Duration(milliseconds: 300)),
+              ),
+              Container(
+                  height: 15,
+                  width: 15,
+                  child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        EvaIcons.closeOutline,
+                        color: Colors.white,
+                        size: 15.0,
+                      ),
+                      onPressed: () {
+                        String displayText = length > 1
+                            ? "Are you sure you want to remove this image?"
+                            : "You must have atleast one image available.";
+
+                        Widget customHeader = Padding(
+                          padding: const EdgeInsets.only(
+                              top: 5.0,
+                              bottom: 5.0,
+                              left: sidePadding,
+                              right: sidePadding),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                displayText,
+                                style: homeTextStyleBold,
+                                overflow: TextOverflow.visible,
+                              ),
+
+                              //button which takes you to user profile
+                            ],
+                          ),
+                        );
+
+                        Widget customBody = Padding(
+                            padding: const EdgeInsets.only(
+                                top: 10.0,
+                                bottom: 10.0,
+                                left: sidePadding,
+                                right: sidePadding),
+                            child: length > 1
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: sidePadding / 2),
+                                        child: SolidButton(
+                                          height: 30,
+                                          width: 100,
+                                          text: "Remove",
+                                          backgroundColor: Colors.red,
+                                          onPressed: () {
+                                            setState(() {
+                                              backgroundImageList.remove(image);
+                                            });
+
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: sidePadding / 2),
+                                        child: TransparentButton(
+                                          height: 30,
+                                          width: 100,
+                                          text: "Cancel",
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  )
+                                : Center(
+                                    child: TransparentButton(
+                                      height: 30,
+                                      width: 100,
+                                      text: "Dismiss",
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ));
+
+                        Map params = {
+                          "context": context,
+                          "custom_header": customHeader,
+                          "custom_body": customBody,
+                          "blur": false
+                        };
+
+                        displayNavigationDrawer(context, params);
+                      }),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.all(Radius.circular(35)),
+                  )),
+            ],
+          ),
         ),
       );
 

@@ -56,6 +56,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   List<String> _tabs;
   Color unselectedLabelColor;
   bool landingPage;
+  Color toolBarIconColor;
+  int _currentTabIndex;
+
+  TabBarStyle _selectedTabBarStyle;
+  TabBarStyle _unselectedTabBarStyle;
+  Color _selectedTabBarColor;
+  Color _unselectedTabBarColor;
+  Color _tabBarSelectedFontColor;
+  Color _tabBarUnselectedFontColor;
+  bool _expanded;
 
   List<Widget> buildTab(BuildContext context, String tab) {
     /*List will hold certain information:
@@ -119,6 +129,50 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     displayNavigationDrawer(context, params);
   }
 
+  toggleToolBarIconColor({bool expanded}) {
+    if (_expanded == expanded) {
+      //acts as a litmus test, to stop the rest executing
+      return;
+    }
+
+    Color newIconColor = null != expanded && expanded
+        ? Colors.white
+        : contentLayouts['header'][headerOptions.toolBarIconColor];
+
+    print("toggle tbicolor called: $expanded");
+
+    TabBarStyle newSelectedTabBarStyle = selectedTabBarStyle;
+    TabBarStyle newUnselectedTabBarStyle = unselectedTabBarStyle;
+    Color newSelectedTabBarColor = selectedTabBarColor;
+    Color newUnselectedTabBarColor = unselectedTabBarColor;
+    Color newTabBarSelectedFontColor = tabBarSelectedFontColor;
+    Color newTabBarUnselectedFontColor = tabBarUnselectedFontColor;
+
+    if (!expanded) {
+      newSelectedTabBarStyle = cSelectedTabBarStyle;
+      newUnselectedTabBarStyle = cUnselectedTabBarStyle;
+      newSelectedTabBarColor = cSelectedTabBarColor;
+      newUnselectedTabBarColor = cUnselectedTabBarColor;
+      newTabBarSelectedFontColor = cTabBarSelectedFontColor;
+      newTabBarUnselectedFontColor = cTabBarUnselectedFontColor;
+    }
+
+    setState(() {
+      print(
+          "###################################toggle bar icon color called, new color: $newIconColor");
+      toolBarIconColor = newIconColor;
+
+      _selectedTabBarStyle = newSelectedTabBarStyle;
+      _unselectedTabBarStyle = newUnselectedTabBarStyle;
+      _selectedTabBarColor = newSelectedTabBarColor;
+      _unselectedTabBarColor = newUnselectedTabBarColor;
+      _tabBarSelectedFontColor = newTabBarSelectedFontColor;
+      _tabBarUnselectedFontColor = newTabBarUnselectedFontColor;
+
+      _expanded = expanded;
+    });
+  }
+
   void onTabTap() {}
 
   void onTabDrag(int index) {
@@ -153,6 +207,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       // Tab Changed swiping to a new tab
       onTabDrag(controller.index);
     }
+
+    //set state for index change here
+    setState(() {
+      _currentTabIndex = controller.index;
+    });
   }
 
   @override
@@ -162,7 +221,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     //get the configured tab list
 
     _tabs = isAdmin ? homeAdminTabList : homeTabList;
-    unselectedLabelColor = Colors.white;
+    _currentTabIndex = 0;
+    unselectedLabelColor = Colors.black38;
+    _selectedTabBarStyle = selectedTabBarStyle;
+    _unselectedTabBarStyle = unselectedTabBarStyle;
+    _selectedTabBarColor = selectedTabBarColor;
+    _unselectedTabBarColor = unselectedTabBarColor;
+    _tabBarSelectedFontColor = tabBarSelectedFontColor;
+    _tabBarUnselectedFontColor = tabBarUnselectedFontColor;
+    _expanded = true;
 
     //set controller list based on obtained list
     controller = TabController(
@@ -211,6 +278,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     landingPage = contentLayouts['header'][headerOptions.landingPageMode]
         [landingPageMode.active];
+
+    toggleTBIconColors = toggleToolBarIconColor;
   }
 
   @override
@@ -245,6 +314,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     print("header height: $homeHeaderHeight");
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: DefaultTabController(
         length: _tabs.length, // This is the number of tabs.
         child: NestedScrollView(
@@ -275,7 +345,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             ? homeHeaderHeight * 0.6
                             : homeHeaderHeight * 0.3,
                         zeroOpacityOffset: 0,
-                        child: Text("More Than Rubies")),
+                        child: AnimatedContainer(
+                            duration: Duration(milliseconds: 300),
+                            child: Text(
+                              "More Than Rubies",
+                              style: TextStyle(color: toolBarIconColor),
+                            ))),
                     pinned: true,
                     snap: false,
                     forceElevated: true,
@@ -285,160 +360,228 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     floating: false,
                     expandedHeight: homeHeaderHeight,
                     backgroundColor: contentLayouts['header']
-                        [headerOptions.appBarColor],
+                            [headerOptions.blurredAppBar]
+                        ? Colors.transparent
+                        : contentLayouts['header'][headerOptions.appBarColor],
                     actionsIconTheme: IconThemeData(opacity: 1.0),
                     actions: <Widget>[
-                      IconButton(
-                        icon: Icon(
-                          Icons.notifications,
-                          color: Colors.white,
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.notifications,
+                            color: toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            // do something
+                          },
                         ),
-                        onPressed: () {
-                          // do something
-                        },
                       ),
-                      IconButton(
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          List options = [
-                            {
-                              "title": "Admin Actions",
-                              "type": "subtitle",
-                            },
-                            {
-                              "iconData": EvaIcons.browserOutline,
-                              "title": "Dashboard",
-                              "onPressed": () {
-                                //takes them to dashboard page, with analytics etc
-                                Navigator.pop(context);
-                              }
-                            },
-                            {
-                              "iconData": EvaIcons.brushOutline,
-                              "title": "Customize",
-                              "onPressed": () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) =>
-                                            HomeCustomizeScreen()));
-                              }
-                            },
-                            {"title": "More Actions", "type": "subtitle"},
-                            {
-                              "iconData": EvaIcons.personAddOutline,
-                              "title": "Invite Members",
-                              "onPressed": () {
-                                //close this menu
-                                Navigator.pop(context);
-
-                                //open invite menue
-                                sharedStateManagement['display_invite_menu']();
-                              }
-                            },
-                            {
-                              "iconData": EvaIcons.bellOutline,
-                              "title": "Manage Notifications",
-                              "onPressed": () {
-                                Navigator.pop(context);
-                              }
-                            },
-                            {
-                              "iconData": UniconsLine.mobile_android,
-                              "title": "Add to Home Screen",
-                              "onPressed": () {
-                                Navigator.pop(context);
-                              }
-                            }
-                          ];
-
-                          Widget customHeader = Padding(
-                            padding: const EdgeInsets.only(
-                                top: 10.0,
-                                bottom: 10.0,
-                                left: sidePadding,
-                                right: sidePadding),
-                            child: FlatButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                if (null != stateCallback[screen.main]) {
-                                  stateCallback[screen.main](() {
-                                    Navigator.pop(context);
-                                    mainScreenState[mainScreen.selectedIndex] =
-                                        2;
-                                  });
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        child: IconButton(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            List options = [
+                              {
+                                "title": "Admin Actions",
+                                "type": "subtitle",
+                              },
+                              {
+                                "iconData": EvaIcons.browserOutline,
+                                "title": "Dashboard",
+                                "onPressed": () {
+                                  //takes them to dashboard page, with analytics etc
+                                  Navigator.pop(context);
                                 }
                               },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                          width: avatarWidth,
-                                          height: avatarHeight,
-                                          margin: const EdgeInsets.only(
-                                              right: 15, bottom: 5),
-                                          decoration: new BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(
-                                                      avatarRadius)),
-                                              image: new DecorationImage(
-                                                fit: BoxFit.cover,
-                                                image: AssetImage(
-                                                    'assets/images/profile_images/default_user.png'),
-                                              ))),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            "Sanliston",
-                                            style: homeTextStyleBold,
-                                            overflow: TextOverflow.visible,
-                                          ),
-                                          Text(
-                                            "Owner",
-                                            style: homeSubTextStyle,
-                                            overflow: TextOverflow.visible,
-                                          )
-                                        ],
-                                      ),
-                                    ],
-                                  ),
+                              {
+                                "iconData": EvaIcons.brushOutline,
+                                "title": "Customize",
+                                "onPressed": () {
+                                  Navigator.pop(context);
+                                  Navigator.push(
+                                      context,
+                                      new MaterialPageRoute(
+                                          builder: (context) =>
+                                              HomeCustomizeScreen()));
+                                }
+                              },
+                              {"title": "More Actions", "type": "subtitle"},
+                              {
+                                "iconData": EvaIcons.personAddOutline,
+                                "title": "Invite Members",
+                                "onPressed": () {
+                                  //close this menu
+                                  Navigator.pop(context);
 
-                                  //button which takes you to user profile
-                                  IconButton(
-                                    icon: Icon(
-                                      EvaIcons.chevronRightOutline,
-                                      color: Colors.black,
+                                  //open invite menue
+                                  sharedStateManagement[
+                                      'display_invite_menu']();
+                                }
+                              },
+                              {
+                                "iconData": EvaIcons.bellOutline,
+                                "title": "Manage Notifications",
+                                "onPressed": () {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              {
+                                "iconData": UniconsLine.mobile_android,
+                                "title": "Add to Home Screen",
+                                "onPressed": () {
+                                  Navigator.pop(context);
+                                }
+                              }
+                            ];
+
+                            Widget customHeader = Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 10.0,
+                                  bottom: 10.0,
+                                  left: sidePadding,
+                                  right: sidePadding),
+                              child: FlatButton(
+                                padding: EdgeInsets.zero,
+                                onPressed: () {
+                                  if (null != stateCallback[screen.main]) {
+                                    stateCallback[screen.main](() {
+                                      Navigator.pop(context);
+                                      mainScreenState[
+                                          mainScreen.selectedIndex] = 2;
+                                    });
+                                  }
+                                },
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Container(
+                                            width: avatarWidth,
+                                            height: avatarHeight,
+                                            margin: const EdgeInsets.only(
+                                                right: 15, bottom: 5),
+                                            decoration: new BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                        avatarRadius)),
+                                                image: new DecorationImage(
+                                                  fit: BoxFit.cover,
+                                                  image: AssetImage(
+                                                      'assets/images/profile_images/default_user.png'),
+                                                ))),
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              "Sanliston",
+                                              style: homeTextStyleBold,
+                                              overflow: TextOverflow.visible,
+                                            ),
+                                            Text(
+                                              "Owner",
+                                              style: homeSubTextStyle,
+                                              overflow: TextOverflow.visible,
+                                            )
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    onPressed: () {
-                                      // Take user to their profile page
-                                    },
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                          Map params = {
-                            "context": context,
-                            "custom_header": customHeader,
-                            "options": options
-                          };
 
-                          displayNavigationDrawer(context, params);
-                        },
+                                    //button which takes you to user profile
+                                    IconButton(
+                                      icon: Icon(
+                                        EvaIcons.chevronRightOutline,
+                                        color: Colors.black,
+                                      ),
+                                      onPressed: () {
+                                        // Take user to their profile page
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                            Map params = {
+                              "context": context,
+                              "custom_header": customHeader,
+                              "options": options
+                            };
+
+                            displayNavigationDrawer(context, params);
+                          },
+                        ),
                       )
                     ],
                     flexibleSpace: Stack(
                       children: <Widget>[
+                        contentLayouts['header'][headerOptions.blurredAppBar] &&
+                                tabBarBlurGlow
+                            ? Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                    height: screenHeight,
+                                    width: screenWidth - 0,
+                                    decoration: new BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            tabBarGlowColor,
+                                            tabBarGlowColor.withOpacity(0.2),
+                                            Colors.white.withOpacity(0.0)
+                                          ]),
+                                      borderRadius: BorderRadius.circular(0),
+                                    )),
+                              )
+                            : Container(),
+                        contentLayouts['header'][headerOptions.blurredAppBar] &&
+                                tabBarLabelGlow
+                            ? Align(
+                                alignment: Alignment.bottomCenter,
+                                child: buildTabBar(context))
+                            : Container(), //so there's a bleeding effect
+                        contentLayouts['header'][headerOptions.blurredAppBar] &&
+                                _expanded //for performance reasons
+                            ? ClipRect(
+                                child: new BackdropFilter(
+                                    filter: new ImageFilter.blur(
+                                        sigmaX: tabBarBlurSigma,
+                                        sigmaY: tabBarBlurSigma),
+                                    child: Container(
+                                        height:
+                                            homeHeaderHeight, //needs to be this height so it covers screen and doesnt cut in half when transitioning
+                                        color:
+                                            tabBarBlurOverlayColor.withOpacity(
+                                                tabBarBlurOverlayOpacity))))
+                            : Container(height: 1.0),
+                        contentLayouts['header'][headerOptions.blurredAppBar] &&
+                                tabBarBlurHue
+                            ? Align(
+                                alignment: Alignment.topCenter,
+                                child: Container(
+                                    height: screenHeight,
+                                    width: screenWidth - 0,
+                                    decoration: new BoxDecoration(
+                                      gradient: LinearGradient(
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                          colors: [
+                                            tabBarGlowColor,
+                                            Colors.white.withOpacity(0.0)
+                                          ]),
+                                      borderRadius: BorderRadius.circular(0),
+                                    )),
+                              )
+                            : Container(),
                         buildHeaderBackground(homeHeaderHeight, screenWidth),
                         FlexibleSpaceBar(
                           collapseMode: CollapseMode.pin,
@@ -493,7 +636,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           ),
                           SliverPadding(
                             padding: const EdgeInsets.only(
-                                left: 0.0, right: 0.0, top: 8.0, bottom: 0.0),
+                                left: 0.0, right: 0.0, top: 8.0, bottom: 100.0),
                             // In this example, the inner scroll view has
                             // fixed-height list items, hence the use of
                             // SliverFixedExtentList. However, one could use any
@@ -589,7 +732,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               child: new Center(
                 child: new ClipRect(
                   child: new BackdropFilter(
-                    filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                    filter: new ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                     child: SizedBox(
                       height: 350,
                       child: new Container(
@@ -606,52 +749,236 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           ],
         ),
       ),
-      // Stack(
-      //   children: <Widget>[
-      //     Image.asset(
-      //       "assets/images/home_background.jpg",
-      //       height: MediaQuery.of(context).size.height + 100,
-      //       width: MediaQuery.of(context).size.width,
-      //       fit: BoxFit.cover,
-      //     ),
-      //     Container(
-      //       decoration: BoxDecoration(
-      //           gradient: LinearGradient(
-      //         colors: [
-      //           Colors.black38,
-      //           Colors.transparent,
-      //         ],
-      //         begin: Alignment.topRight,
-      //         end: Alignment.bottomRight,
-      //         stops: [0.0, 0.4],
-      //         tileMode: TileMode.clamp,
-      //       )),
-      //     ),
-      //     new Center(
-      //       child: new ClipRect(
-      //         child: new BackdropFilter(
-      //           filter: new ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
-      //           child: new Container(
-      //             width: 300.0,
-      //             height: 200.0,
-      //             decoration: new BoxDecoration(
-      //                 borderRadius: BorderRadius.circular(10),
-      //                 color: Colors.grey.shade200.withOpacity(0.1)),
-      //             child: new Center(
-      //               child: Padding(
-      //                 padding: const EdgeInsets.all(8.0),
-      //                 child: new Text(
-      //                   'This is an example of an announcement or something.',
-      //                   style: homeTextStyleBoldWhite,
-      //                 ),
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     )
-      //   ],
-      // ),
+      Padding(
+        padding: const EdgeInsets.only(bottom: 40.0, top: 90),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(sidePadding),
+              child: new Center(
+                child: new ClipRect(
+                  child: new BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                    child: SizedBox(
+                      height: 120,
+                      child: new Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey.shade200.withOpacity(0.2)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(sidePadding),
+                          child: Text(
+                              "This is an example landing page widget. Maybe an announcement or something goes here.",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.heebo(
+                                  textStyle: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14,
+                                      color: Colors.white))),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(sidePadding),
+              child: new Center(
+                child: new ClipRect(
+                  child: new BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                    child: SizedBox(
+                      height: 120,
+                      child: new Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey.shade200.withOpacity(0.2)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(sidePadding),
+                          child: Text(
+                              "This is an example landing page widget. Maybe an announcement or something goes here.",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.heebo(
+                                  textStyle: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14,
+                                      color: Colors.white))),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(sidePadding),
+              child: new Center(
+                child: new ClipRect(
+                  child: new BackdropFilter(
+                    filter: new ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                    child: SizedBox(
+                      height: 120,
+                      child: new Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey.shade200.withOpacity(0.2)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(sidePadding),
+                          child: Text(
+                              "This is an example landing page widget. Maybe an announcement or something goes here.",
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.heebo(
+                                  textStyle: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 14,
+                                      color: Colors.white))),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+      Stack(
+        children: <Widget>[
+          Image.asset(
+            "assets/images/home_background.jpg",
+            height: MediaQuery.of(context).size.height + 100,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              colors: [
+                Colors.black38,
+                Colors.transparent,
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomRight,
+              stops: [0.0, 0.4],
+              tileMode: TileMode.clamp,
+            )),
+          ),
+          new Center(
+            child: new ClipRect(
+              child: new BackdropFilter(
+                filter: new ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                child: new Container(
+                  width: 300.0,
+                  height: 200.0,
+                  decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade200.withOpacity(0.1)),
+                  child: new Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: new Text(
+                        'This is an example of an announcement or something.',
+                        style: homeTextStyleBoldWhite,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+      Stack(
+        children: <Widget>[
+          Image.asset(
+            "assets/images/home_background_2.jpg",
+            height: MediaQuery.of(context).size.height + 100,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              colors: [
+                Colors.black38,
+                Colors.transparent,
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomRight,
+              stops: [0.0, 0.4],
+              tileMode: TileMode.clamp,
+            )),
+          ),
+          new Center(
+            child: new ClipRect(
+              child: new BackdropFilter(
+                filter: new ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
+                child: new Container(
+                  width: 300.0,
+                  height: 200.0,
+                  decoration: new BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey.shade200.withOpacity(0.1)),
+                  child: new Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: new Text(
+                        'This is an example of an announcement or something.',
+                        style: homeTextStyleBoldWhite,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+      Stack(
+        children: <Widget>[
+          Image.asset(
+            "assets/images/home_background_3.jpg",
+            height: MediaQuery.of(context).size.height + 100,
+            width: MediaQuery.of(context).size.width,
+            fit: BoxFit.cover,
+          ),
+          Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              colors: [
+                Colors.black38,
+                Colors.transparent,
+              ],
+              begin: Alignment.topRight,
+              end: Alignment.bottomRight,
+              stops: [0.0, 0.4],
+              tileMode: TileMode.clamp,
+            )),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(sidePadding),
+            child: new Center(
+              child: new ClipRect(
+                child: new BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: SizedBox(
+                    height: 350,
+                    child: new Container(
+                      decoration: new BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade200.withOpacity(0.2)),
+                      child: buildHeader(context),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
       // buildHeader(context),
     ];
 
@@ -673,18 +1000,84 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return swiper;
   }
 
+  buildSelectedTabStyle({Color color, TabBarStyle tabBarStyle}) {
+    var decoration = BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        color: color);
+
+    switch (tabBarStyle) {
+      case TabBarStyle.halfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.inverseHalfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.border:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            border: Border.all(color: color, width: 1),
+            color: Colors.transparent);
+        break;
+
+      case TabBarStyle.fullRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(50), color: color);
+        break;
+
+      case TabBarStyle.traditional:
+        return UnderlineTabIndicator(
+            borderSide: BorderSide(color: color, width: 4.0));
+        break;
+
+      case TabBarStyle.dot:
+        return CircleTabIndicator(color: color, radius: 5.0);
+        break;
+
+      case TabBarStyle.bubble:
+        return BubbleTabIndicator(color: color);
+        break;
+
+      case TabBarStyle.square:
+        return BubbleTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+
+      case TabBarStyle.hoverLine:
+        return LineTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+    }
+
+    return decoration;
+  }
+
   TabBar buildTabBar(BuildContext context) {
     return TabBar(
+      physics: BouncingScrollPhysics(),
       labelPadding:
           EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
       indicatorSize: TabBarIndicatorSize.label,
       isScrollable: true,
       tabs: _tabs.map((String name) {
+        //only called at initial build
+        //to force rebuild, set state and put dependant variable in here?: Yes
+        //the variable is _currentTabIndex
+
+        //if index is current index remove styling
+
+        print("----------------tab builder called: $name");
         Widget widget = Tab(
           child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
-                border: Border.all(color: Colors.transparent, width: 1)),
+            // decoration: buildSelectedTabStyle(
+            //     color: _unselectedTabBarColor,
+            //     tabBarStyle: _unselectedTabBarStyle),
             child: Align(
               alignment: Alignment.center,
               child: Padding(
@@ -705,13 +1098,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         return widget;
       }).toList(),
       controller: controller,
-      labelColor: contentLayouts['header'][headerOptions.appBarColor],
-      unselectedLabelColor: unselectedLabelColor,
-      indicatorColor: contentLayouts['header'][headerOptions.appBarColor],
-      indicator: BoxDecoration(
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-          color: Colors.white),
+      labelColor: _tabBarSelectedFontColor,
+      unselectedLabelColor: _tabBarUnselectedFontColor,
+      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w400),
+      indicatorColor: _tabBarSelectedFontColor,
+      indicator: buildSelectedTabStyle(
+          color: _selectedTabBarColor, tabBarStyle: _selectedTabBarStyle),
       onTap: (index) {
         String name = _tabs[index];
 
@@ -739,7 +1131,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientSecondColor,
       Color gradientThirdColor,
       Color diagonalBarColor,
-      GradientOrientations gradientOrientation = GradientOrientations.diagonal,
+      GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
       bool diagonalBarShadow,
       double diagonalBarShadowBlurRadius,
@@ -748,7 +1140,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       bool topLeftBar,
       bool topRightBar,
       bool bottomLeftBar,
-      bool bottomRightBar}) {
+      bool bottomRightBar,
+      Color topLeftBarColor,
+      Color topRightBarColor,
+      Color bottomLeftBarColor,
+      Color bottomRightBarColor}) {
     backgroundStyle = null != backgroundStyle
         ? backgroundStyle
         : contentLayouts["header"][headerOptions.backgroundStyle];
@@ -787,6 +1183,27 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     bottomRightBar = null != bottomRightBar
         ? bottomRightBar
         : contentLayouts["header"][headerOptions.bottomRightBar];
+
+    topLeftBarColor = null != topLeftBarColor
+        ? topLeftBar
+        : contentLayouts["header"][headerOptions.topLeftBarColor];
+
+    topRightBarColor = null != topRightBarColor
+        ? topRightBar
+        : contentLayouts["header"][headerOptions.topRightBarColor];
+
+    bottomLeftBarColor = null != bottomLeftBarColor
+        ? bottomLeftBar
+        : contentLayouts["header"][headerOptions.bottomLeftBarColor];
+
+    bottomRightBarColor = null != bottomRightBarColor
+        ? bottomRightBar
+        : contentLayouts["header"][headerOptions.bottomRightBarColor];
+
+    //gradient orientation
+    gradientOrientation = null != gradientOrientation
+        ? gradientOrientation
+        : currentGradientOrientation;
 
     //setting default bars until when i create the landing page settings page
     if (landingPage) {
@@ -889,6 +1306,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             topRightBar: topRightBar,
             bottomLeftBar: bottomLeftBar,
             bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: SizedBox(
               width: screenWidth,
               child: Stack(
@@ -952,6 +1373,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             topRightBar: topRightBar,
             bottomLeftBar: bottomLeftBar,
             bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
                 SizedBox(
@@ -1003,7 +1428,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientSecondColor,
       Color gradientThirdColor,
       Color diagonalBarColor,
-      GradientOrientations gradientOrientation = GradientOrientations.diagonal,
+      GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
       bool diagonalBarShadow,
       double diagonalBarShadowBlurRadius,
@@ -1052,12 +1477,17 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? bottomRightBar
         : contentLayouts["header"][headerOptions.bottomRightBar];
 
+    //gradient orientation
+    gradientOrientation = null != gradientOrientation
+        ? gradientOrientation
+        : currentGradientOrientation;
+
     //setting default bars until when i create the landing page settings page
     if (landingPage) {
       topLeftBar = true;
       topRightBar = true;
-      bottomLeftBar = true;
-      bottomRightBar = true;
+      bottomLeftBar = false;
+      bottomRightBar = false;
     }
 
     print(
@@ -1078,6 +1508,72 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     );
 
     switch (backgroundStyle) {
+      case backgroundStyles.solid:
+        Widget solid = SizedBox(
+            width: screenWidth,
+            height: homeHeaderHeight * heightFactor,
+            child: Container(color: primaryColor));
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: false,
+            scrollFade: true,
+            child: Stack(
+              children: <Widget>[
+                solid,
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        break;
+
+      case backgroundStyles.solidDiagonalLine:
+        Widget solid = Container(color: primaryColor);
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            child: Stack(
+              children: <Widget>[
+                solid,
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+
+        break;
+
       case backgroundStyles.diagonalLine:
         widget = Positioned.fill(
           child: CustomTabScroll(
@@ -1188,16 +1684,18 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradient:
-        Widget gradient = Positioned.fill(
-          child: SizedBox(
-              width: screenWidth,
-              height: homeHeaderHeight * heightFactor,
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: contentLayouts['header']
-                        [headerOptions.backgroundGradient]),
-              )),
-        );
+        print("passed gradient orientation: $gradientOrientation");
+        Widget gradient = SizedBox(
+            width: screenWidth,
+            height: homeHeaderHeight * heightFactor,
+            child: Container(
+              decoration: BoxDecoration(
+                  gradient: getGradient(
+                      gradientFirstColor: gradientFirstColor,
+                      gradientSecondColor: gradientSecondColor,
+                      gradientThirdColor: gradientThirdColor,
+                      gradientOrientation: gradientOrientation)),
+            ));
 
         widget = Positioned.fill(
           child: CustomTabScroll(
@@ -1207,14 +1705,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                  child: SizedBox(
-                      width: screenWidth,
-                      height: homeHeaderHeight * heightFactor,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            gradient: contentLayouts['header']
-                                [headerOptions.backgroundGradient]),
-                      )),
+                  child: gradient,
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -1774,5 +2265,128 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     return widget;
+  }
+}
+
+class CircleTabIndicator extends Decoration {
+  final BoxPainter _painter;
+
+  CircleTabIndicator({@required Color color, @required double radius})
+      : _painter = _CirclePainter(color, radius);
+
+  @override
+  BoxPainter createBoxPainter([onChanged]) => _painter;
+}
+
+class _CirclePainter extends BoxPainter {
+  final Paint _paint;
+  final double radius;
+
+  _CirclePainter(Color color, this.radius)
+      : _paint = Paint()
+          ..color = color
+          ..isAntiAlias = true;
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration cfg) {
+    final Offset circleOffset =
+        offset + Offset(cfg.size.width / 2, cfg.size.height - radius - 5.0);
+    canvas.drawCircle(circleOffset, radius, _paint);
+  }
+}
+
+class BubbleTabIndicator extends Decoration {
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+
+  BubbleTabIndicator(
+      {this.color = Colors.grey,
+      this.indicatorHeight = 30.0,
+      this.bubbleRadius = 20.0});
+  @override
+  _BubbleTabPainter createBoxPainter([VoidCallback onChanged]) {
+    return new _BubbleTabPainter(this, onChanged,
+        color: this.color,
+        indicatorHeight: this.indicatorHeight,
+        bubbleRadius: this.bubbleRadius);
+  }
+}
+
+class _BubbleTabPainter extends BoxPainter {
+  final BubbleTabIndicator decoration;
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+
+  _BubbleTabPainter(this.decoration, VoidCallback onChanged,
+      {this.color = Colors.blue, this.indicatorHeight, this.bubbleRadius})
+      : assert(decoration != null),
+        super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    assert(configuration != null);
+    assert(configuration.size != null);
+
+    //offset is the position from where the decoration should be drawn.
+    //configuration.size tells us about the height and width of the tab.
+    final Rect rect = Offset(
+            offset.dx, (configuration.size.height / 2) - indicatorHeight / 2) &
+        Size(configuration.size.width, indicatorHeight);
+    final Paint paint = Paint();
+    paint.color = color;
+    paint.style = PaintingStyle.fill;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(bubbleRadius)), paint);
+  }
+}
+
+class LineTabIndicator extends Decoration {
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+
+  LineTabIndicator(
+      {this.color = Colors.grey,
+      this.indicatorHeight = 30.0,
+      this.bubbleRadius = 20.0});
+  @override
+  _LineTabPainter createBoxPainter([VoidCallback onChanged]) {
+    return new _LineTabPainter(this, onChanged,
+        color: this.color,
+        indicatorHeight: this.indicatorHeight,
+        bubbleRadius: this.bubbleRadius);
+  }
+}
+
+class _LineTabPainter extends BoxPainter {
+  final LineTabIndicator decoration;
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+
+  _LineTabPainter(this.decoration, VoidCallback onChanged,
+      {this.color = Colors.blue, this.indicatorHeight, this.bubbleRadius})
+      : assert(decoration != null),
+        super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    assert(configuration != null);
+    assert(configuration.size != null);
+
+    final widthSubtract = 20.0;
+
+    //offset is the position from where the decoration should be drawn.
+    //configuration.size tells us about the height and width of the tab.
+    final Rect rect = Offset(
+            offset.dx + widthSubtract / 2, (configuration.size.height - 10)) &
+        Size(configuration.size.width - widthSubtract, 5.0);
+    final Paint paint = Paint();
+    paint.color = color;
+    paint.style = PaintingStyle.fill;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, Radius.circular(bubbleRadius)), paint);
   }
 }

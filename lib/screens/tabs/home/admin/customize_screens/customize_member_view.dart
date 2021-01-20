@@ -40,6 +40,11 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     super.initState();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   List<Widget> buildPreview(BuildContext context, String tab) {
     /*List will hold certain information:
     number of entries in List

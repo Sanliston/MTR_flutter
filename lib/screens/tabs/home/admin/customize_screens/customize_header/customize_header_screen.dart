@@ -20,7 +20,13 @@ enum Options {
   gradientSecondColor,
   gradientThirdColor,
   solidBGColor,
-  diagonalColor
+  diagonalColor, //will be removed and replaced by the left and right below
+  topLeftBarColor,
+  topRightBarColor,
+  inviteButtonColor,
+  inviteButtonTextColor,
+  customButtonColor,
+  customButtonTextColor,
 }
 
 enum WorkingColors {
@@ -34,6 +40,12 @@ enum WorkingColors {
   gradientThirdColor,
   solidBGColor,
   diagonalColor,
+  topLeftBarColor,
+  topRightBarColor,
+  inviteButtonColor,
+  inviteButtonTextColor,
+  customButtonColor,
+  customButtonTextColor,
 }
 
 enum WorkingBackGroundOptions {
@@ -65,6 +77,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
   List selectedBackgroundImageList;
 
+//These are not actually used -- TODO REMOVE THEM
   Color workingTitleColor;
   Color workingTagLineColor;
 
@@ -77,6 +90,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   Color workingThirdGradientColor;
 
   Color workingSolidBGColor;
+
+  Color workingInviteButtonColor;
+  Color workingInviteButtonTextColor;
+
+  Color workingCustomButtonColor;
+  Color workingCustomButtonTextColor;
+  String workingCustomButtonText;
+  //==============
 
   GradientOrientations workingGradientOrientation;
 
@@ -111,6 +132,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   bool workingInviteButtonActive;
   bool workingCustomButtonActive;
   bool workingDiagonalBarActive;
+  bool workingTLBActive;
+  bool workingTRBActive;
   bool workingDiagonalBarShadow;
   bool workingCoverMultiPhoto;
   bool workingLandingPageMode;
@@ -169,7 +192,19 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       WorkingColors.accentColor: accentColor,
       WorkingColors.gradientFirstColor: gradientColor1,
       WorkingColors.gradientSecondColor: gradientColor2,
-      WorkingColors.gradientThirdColor: gradientColor3
+      WorkingColors.gradientThirdColor: gradientColor3,
+      WorkingColors.topLeftBarColor: contentLayouts['header']
+          [headerOptions.topLeftBarColor],
+      WorkingColors.topRightBarColor: contentLayouts['header']
+          [headerOptions.topRightBarColor],
+      WorkingColors.inviteButtonColor: contentLayouts['header']
+          [headerOptions.inviteButtonColor],
+      WorkingColors.inviteButtonTextColor: contentLayouts['header']
+          [headerOptions.inviteButtonTextColor],
+      WorkingColors.customButtonColor: contentLayouts['header']
+          [headerOptions.customButtonColor],
+      WorkingColors.customButtonTextColor: contentLayouts['header']
+          [headerOptions.customButtonTextColor],
     };
 
     targetColor = null;
@@ -183,7 +218,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.gradientFirstColor: dormantWidget,
       Options.gradientSecondColor: dormantWidget,
       Options.gradientThirdColor: dormantWidget,
-      Options.diagonalColor: dormantWidget
+      Options.diagonalColor: dormantWidget,
+      Options.topLeftBarColor: dormantWidget,
+      Options.topRightBarColor: dormantWidget,
+      Options.inviteButtonColor: dormantWidget,
+      Options.inviteButtonTextColor: dormantWidget,
+      Options.customButtonColor: dormantWidget,
+      Options.customButtonTextColor: dormantWidget
     };
 
     colorPickerContainerHeights = {
@@ -194,7 +235,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.accentColor: 1.0,
       Options.gradientFirstColor: 1.0,
       Options.gradientSecondColor: 1.0,
-      Options.gradientThirdColor: 1.0
+      Options.gradientThirdColor: 1.0,
+      Options.topLeftBarColor: 1.0,
+      Options.topRightBarColor: 1.0,
+      Options.inviteButtonColor: 1.0,
+      Options.inviteButtonTextColor: 1.0,
+      Options.customButtonColor: 1.0,
+      Options.customButtonTextColor: 1.0,
     };
 
     workingGradientOrientation = currentGradientOrientation;
@@ -218,6 +265,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         contentLayouts['header'][headerOptions.diagonalBarShadowBlurRadius];
     workingDiagonalBarShadowLift =
         contentLayouts['header'][headerOptions.diagonalBarShadowLift];
+    workingTLBActive = contentLayouts['header'][headerOptions.topLeftBar];
+    workingTRBActive = contentLayouts['header'][headerOptions.topRightBar];
 
     workingBackgroundStyle =
         contentLayouts['header'][headerOptions.backgroundStyle];
@@ -237,6 +286,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     customButtonLabelController = new TextEditingController();
     customButtonActionController = new TextEditingController();
     gradientOController = new TextEditingController();
+
+    placeNameController.text =
+        contentLayouts['header'][headerOptions.titleText];
+    taglineController.text =
+        contentLayouts['header'][headerOptions.tagLineText];
+    customButtonLabelController.text =
+        contentLayouts['header'][headerOptions.customButtonText];
 
     customButtonActionFocusNode.canRequestFocus =
         false; //we don't want to actually be able to write in this one -- this doesnt seem to work
@@ -373,6 +429,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   }
 
   void toggleDiagonal() {
+    //deprecated
     //get current background option
     backgroundStyles currentStyle = getWorkingBGOption();
     backgroundStyles newStyle;
@@ -454,6 +511,25 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     gradientColor3 = workingColors[WorkingColors.gradientThirdColor];
     currentGradientOrientation = workingGradientOrientation;
 
+    contentLayouts[header][headerOptions.tagLineText] = taglineController.text;
+    contentLayouts[header][headerOptions.titleText] = placeNameController.text;
+    contentLayouts[header][headerOptions.customButtonText] =
+        customButtonLabelController.text;
+
+    contentLayouts[header][headerOptions.customButtonColor] =
+        workingColors[WorkingColors.customButtonColor];
+    contentLayouts[header][headerOptions.inviteButtonColor] =
+        workingColors[WorkingColors.inviteButtonColor];
+    contentLayouts[header][headerOptions.customButtonTextColor] =
+        workingColors[WorkingColors.customButtonTextColor];
+    contentLayouts[header][headerOptions.inviteButtonTextColor] =
+        workingColors[WorkingColors.inviteButtonTextColor];
+
+    contentLayouts[header][headerOptions.titleColor] =
+        workingColors[WorkingColors.titleColor];
+    contentLayouts[header][headerOptions.tagLineColor] =
+        workingColors[WorkingColors.tagLineColor];
+
     contentLayouts[header][headerOptions.tagLine] = workingTaglineActive;
     contentLayouts[header][headerOptions.placeLogo] = workingPlaceLogoActive;
     contentLayouts[header][headerOptions.backgroundStyle] =
@@ -472,6 +548,12 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         workingDiagonalBarShadowLift;
     contentLayouts[header][headerOptions.diagonalMaxOpacity] =
         workingDBMaxOpacity;
+    contentLayouts[header][headerOptions.topLeftBar] = workingTLBActive;
+    contentLayouts[header][headerOptions.topLeftBarColor] =
+        workingColors[WorkingColors.topLeftBarColor];
+    contentLayouts[header][headerOptions.topRightBarColor] =
+        workingColors[WorkingColors.topRightBarColor];
+    contentLayouts[header][headerOptions.topRightBar] = workingTRBActive;
     contentLayouts[header][headerOptions.landingPageMode]
         [landingPageMode.active] = workingLandingPageMode;
 
@@ -585,36 +667,33 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: sidePadding),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Show Background Diagonal Bar",
-                            style: homeTextStyleBold),
-                        //should be displayed only if custom button is enabled
-                      ],
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        setState(() {
-                          toggleDiagonal();
-                        });
-                      },
-                      icon: Icon(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      workingDiagonalBarActive = !workingDiagonalBarActive;
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Background Diagonal Bars",
+                              style: homeTextStyleBold),
+                          //should be displayed only if custom button is enabled
+                        ],
+                      ),
+                      Icon(
                         workingDiagonalBarActive
-                            ? UniconsSolid.toggle_on
-                            : UniconsSolid.toggle_off,
-                        color: workingDiagonalBarActive
-                            ? workingColors[WorkingColors.primaryColor]
-                            : Colors.grey[400],
+                            ? EvaIcons.chevronUpOutline
+                            : EvaIcons.chevronDownOutline,
+                        color: Colors.grey[400],
                         size: 40.0,
                       ),
-                    )
-                  ],
+                    ],
+                  ),
                 ),
               ),
               AnimatedCrossFade(
@@ -730,23 +809,132 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             color: Colors.grey[400].withOpacity(0.2),
           ),
         ),
-        buildColorRow("Bar Color", workingColors[WorkingColors.diagonalColor],
-            onTapCallback: () {
-          toggleColorEditor(Options.diagonalColor);
-        }, longpressCallback: () {
-          displayPopupColorEditor(Options.diagonalColor);
-        }),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Show Top Left Bar", style: homeSubTextStyle),
+                  //should be displayed only if custom button is enabled
+                ],
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    workingTLBActive = !workingTLBActive;
+                  });
+                },
+                icon: Icon(
+                  workingTLBActive
+                      ? UniconsSolid.toggle_on
+                      : UniconsSolid.toggle_off,
+                  color: workingTLBActive
+                      ? workingColors[WorkingColors.primaryColor]
+                      : Colors.grey[400],
+                  size: 40.0,
+                ),
+              )
+            ],
+          ),
+        ),
         AnimatedCrossFade(
-            duration: crossFadeDuration,
-            firstChild: colorPickerContainers[Options.diagonalColor],
-            secondChild: Container(height: 0.0),
-            crossFadeState: Options.diagonalColor == activeColorEditor
+            firstChild: Column(
+              children: [
+                buildColorRow("Top Left Bar Color",
+                    workingColors[WorkingColors.topLeftBarColor],
+                    onTapCallback: () {
+                  toggleColorEditor(Options.topLeftBarColor);
+                }, longpressCallback: () {
+                  displayPopupColorEditor(Options.topLeftBarColor);
+                }),
+                AnimatedCrossFade(
+                    duration: crossFadeDuration,
+                    firstChild: colorPickerContainers[Options.topLeftBarColor],
+                    secondChild: Container(height: 0.0),
+                    crossFadeState: Options.topLeftBarColor == activeColorEditor
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond)
+              ],
+            ),
+            secondChild: Container(),
+            crossFadeState: workingTLBActive
                 ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond),
+                : CrossFadeState.showSecond,
+            duration: crossFadeDuration),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Divider(
+            thickness: 1.0,
+            color: Colors.grey[400].withOpacity(0.2),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Show Top Right Bar", style: homeSubTextStyle),
+                  //should be displayed only if custom button is enabled
+                ],
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  setState(() {
+                    workingTRBActive = !workingTRBActive;
+                  });
+                },
+                icon: Icon(
+                  workingTRBActive
+                      ? UniconsSolid.toggle_on
+                      : UniconsSolid.toggle_off,
+                  color: workingTRBActive
+                      ? workingColors[WorkingColors.primaryColor]
+                      : Colors.grey[400],
+                  size: 40.0,
+                ),
+              )
+            ],
+          ),
+        ),
+        AnimatedCrossFade(
+            firstChild: Column(
+              children: [
+                buildColorRow("Top Right Bar Color",
+                    workingColors[WorkingColors.topRightBarColor],
+                    onTapCallback: () {
+                  toggleColorEditor(Options.topRightBarColor);
+                }, longpressCallback: () {
+                  displayPopupColorEditor(Options.topRightBarColor);
+                }),
+                AnimatedCrossFade(
+                    duration: crossFadeDuration,
+                    firstChild: colorPickerContainers[Options.topRightBarColor],
+                    secondChild: Container(height: 0.0),
+                    crossFadeState:
+                        Options.topRightBarColor == activeColorEditor
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond)
+              ],
+            ),
+            secondChild: Container(),
+            crossFadeState: workingTRBActive
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond,
+            duration: crossFadeDuration),
         Padding(
           padding: const EdgeInsets.only(
               top: sidePadding, left: sidePadding, right: sidePadding),
-          child: Text("Bar Max Opacity: ", style: homeSubTextStyle),
+          child: Text("Bars Max Opacity: ", style: homeSubTextStyle),
         ),
         Padding(
           padding: const EdgeInsets.only(
@@ -1682,6 +1870,30 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         targetColor = WorkingColors.diagonalColor;
         break;
 
+      case Options.topLeftBarColor:
+        targetColor = WorkingColors.topLeftBarColor;
+        break;
+
+      case Options.topRightBarColor:
+        targetColor = WorkingColors.topRightBarColor;
+        break;
+
+      case Options.inviteButtonColor:
+        targetColor = WorkingColors.inviteButtonColor;
+        break;
+
+      case Options.inviteButtonTextColor:
+        targetColor = WorkingColors.inviteButtonTextColor;
+        break;
+
+      case Options.customButtonColor:
+        targetColor = WorkingColors.customButtonColor;
+        break;
+
+      case Options.customButtonColor:
+        targetColor = WorkingColors.customButtonTextColor;
+        break;
+
       default:
         targetColor = WorkingColors.primaryColor;
     }
@@ -1786,6 +1998,30 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
       case Options.gradientThirdColor:
         selectedColor = WorkingColors.gradientThirdColor;
+        break;
+
+      case Options.topLeftBarColor:
+        targetColor = WorkingColors.topLeftBarColor;
+        break;
+
+      case Options.topRightBarColor:
+        targetColor = WorkingColors.topRightBarColor;
+        break;
+
+      case Options.inviteButtonColor:
+        targetColor = WorkingColors.inviteButtonColor;
+        break;
+
+      case Options.inviteButtonTextColor:
+        targetColor = WorkingColors.inviteButtonTextColor;
+        break;
+
+      case Options.customButtonColor:
+        targetColor = WorkingColors.customButtonColor;
+        break;
+
+      case Options.customButtonColor:
+        targetColor = WorkingColors.customButtonTextColor;
         break;
 
       default:
@@ -2465,7 +2701,11 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             diagonalBarShadow: workingDiagonalBarShadow,
             diagonalBarShadowBlurRadius: workingDiagonalBarShadowBlurRadius,
             diagonalBarShadowLift: workingDiagonalBarShadowLift,
-            diagonalMaxOpacity: workingDBMaxOpacity),
+            diagonalMaxOpacity: workingDBMaxOpacity,
+            topLeftBar: workingTLBActive,
+            topRightBar: workingTRBActive,
+            topLeftBarColor: workingColors[WorkingColors.topLeftBarColor],
+            topRightBarColor: workingColors[WorkingColors.topRightBarColor]),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -2480,16 +2720,29 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
               child: AbsorbPointer(
                 child: SizedBox(
                     height: 280.0,
-                    child: headerBuilders['header'](context,
-                        memberViewMode: true,
-                        sizeFactor: sizeFactor,
-                        placeLogo: workingPlaceLogoActive,
-                        tagLine: workingTaglineActive,
-                        memberPreview: workingMemberPreviewActive,
-                        customButton: workingCustomButtonActive,
-                        inviteButton: workingInviteButtonActive,
-                        tagLineColor: workingColors[WorkingColors.tagLineColor],
-                        titleColor: workingColors[WorkingColors.titleColor])),
+                    child: headerBuilders['header'](
+                      context,
+                      memberViewMode: true,
+                      sizeFactor: sizeFactor,
+                      placeLogo: workingPlaceLogoActive,
+                      tagLine: workingTaglineActive,
+                      memberPreview: workingMemberPreviewActive,
+                      customButton: workingCustomButtonActive,
+                      inviteButton: workingInviteButtonActive,
+                      tagLineColor: workingColors[WorkingColors.tagLineColor],
+                      titleColor: workingColors[WorkingColors.titleColor],
+                      titleText: placeNameController.text,
+                      tagLineText: taglineController.text,
+                      customButtonText: customButtonLabelController.text,
+                      customButtonColor:
+                          workingColors[WorkingColors.customButtonColor],
+                      customButtonTextColor:
+                          workingColors[WorkingColors.customButtonTextColor],
+                      inviteButtonColor:
+                          workingColors[WorkingColors.inviteButtonColor],
+                      inviteButtonTextColor:
+                          workingColors[WorkingColors.inviteButtonTextColor],
+                    )),
               ),
             )
           ],

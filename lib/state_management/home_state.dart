@@ -569,14 +569,21 @@ List<String> homeAdminTabList = <String>[
 //NOTE: tab names here have to match those in homeTabList (excluding header and default)
 enum headerOptions {
   titleColor,
+  titleText,
   headerFontColor,
   toolBarIconColor,
   tagLine,
+  tagLineText,
   tagLineColor,
   placeLogo,
   memberPreview,
   inviteButton,
+  inviteButtonColor,
+  inviteButtonTextColor,
   customButton,
+  customButtonColor,
+  customButtonTextColor,
+  customButtonText,
   layout,
   blurEffect,
   blurredAppBar,
@@ -605,6 +612,12 @@ enum headerOptions {
   bottomRightBarColor
 }
 
+/*TODO - 
+remove non diagonal settings, as going forward all backgrounds will be diagonal 
+They will be differentiated by how many diagonal bars are active,
+this will also allow the auto scroll to work with any background
+
+*/
 enum backgroundStyles {
   diagonalLine,
   image,
@@ -658,6 +671,7 @@ Gradient getGradient(
     Color gradientSecondColor,
     Color gradientThirdColor,
     GradientOrientations gradientOrientation}) {
+  print("in getGradient first color: $gradientFirstColor");
   gradientFirstColor =
       null != gradientFirstColor ? gradientFirstColor : gradientColor1;
   gradientSecondColor =
@@ -769,15 +783,23 @@ Map contentLayouts = {
   "header": {
     headerOptions.fullscreenMode: false, // deprecated, use landingPageMode
     headerOptions.titleColor: Colors.white,
+    headerOptions.titleText: "More than Rubies",
     headerOptions.headerFontColor: Colors.grey[100],
     headerOptions.toolBarIconColor: Colors.white,
     headerOptions.blurredAppBar: true,
     headerOptions.tagLine: true,
+    headerOptions.tagLineText: "Welcome to our safe space.",
     headerOptions.tagLineColor: Colors.white,
     headerOptions.placeLogo: true,
     headerOptions.memberPreview: true,
     headerOptions.inviteButton: true,
+    headerOptions.inviteButtonColor: Colors.white,
+    headerOptions.inviteButtonTextColor: Colors.white,
     headerOptions.customButton: true,
+    headerOptions.customButtonColor: Colors.white,
+    headerOptions.customButtonTextColor: Colors.white,
+    headerOptions.customButtonText: "custom",
+
     headerOptions.layout:
         "default", //idea is to have different layouts, like picture on the left, all centered, etc.
     headerOptions.blurEffect: false,
@@ -871,7 +893,7 @@ bool tabBarBlurGlow = true;
 bool tabBarLabelGlow = false;
 bool tabBarBlurHue = false;
 bool tabBarSolidAppBar = true;
-Color tabBarBlurOverlayColor = Colors.grey[300];
+Color tabBarBlurOverlayColor = primaryColor.withOpacity(0.4);
 double tabBarBlurOverlayOpacity = 0.4;
 double tabBarBlurSigma = 7.0;
 
@@ -879,10 +901,10 @@ double tabBarBlurSigma = 7.0;
 TabBarStyle cSelectedTabBarStyle = TabBarStyle.bubble;
 TabBarStyle cUnselectedTabBarStyle = TabBarStyle
     .dot; //this will just overlap under the selected style -- doesnt disappear
-Color cSelectedTabBarColor = primaryColor;
+Color cSelectedTabBarColor = Colors.white;
 Color cUnselectedTabBarColor = primaryColor;
-Color cTabBarSelectedFontColor = Colors.white;
-Color cTabBarUnselectedFontColor = primaryColor;
+Color cTabBarSelectedFontColor = primaryColor;
+Color cTabBarUnselectedFontColor = Colors.white;
 Color cTabBarGlowColor = primaryColor;
 
 //modalBottomSheet blur settings
@@ -916,5 +938,6 @@ bool persistentNavBar = false; //whether bottom navbar is always visible?
 
 //for toggling appToolBarIconColors
 Function toggleTBIconColors = () {};
+Function toggleHomeTabBar = () {};
 
 //Homestate object containing values

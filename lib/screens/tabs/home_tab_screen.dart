@@ -67,6 +67,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   Color _tabBarUnselectedFontColor;
   bool _expanded;
 
+  void tabControllerCb(index) {
+    setState(() {
+      controller.index = index;
+    });
+  }
+
   List<Widget> buildTab(BuildContext context, String tab) {
     /*List will hold certain information:
     number of entries in List
@@ -139,8 +145,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? Colors.white
         : contentLayouts['header'][headerOptions.toolBarIconColor];
 
-    print("toggle tbicolor called: $expanded");
-
     TabBarStyle newSelectedTabBarStyle = selectedTabBarStyle;
     TabBarStyle newUnselectedTabBarStyle = unselectedTabBarStyle;
     Color newSelectedTabBarColor = selectedTabBarColor;
@@ -157,19 +161,23 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       newTabBarUnselectedFontColor = cTabBarUnselectedFontColor;
     }
 
+    if (_selectedTabBarStyle == newSelectedTabBarStyle) {
+      return;
+    }
+
     setState(() {
-      print(
-          "###################################toggle bar icon color called, new color: $newIconColor");
       toolBarIconColor = newIconColor;
 
-      _selectedTabBarStyle = newSelectedTabBarStyle;
-      _unselectedTabBarStyle = newUnselectedTabBarStyle;
-      _selectedTabBarColor = newSelectedTabBarColor;
-      _unselectedTabBarColor = newUnselectedTabBarColor;
-      _tabBarSelectedFontColor = newTabBarSelectedFontColor;
-      _tabBarUnselectedFontColor = newTabBarUnselectedFontColor;
+      // _selectedTabBarStyle = newSelectedTabBarStyle;
+      // _unselectedTabBarStyle = newUnselectedTabBarStyle;
+      // _selectedTabBarColor = newSelectedTabBarColor;
+      // _unselectedTabBarColor = newUnselectedTabBarColor;
+      // _tabBarSelectedFontColor = newTabBarSelectedFontColor;
+      // _tabBarUnselectedFontColor = newTabBarUnselectedFontColor;
 
       _expanded = expanded;
+
+      print("set state selected tabbar style: $selectedTabBarStyle");
     });
   }
 
@@ -348,7 +356,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         child: AnimatedContainer(
                             duration: Duration(milliseconds: 300),
                             child: Text(
-                              "More Than Rubies",
+                              contentLayouts['header'][headerOptions.titleText],
                               style: TextStyle(color: toolBarIconColor),
                             ))),
                     pinned: true,
@@ -547,10 +555,20 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 tabBarLabelGlow
                             ? Align(
                                 alignment: Alignment.bottomCenter,
-                                child: buildTabBar(context))
+                                child: HomeTabBar(
+                                  tabs: _tabs,
+                                  controller: controller,
+                                  tabBarSelectedFontColor:
+                                      _tabBarSelectedFontColor,
+                                  tabBarUnselectedFontColor:
+                                      _tabBarUnselectedFontColor,
+                                  tabControllerCb: tabControllerCb,
+                                  selectedTabBarColor: selectedTabBarColor,
+                                  selectedTabBarStyle: selectedTabBarStyle,
+                                ))
                             : Container(), //so there's a bleeding effect
                         contentLayouts['header'][headerOptions.blurredAppBar] &&
-                                _expanded //for performance reasons
+                                !_expanded //for performance reasons
                             ? ClipRect(
                                 child: new BackdropFilter(
                                     filter: new ImageFilter.blur(
@@ -597,7 +615,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         ),
                       ],
                     ),
-                    bottom: buildTabBar(context)),
+                    bottom: HomeTabBar(
+                      tabs: _tabs,
+                      controller: controller,
+                      tabBarSelectedFontColor: _tabBarSelectedFontColor,
+                      tabBarUnselectedFontColor: _tabBarUnselectedFontColor,
+                      tabControllerCb: tabControllerCb,
+                      selectedTabBarColor: _selectedTabBarColor,
+                      selectedTabBarStyle: _selectedTabBarStyle,
+                    )),
               ),
             ];
           },
@@ -652,9 +678,6 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
                                   //set the selectedHomeTab state variable
                                   selectedHomeTab = name;
-
-                                  print(
-                                      "build item, index:  $index \n, tab name: $name");
 
                                   //here we return the corresponding view depending on the given index, so we need to create an array of views to return
                                   /*The array of views will vary depending on the current active tab
@@ -1185,19 +1208,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         : contentLayouts["header"][headerOptions.bottomRightBar];
 
     topLeftBarColor = null != topLeftBarColor
-        ? topLeftBar
+        ? topLeftBarColor
         : contentLayouts["header"][headerOptions.topLeftBarColor];
 
     topRightBarColor = null != topRightBarColor
-        ? topRightBar
+        ? topRightBarColor
         : contentLayouts["header"][headerOptions.topRightBarColor];
 
     bottomLeftBarColor = null != bottomLeftBarColor
-        ? bottomLeftBar
+        ? bottomLeftBarColor
         : contentLayouts["header"][headerOptions.bottomLeftBarColor];
 
     bottomRightBarColor = null != bottomRightBarColor
-        ? bottomRightBar
+        ? bottomRightBarColor
         : contentLayouts["header"][headerOptions.bottomRightBarColor];
 
     //gradient orientation
@@ -1227,8 +1250,52 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         : MediaQuery.of(context).size.height * heightFactor;
 
     print("preview header background style: $backgroundStyle");
+    print("in function gradient first color: $gradientFirstColor");
 
     switch (backgroundStyle) {
+      case backgroundStyles.solid:
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(
+                    width: screenWidth, child: Container(color: primaryColor)),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
       case backgroundStyles.diagonalLine:
         widget = Positioned.fill(
           child: Stack(
@@ -1259,31 +1326,50 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
       case backgroundStyles.image:
         widget = Positioned.fill(
-          child: SizedBox(
-            width: screenWidth,
-            height: homeHeaderHeight * heightFactor,
-            child: Stack(
-              children: <Widget>[
-                Image.asset(
-                  "assets/images/home_background.jpg",
-                  height: homeHeaderHeight * 1.1,
-                  width: screenWidth,
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.black38,
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 0.4],
-                    tileMode: TileMode.clamp,
-                  )),
-                ),
-              ],
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: SizedBox(
+              width: screenWidth,
+              child: Stack(
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/home_background.jpg",
+                    height: homeHeaderHeight * 1.1,
+                    width: screenWidth,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      colors: [
+                        Colors.black38,
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 0.4],
+                      tileMode: TileMode.clamp,
+                    )),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -1341,22 +1427,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradient:
-        widget = Positioned.fill(
-          child: SizedBox(
-              width: screenWidth,
-              height: homeHeaderHeight * heightFactor,
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: getGradient(
-                        gradientFirstColor: gradientFirstColor,
-                        gradientSecondColor: gradientSecondColor,
-                        gradientThirdColor: gradientThirdColor,
-                        gradientOrientation: gradientOrientation)),
-              )),
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
         );
-        break;
 
-      case backgroundStyles.gradientDiagonalLine:
         widget = Positioned.fill(
           child: CustomTabScroll(
             scrollController: scrollController,
@@ -1379,16 +1458,60 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
-                SizedBox(
-                    width: screenWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: getGradient(
-                              gradientFirstColor: gradientFirstColor,
-                              gradientSecondColor: gradientSecondColor,
-                              gradientThirdColor: gradientThirdColor,
-                              gradientOrientation: gradientOrientation)),
-                    )),
+                SizedBox(width: screenWidth, child: gradient),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
+      case backgroundStyles.gradientDiagonalLine:
+        print("gradient diagonal line switch, topleftbar: $topLeftBar");
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
+        );
+
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(width: screenWidth, child: gradient),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -1437,7 +1560,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       bool topLeftBar,
       bool topRightBar,
       bool bottomLeftBar,
-      bool bottomRightBar}) {
+      bool bottomRightBar,
+      Color topLeftBarColor,
+      Color topRightBarColor,
+      Color bottomLeftBarColor,
+      Color bottomRightBarColor}) {
     backgroundStyle = null != backgroundStyle
         ? backgroundStyle
         : contentLayouts["header"][headerOptions.backgroundStyle];
@@ -1476,6 +1603,22 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     bottomRightBar = null != bottomRightBar
         ? bottomRightBar
         : contentLayouts["header"][headerOptions.bottomRightBar];
+
+    topLeftBarColor = null != topLeftBarColor
+        ? topLeftBarColor
+        : contentLayouts["header"][headerOptions.topLeftBarColor];
+
+    topRightBarColor = null != topRightBarColor
+        ? topRightBarColor
+        : contentLayouts["header"][headerOptions.topRightBarColor];
+
+    bottomLeftBarColor = null != bottomLeftBarColor
+        ? bottomLeftBarColor
+        : contentLayouts["header"][headerOptions.bottomLeftBarColor];
+
+    bottomRightBarColor = null != bottomRightBarColor
+        ? bottomRightBarColor
+        : contentLayouts["header"][headerOptions.bottomRightBarColor];
 
     //gradient orientation
     gradientOrientation = null != gradientOrientation
@@ -1610,31 +1753,50 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
       case backgroundStyles.image:
         widget = Positioned.fill(
-          child: SizedBox(
-            width: screenWidth,
-            height: homeHeaderHeight * heightFactor,
-            child: Stack(
-              children: <Widget>[
-                Image.asset(
-                  "assets/images/home_background.jpg",
-                  height: homeHeaderHeight * 1.1,
-                  width: screenWidth,
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.black38,
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 0.4],
-                    tileMode: TileMode.clamp,
-                  )),
-                ),
-              ],
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: SizedBox(
+              width: screenWidth,
+              child: Stack(
+                children: <Widget>[
+                  Image.asset(
+                    "assets/images/home_background.jpg",
+                    height: homeHeaderHeight * 1.1,
+                    width: screenWidth,
+                    fit: BoxFit.cover,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                      colors: [
+                        Colors.black38,
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomRight,
+                      stops: [0.0, 0.4],
+                      tileMode: TileMode.clamp,
+                    )),
+                  ),
+                ],
+              ),
             ),
           ),
         );
@@ -1648,11 +1810,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             fullOpacityOffset: 0,
             diagonalLine: true,
             fixedMode: false,
-            blurBackground: false,
             color: diagonalBarColor,
             shadow: diagonalBarShadow,
             shadowBlurRadius: diagonalBarShadowBlurRadius,
             shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: SizedBox(
               width: screenWidth,
               child: Stack(
@@ -1684,29 +1854,38 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradient:
-        print("passed gradient orientation: $gradientOrientation");
-        Widget gradient = SizedBox(
-            width: screenWidth,
-            height: homeHeaderHeight * heightFactor,
-            child: Container(
-              decoration: BoxDecoration(
-                  gradient: getGradient(
-                      gradientFirstColor: gradientFirstColor,
-                      gradientSecondColor: gradientSecondColor,
-                      gradientThirdColor: gradientThirdColor,
-                      gradientOrientation: gradientOrientation)),
-            ));
-
         widget = Positioned.fill(
           child: CustomTabScroll(
             scrollController: scrollController,
             zeroOpacityOffset: homeHeaderHeight * heightFactor,
             fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
-                Positioned.fill(
-                  child: gradient,
-                ),
+                SizedBox(
+                    width: screenWidth,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          gradient: getGradient(
+                              gradientFirstColor: gradientFirstColor,
+                              gradientSecondColor: gradientSecondColor,
+                              gradientThirdColor: gradientThirdColor,
+                              gradientOrientation: gradientOrientation)),
+                    )),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -1739,6 +1918,14 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             shadowBlurRadius: diagonalBarShadowBlurRadius,
             shadowLift: diagonalBarShadowLift,
             maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
                 SizedBox(
@@ -1783,9 +1970,16 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       bool tagLine,
       bool memberPreview,
       bool customButton,
+      Color customButtonColor,
+      Color customButtonTextColor,
       bool inviteButton,
+      Color inviteButtonColor,
+      Color inviteButtonTextColor,
       Color titleColor,
-      Color tagLineColor}) {
+      Color tagLineColor,
+      String titleText,
+      String tagLineText,
+      String customButtonText}) {
     placeLogo = null != placeLogo
         ? placeLogo
         : contentLayouts['header'][headerOptions.placeLogo];
@@ -1806,9 +2000,34 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? inviteButton
         : contentLayouts['header'][headerOptions.inviteButton];
 
+    customButtonColor = null != customButtonColor
+        ? customButtonColor
+        : contentLayouts['header'][headerOptions.customButtonColor];
+    customButtonTextColor = null != customButtonTextColor
+        ? customButtonTextColor
+        : contentLayouts['header'][headerOptions.customButtonTextColor];
+
+    customButtonText = null != customButtonText
+        ? customButtonText
+        : contentLayouts['header'][headerOptions.customButtonText];
+
+    inviteButtonColor = null != inviteButtonColor
+        ? inviteButtonColor
+        : contentLayouts['header'][headerOptions.inviteButtonColor];
+    inviteButtonTextColor = null != inviteButtonTextColor
+        ? inviteButtonTextColor
+        : contentLayouts['header'][headerOptions.inviteButtonTextColor];
+
+    titleText = null != titleText
+        ? titleText
+        : contentLayouts['header'][headerOptions.titleText];
     titleColor = null != titleColor
         ? titleColor
         : contentLayouts['header'][headerOptions.titleColor];
+
+    tagLineText = null != tagLineText
+        ? tagLineText
+        : contentLayouts['header'][headerOptions.tagLineText];
     tagLineColor = null != tagLineColor
         ? tagLineColor
         : contentLayouts['header'][headerOptions.tagLineColor];
@@ -1850,7 +2069,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 Flexible(
                                     flex: 20,
                                     child: Text(
-                                      "More than Rubies",
+                                      titleText,
                                       style: TextStyle(
                                         color: titleColor,
                                         letterSpacing: titleSpacing,
@@ -1865,7 +2084,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                 headerBuilders['tagline'](
                                     sizeFactor: sizeFactor,
                                     tagLine: tagLine,
-                                    color: tagLineColor),
+                                    color: tagLineColor,
+                                    tagLineText: tagLineText),
                                 Expanded(
                                     flex: 10,
                                     child: headerBuilders['member_preview'](
@@ -1890,10 +2110,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         children: [
                           headerBuilders['invite_button'](
                               sizeFactor: sizeFactor,
-                              inviteButton: inviteButton),
+                              inviteButton: inviteButton,
+                              inviteButtonColor: inviteButtonColor,
+                              inviteButtonTextColor: inviteButtonTextColor),
                           headerBuilders['custom_button'](
                               sizeFactor: sizeFactor,
-                              customButton: customButton)
+                              customButton: customButton,
+                              customButtonColor: customButtonColor,
+                              customButtonTextColor: customButtonTextColor,
+                              customButtonText: customButtonText)
                         ],
                       ),
                     ),
@@ -1927,9 +2152,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           Flexible(
                               flex: 20,
                               child: Text(
-                                "More than Rubies",
+                                titleText,
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: titleColor,
                                   letterSpacing: titleSpacing,
                                   fontSize: titleFontSize,
                                   fontWeight: FontWeight.bold,
@@ -1942,7 +2167,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                           headerBuilders['tagline'](
                               sizeFactor: sizeFactor,
                               tagLine: tagLine,
-                              color: tagLineColor),
+                              color: tagLineColor,
+                              tagLineText: tagLineText),
                           Expanded(
                             flex: 10,
                             child: headerBuilders['member_preview'](context,
@@ -1962,10 +2188,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         children: [
                           headerBuilders['invite_button'](
                               sizeFactor: sizeFactor,
-                              inviteButton: inviteButton),
+                              inviteButton: inviteButton,
+                              inviteButtonColor: inviteButtonColor,
+                              inviteButtonTextColor: inviteButtonTextColor),
                           headerBuilders['custom_button'](
                               sizeFactor: sizeFactor,
-                              customButton: customButton)
+                              customButton: customButton,
+                              customButtonColor: customButtonColor,
+                              customButtonTextColor: customButtonTextColor,
+                              customButtonText: customButtonText)
                         ],
                       ),
                     ),
@@ -1979,7 +2210,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
   }
 
-  Widget buildHeaderTagLine({sizeFactor: 1.0, bool tagLine, Color color}) {
+  Widget buildHeaderTagLine(
+      {sizeFactor: 1.0, bool tagLine, Color color, String tagLineText}) {
     tagLine = null != tagLine
         ? tagLine
         : contentLayouts['header'][headerOptions.tagLine];
@@ -1989,7 +2221,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       widget = Padding(
         padding: const EdgeInsets.only(top: 5.0, bottom: 5.0),
         child: Text(
-          "This is the length of this tag line ,text past the comma and including the comma is therefore not shown",
+          tagLineText,
           maxLines: 1,
           textAlign: TextAlign.start,
           style: GoogleFonts.heebo(
@@ -2003,7 +2235,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderCustomButton({sizeFactor: 1.0, bool customButton}) {
+  Widget buildHeaderCustomButton(
+      {sizeFactor: 1.0,
+      bool customButton,
+      String customButtonText,
+      Color customButtonColor,
+      Color customButtonTextColor}) {
     customButton = null != customButton
         ? customButton
         : contentLayouts['header'][headerOptions.customButton];
@@ -2023,7 +2260,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               bottom: 0.0 * sizeFactor),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: Colors.white,
+              color: customButtonColor,
               width: 1.0,
             ),
             borderRadius: BorderRadius.circular(30.0 * sizeFactor),
@@ -2034,17 +2271,17 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               Padding(
                 padding: const EdgeInsets.only(right: 8.0),
                 child: Icon(
-                  EvaIcons.brushOutline,
-                  color: Colors.white,
+                  EvaIcons.starOutline,
+                  color: customButtonTextColor,
                   size: 18.0 * sizeFactor,
                 ),
               ),
               Text(
-                'Custom',
+                customButtonText,
                 overflow: TextOverflow.clip,
                 style: GoogleFonts.heebo(
                     textStyle: TextStyle(
-                  color: Colors.white,
+                  color: customButtonTextColor,
                   letterSpacing: 1.5 * sizeFactor,
                   fontSize: 11.0 * sizeFactor,
                   fontWeight: FontWeight.normal,
@@ -2058,7 +2295,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return widget;
   }
 
-  Widget buildHeaderInviteButton({sizeFactor: 1.0, bool inviteButton}) {
+  Widget buildHeaderInviteButton(
+      {sizeFactor: 1.0,
+      bool inviteButton,
+      Color inviteButtonColor,
+      Color inviteButtonTextColor}) {
     inviteButton = null != inviteButton
         ? inviteButton
         : contentLayouts['header'][headerOptions.inviteButton];
@@ -2081,7 +2322,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 bottom: 0.0 * sizeFactor),
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                color: Colors.white,
+                color: inviteButtonColor,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.circular(30.0 * sizeFactor),
@@ -2095,7 +2336,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     padding: const EdgeInsets.only(right: 8.0),
                     child: Icon(
                       EvaIcons.personAddOutline,
-                      color: Colors.white,
+                      color: inviteButtonTextColor,
                       size: 18.0 * sizeFactor,
                     ),
                   ),
@@ -2104,7 +2345,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     overflow: TextOverflow.clip,
                     style: GoogleFonts.heebo(
                         textStyle: TextStyle(
-                      color: Colors.white,
+                      color: inviteButtonTextColor,
                       letterSpacing: 1.5 * sizeFactor,
                       fontSize: 11.0 * sizeFactor,
                       fontWeight: FontWeight.normal,
@@ -2265,6 +2506,269 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     return widget;
+  }
+}
+
+class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
+  const HomeTabBar(
+      {Key key,
+      @required List<String> tabs,
+      @required this.controller,
+      @required Color tabBarSelectedFontColor,
+      @required Color tabBarUnselectedFontColor,
+      @required Function tabControllerCb,
+      @required Color selectedTabBarColor,
+      @required TabBarStyle selectedTabBarStyle})
+      : _tabs = tabs,
+        _tabBarSelectedFontColor = tabBarSelectedFontColor,
+        _tabBarUnselectedFontColor = tabBarUnselectedFontColor,
+        _tabControllerCB = tabControllerCb,
+        _selectedTabBarColor = selectedTabBarColor,
+        _selectedTabBarStyle = selectedTabBarStyle,
+        super(key: key);
+
+  final List<String> _tabs;
+  final TabController controller;
+  final Color _tabBarSelectedFontColor;
+  final Color _tabBarUnselectedFontColor;
+  final Color _selectedTabBarColor;
+  final TabBarStyle _selectedTabBarStyle;
+  final Function _tabControllerCB;
+
+  Size get preferredSize {
+    return new Size.fromHeight(50.0);
+  }
+
+  @override
+  _HomeTabBarState createState() => _HomeTabBarState(
+      tabs: this._tabs,
+      controller: this.controller,
+      tabBarSelectedFontColor: this._tabBarSelectedFontColor,
+      tabBarUnselectedFontColor: this._tabBarUnselectedFontColor,
+      tabControllerCb: this._tabControllerCB,
+      selectedTabBarColor: this._selectedTabBarColor,
+      selectedTabBarStyle: this._selectedTabBarStyle,
+      key: this.key);
+}
+
+class _HomeTabBarState extends State<HomeTabBar> {
+  List<String> _tabs;
+  TabController controller;
+  Color _tabBarSelectedFontColor;
+  Color _tabBarUnselectedFontColor;
+  Color _selectedTabBarColor;
+  TabBarStyle _selectedTabBarStyle;
+  Function _tabControllerCB;
+  List<Widget> tabList;
+  bool _flexExpanded;
+
+  _HomeTabBarState(
+      {Key key,
+      @required List<String> tabs,
+      @required this.controller,
+      @required Color tabBarSelectedFontColor,
+      @required Color tabBarUnselectedFontColor,
+      @required Function tabControllerCb,
+      @required Color selectedTabBarColor,
+      @required TabBarStyle selectedTabBarStyle})
+      : _tabs = tabs,
+        _tabBarSelectedFontColor = tabBarSelectedFontColor,
+        _tabBarUnselectedFontColor = tabBarUnselectedFontColor,
+        _tabControllerCB = tabControllerCb,
+        _selectedTabBarColor = selectedTabBarColor,
+        _selectedTabBarStyle = selectedTabBarStyle;
+
+  Size get preferredSize {
+    return new Size.fromHeight(50.0);
+  }
+
+  _toggleHomeTabBar({bool expanded}) {
+    if (_flexExpanded == expanded) {
+      //acts as a litmus test, to stop the rest executing
+      return;
+    }
+
+    print("toggletoolbaricon color called");
+
+    Color newIconColor = null != expanded && expanded
+        ? Colors.white
+        : contentLayouts['header'][headerOptions.toolBarIconColor];
+
+    TabBarStyle newSelectedTabBarStyle = selectedTabBarStyle;
+    TabBarStyle newUnselectedTabBarStyle = unselectedTabBarStyle;
+    Color newSelectedTabBarColor = selectedTabBarColor;
+    Color newUnselectedTabBarColor = unselectedTabBarColor;
+    Color newTabBarSelectedFontColor = tabBarSelectedFontColor;
+    Color newTabBarUnselectedFontColor = tabBarUnselectedFontColor;
+
+    if (!expanded) {
+      newSelectedTabBarStyle = cSelectedTabBarStyle;
+      newUnselectedTabBarStyle = cUnselectedTabBarStyle;
+      newSelectedTabBarColor = cSelectedTabBarColor;
+      newUnselectedTabBarColor = cUnselectedTabBarColor;
+      newTabBarSelectedFontColor = cTabBarSelectedFontColor;
+      newTabBarUnselectedFontColor = cTabBarUnselectedFontColor;
+    }
+
+    if (_selectedTabBarStyle == newSelectedTabBarStyle) {
+      return;
+    }
+
+    setState(() {
+      _selectedTabBarStyle = newSelectedTabBarStyle;
+
+      _selectedTabBarColor = newSelectedTabBarColor;
+
+      _tabBarSelectedFontColor = newTabBarSelectedFontColor;
+      _tabBarUnselectedFontColor = newTabBarUnselectedFontColor;
+
+      _flexExpanded = expanded;
+
+      print("set state selected tabbar style: $selectedTabBarStyle");
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+
+    //create tab list
+    tabList = _tabs.map((String name) {
+      //only called at initial build
+      //to force rebuild, set state and put dependant variable in here?: Yes
+      //the variable is _currentTabIndex
+
+      //if index is current index remove styling
+
+      Widget widget = Tab(
+        child: Container(
+          // decoration: buildSelectedTabStyle(
+          //     color: _unselectedTabBarColor,
+          //     tabBarStyle: _unselectedTabBarStyle),
+          child: Align(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+              child: Text(name),
+            ),
+          ),
+        ),
+      );
+
+      if ("AddTabButton" == name) {
+        widget = Icon(
+          EvaIcons.plusCircle,
+          color: Colors.white,
+        );
+      }
+
+      return widget;
+    }).toList();
+
+    toggleHomeTabBar = _toggleHomeTabBar;
+  }
+
+  @override
+  dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("tabbar widget rebuilt");
+    return TabBar(
+      physics: BouncingScrollPhysics(),
+      labelPadding:
+          EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
+      indicatorSize: TabBarIndicatorSize.label,
+      isScrollable: true,
+      tabs: tabList,
+      controller: controller,
+      labelColor: _tabBarSelectedFontColor,
+      unselectedLabelColor: _tabBarUnselectedFontColor,
+      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w400),
+      indicatorColor: _tabBarSelectedFontColor,
+      indicator: buildSelectedTabStyle(
+          color: _selectedTabBarColor, tabBarStyle: _selectedTabBarStyle),
+      onTap: (index) {
+        String name = _tabs[index];
+
+        if ("AddTabButton" == name) {
+          //stop event execution
+          int index = controller.previousIndex;
+          // setState(() {
+          //   controller.index = index;
+          // });
+
+          _tabControllerCB(index);
+
+          //do stuff with button here
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) => HomeCustomizeScreen()));
+        }
+      },
+    );
+  }
+
+  buildSelectedTabStyle({Color color, TabBarStyle tabBarStyle}) {
+    print("selected tabbarstyle: $selectedTabBarStyle");
+    var decoration = BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        color: color);
+
+    switch (tabBarStyle) {
+      case TabBarStyle.halfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.inverseHalfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.border:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(25.0),
+            border: Border.all(color: color, width: 1),
+            color: Colors.transparent);
+        break;
+
+      case TabBarStyle.fullRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(50), color: color);
+        break;
+
+      case TabBarStyle.traditional:
+        return UnderlineTabIndicator(
+            borderSide: BorderSide(color: color, width: 4.0));
+        break;
+
+      case TabBarStyle.dot:
+        return CircleTabIndicator(color: color, radius: 5.0);
+        break;
+
+      case TabBarStyle.bubble:
+        return BubbleTabIndicator(color: color);
+        break;
+
+      case TabBarStyle.square:
+        return BubbleTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+
+      case TabBarStyle.hoverLine:
+        return LineTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+    }
+
+    return decoration;
   }
 }
 

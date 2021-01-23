@@ -51,7 +51,7 @@ class CustomTabScroll extends StatefulWidget {
       this.blurBackground: false,
       this.blurRadius: 5.0,
       this.topLeftBar = true,
-      this.topRightBar = true,
+      this.topRightBar = false,
       this.bottomLeftBar = false,
       this.bottomRightBar = false,
       this.topLeftBarColor,
@@ -121,7 +121,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
       this.maxOpacity: 1.0,
       this.blurBackground: false,
       this.blurRadius: 5.0,
-      this.topLeftBar = true,
+      this.topLeftBar = false,
       this.topRightBar = true,
       this.bottomLeftBar = false,
       this.bottomRightBar = false,
@@ -146,7 +146,6 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   initState() {
     super.initState();
 
-    print("init state called");
     _offset = scrollController.offset;
     _maxOffset = scrollController.position.maxScrollExtent;
     _minOffset = scrollController.position.minScrollExtent;
@@ -165,8 +164,6 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
 
   @override
   dispose() {
-    print("dispose called");
-
     // if (! fixedMode &&  scrollController.hasClients) {
     //    scrollController.position.isScrollingNotifier.removeListener(snap);
     //    scrollController.removeListener(_setCTSOffset);
@@ -194,19 +191,23 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         //for toggling tool bar icon colors
         if (_offset < 10) {
           toggleTBIconColors(expanded: true);
+          toggleHomeTabBar(expanded: true);
         }
 
         if (_offset > 10) {
           toggleTBIconColors(expanded: false);
+          toggleHomeTabBar(expanded: false);
         }
       } else {
         //for toggling tool bar icon colors
-        if (_offset < 300) {
+        if (_offset.roundToDouble() < 230) {
           toggleTBIconColors(expanded: true);
+          toggleHomeTabBar(expanded: true);
         }
 
-        if (_offset > 200) {
+        if (_offset.roundToDouble() > 230) {
           toggleTBIconColors(expanded: false);
+          toggleHomeTabBar(expanded: false);
         }
       }
     });
@@ -216,8 +217,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   void snap() {
     /*Rounding values before comparing fixes issue where it kept snapping even when the header
     was fully extended or not. Causing the user to lose their scroll position randomly when scrolling */
-    print("snap called");
-    print(scrollController.offset);
+
     //set maxOffset if not already set
     if (!_maxOffsetSet) {
       _maxOffset = scrollController.position.maxScrollExtent;
@@ -297,7 +297,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     calculatedOpacity = customTabScrollSettings[CTS.appBarBackgroundImage]
         ? 1.0
         : calculatedOpacity;
-    double barOpacity = maxOpacity - calculatedOpacity;
+    double barOpacity = widget.maxOpacity - calculatedOpacity;
     barOpacity = barOpacity > 0 ? barOpacity : 0.05;
     double rotateAngle = 220.0 >= _offset ? (1 - (_offset / 220)) / 4 : 0;
     double tolerance = 241.0 >= _offset ? (1 - (_offset / 241)) / 4 : 0;
@@ -318,8 +318,8 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     double landingPageBarOpacity =
         1 - barOpacity * 2 > 0 ? 1 - barOpacity * 2 : 0;
 
-    landingPageBarOpacity = landingPageBarOpacity > maxOpacity
-        ? maxOpacity
+    landingPageBarOpacity = landingPageBarOpacity > widget.maxOpacity
+        ? widget.maxOpacity
         : landingPageBarOpacity; //
 
     landingPageBarOpacity = customTabScrollSettings[CTS.dynamicDiagnonalBar]
@@ -327,8 +327,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         : maxOpacity;
 
     //apply max opacity here instead of within the calculations
-    dynamicBarOpacity =
-        dynamicBarOpacity > maxOpacity ? maxOpacity : dynamicBarOpacity;
+    dynamicBarOpacity = dynamicBarOpacity > widget.maxOpacity
+        ? widget.maxOpacity
+        : dynamicBarOpacity;
 
     if (!diagonalLine && scrollFade) {
       //when there's no diagonal line but still want background to fade on scroll
@@ -351,8 +352,8 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     }
 
     if (fixedMode) {
-      barOpacity = maxOpacity;
-      dynamicBarOpacity = maxOpacity;
+      barOpacity = widget.maxOpacity;
+      dynamicBarOpacity = widget.maxOpacity;
       // bottomOffset = landingPage ? screenHeight * 0.15 : 40;
       bottomOffset = 30;
     }
@@ -366,7 +367,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     // print("bar opacity: $barOpacity");
     // print("landingpageopacity: $landingPageBarOpacity");
 
-    Widget topLeftBarWidget = topLeftBar
+    Widget topLeftBarWidget = widget.topLeftBar
         ? HeaderBar(
             bottom: topLeftBottom,
             rotateAngle: rotateAngle,
@@ -376,14 +377,14 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
             dynamicBarOpacity: dynamicBarOpacity,
             widget: widget,
             alignment: Alignment.topLeft,
-            color: secondaryColor,
-            shadow: shadow,
-            shadowLift: shadowLift,
-            blurRadius: blurRadius,
+            color: widget.topLeftBarColor,
+            shadow: widget.shadow,
+            shadowLift: widget.shadowLift,
+            blurRadius: widget.shadowBlurRadius,
           )
         : Container();
 
-    Widget topRightBarWidget = topRightBar
+    Widget topRightBarWidget = widget.topRightBar
         ? HeaderBar(
             bottom: topRightBottom,
             rotateAngle: -rotateAngle,
@@ -393,14 +394,14 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
             dynamicBarOpacity: dynamicBarOpacity,
             widget: widget,
             alignment: Alignment.topRight,
-            color: color,
-            shadow: shadow,
-            shadowLift: shadowLift,
-            blurRadius: blurRadius,
+            color: widget.topRightBarColor,
+            shadow: widget.shadow,
+            shadowLift: widget.shadowLift,
+            blurRadius: widget.shadowBlurRadius,
           )
         : Container();
 
-    Widget bottomLeftBarWidget = bottomLeftBar
+    Widget bottomLeftBarWidget = widget.bottomLeftBar
         ? HeaderBar(
             bottom: 0,
             rotateAngle: -rotateAngle,
@@ -410,14 +411,14 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
             dynamicBarOpacity: dynamicBarOpacity,
             widget: widget,
             alignment: Alignment.bottomLeft,
-            color: secondaryColor,
-            shadow: shadow,
-            shadowLift: shadowLift,
-            blurRadius: blurRadius,
+            color: widget.bottomLeftBarColor,
+            shadow: widget.shadow,
+            shadowLift: widget.shadowLift,
+            blurRadius: widget.shadowBlurRadius,
           )
         : Container();
 
-    Widget bottomRightBarWidget = bottomRightBar
+    Widget bottomRightBarWidget = widget.bottomRightBar
         ? HeaderBar(
             bottom: 0,
             rotateAngle: rotateAngle,
@@ -427,10 +428,10 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
             dynamicBarOpacity: dynamicBarOpacity,
             widget: widget,
             alignment: Alignment.bottomRight,
-            color: secondaryColor,
-            shadow: shadow,
-            shadowLift: shadowLift,
-            blurRadius: blurRadius,
+            color: widget.bottomRightBarColor,
+            shadow: widget.shadow,
+            shadowLift: widget.shadowLift,
+            blurRadius: widget.shadowBlurRadius,
           )
         : Container();
 
@@ -445,9 +446,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
             widget: widget,
             alignment: Alignment.bottomCenter,
             color: primaryColor,
-            shadow: shadow,
-            shadowLift: shadowLift,
-            blurRadius: blurRadius,
+            shadow: widget.shadow,
+            shadowLift: widget.shadowLift,
+            blurRadius: widget.shadowBlurRadius,
           )
         : Container();
 
@@ -554,7 +555,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         Positioned.fill(
           child: Opacity(
             opacity: tabBarOpacity,
-            child: child,
+            child: widget.child,
           ),
         ),
         topRightBarWidget,
@@ -598,6 +599,8 @@ class HeaderBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color usedColor = null != color ? color : primaryColor;
+
     List<BoxShadow> shadowList = shadow
         ? <BoxShadow>[
             BoxShadow(
@@ -624,7 +627,7 @@ class HeaderBar extends StatelessWidget {
                 height: 100.0,
                 decoration: BoxDecoration(
                   boxShadow: shadowList,
-                  color: color,
+                  color: usedColor,
                 )),
           ),
         ),

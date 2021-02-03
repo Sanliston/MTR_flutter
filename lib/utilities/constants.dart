@@ -57,9 +57,13 @@ final double avatarWidth = 40.0;
 final double avatarHeight = 40.0;
 final double avatarRadius = 60.0;
 
-final homeSubtitleTextStyle = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87));
+final fontColor = Colors.black87;
+
+final homeSubtitleTextStyle = darkMode
+    ? dHomeSubtitleTextStyle
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.w600, fontSize: 14, color: fontColor));
 
 final homeLinkTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -69,13 +73,17 @@ final homeSubtitleTextStyleAccent = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
 
-final homeTextStyle = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.black87));
+final homeTextStyle = darkMode
+    ? dHomeTextStyle
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.normal, fontSize: 14, color: fontColor));
 
-final homeTextStyleBold = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87));
+final homeTextStyleBold = darkMode
+    ? dHomeTextStyleBold
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.w600, fontSize: 14, color: fontColor));
 
 final homeTextStyleBoldWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -89,21 +97,29 @@ final homeTextStyleWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
         fontWeight: FontWeight.normal, fontSize: 14, color: Colors.white));
 
-final homeSubTextStyle = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
+final homeSubTextStyle = darkMode
+    ? dHomeSubTextStyle
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.normal, fontSize: 12, color: fontColor));
 
-final homeSubTextStyleBold = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
+final homeSubTextStyleBold = darkMode
+    ? dHomeSubTextStyleBold
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 12, color: fontColor));
 
-final homeSubTextStyleLight = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
+final homeSubTextStyleLight = darkMode
+    ? dHomeSubTextStyleLight
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 12, color: fontColor));
 
-final homeSubTextStyleFocused = GoogleFonts.heebo(
-    textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 14, color: primaryColor));
+final homeSubTextStyleFocused = darkMode
+    ? dHomeSubTextStyleFocused
+    : GoogleFonts.heebo(
+        textStyle: TextStyle(
+            fontWeight: FontWeight.normal, fontSize: 14, color: fontColor));
 
 final warningSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -138,6 +154,57 @@ final inputTransparentDecorationStyle = BoxDecoration(
   ],
 );
 
+//dark mode font styles
+final dFontColor = Colors.white;
+
+final dHomeSubtitleTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: dFontColor));
+
+final dHomeLinkTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
+
+final dHomeSubtitleTextStyleAccent = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
+
+final dHomeTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: dFontColor));
+
+final dHomeTextStyleBold = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: dFontColor));
+
+final dHomeTextStyleBoldWhite = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white));
+
+final dHomeTextStyleBoldWhiteSmall = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.w600, fontSize: 9, color: Colors.white));
+
+final dHomeTextStyleWhite = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.white));
+
+final dHomeSubTextStyle = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 12, color: dFontColor));
+
+final dHomeSubTextStyleBold = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.bold, fontSize: 12, color: dFontColor));
+
+final dHomeSubTextStyleLight = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.bold, fontSize: 12, color: dFontColor));
+
+final dHomeSubTextStyleFocused = GoogleFonts.heebo(
+    textStyle: TextStyle(
+        fontWeight: FontWeight.normal, fontSize: 14, color: dFontColor));
+
 //Forum tab styles
 final forumTextStyleBold = GoogleFonts.heebo(
     textStyle: TextStyle(
@@ -145,7 +212,9 @@ final forumTextStyleBold = GoogleFonts.heebo(
 
 final forumInteractionsStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54));
+        fontWeight: FontWeight.bold,
+        fontSize: 12,
+        color: darkMode ? dFontColor.withOpacity(0.4) : Colors.black54));
 
 //group tab values
 final double memberAvatarWidth = 20.0;
@@ -154,11 +223,15 @@ final double memberAvatarRadius = 10.0;
 
 final groupsSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.black54));
+        fontWeight: FontWeight.normal,
+        fontSize: 12,
+        color: darkMode ? dFontColor : Colors.black54));
 
 final groupsSubTextStyleBold = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black54));
+        fontWeight: FontWeight.w600,
+        fontSize: 12,
+        color: darkMode ? dFontColor : Colors.black54));
 
 //customize screen values
 const double memberViewPadding = 30.0;

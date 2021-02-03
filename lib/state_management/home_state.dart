@@ -70,7 +70,7 @@ List<Map> membersShortlist = [
 List<Map> forumPosts = [
   {
     'user': 'Waka Flocka',
-    'title': 'Flocka Bitches',
+    'title': 'What does this term mean?',
     'date': '5 months ago',
     'body':
         'Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc manLorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man',
@@ -79,17 +79,17 @@ List<Map> forumPosts = [
   },
   {
     'user': 'Jane',
-    'title': 'Test',
+    'title': 'Hello World',
     'date': '1 year ago',
-    'body': 'Lorem ipsum etc man',
+    'body': 'What makes you happy?',
     'likes': 246,
     'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
   },
   {
     'user': 'Jane',
-    'title': 'Test',
+    'title': 'Help',
     'date': '20/10/16',
-    'body': 'Lorem ipsum etc man',
+    'body': 'I need advice',
     'likes': 1000,
     'comments': {'1': {}, '2': {}, '3': {}, '4': {}}
   },
@@ -313,11 +313,11 @@ List<Map> groupsList = [
     'recent_activity': {
       'username': 'James',
       'action': 'posted',
-      'post_title': 'I\'m sick of these damn Siths'
+      'post_title': 'I\'m happy I made it here'
     }
   },
   {
-    'name': 'Band of Bastards',
+    'name': 'Band of Good fellows',
     'security': 'public',
     'members': [
       {
@@ -467,13 +467,35 @@ List<Map> groupsList = [
   }
 ];
 
+//darkMode toggle
+bool darkMode = false;
+
 //core colors
-Color primaryColor = Color(0xFF4568DC);
-Color secondaryColor = Color(0xFFB06AB3);
+
+//good green combo
+// Color primaryColor = Color(0xFF56ab2f);
+// Color secondaryColor = Color(0xFFa8e063);
+
+//good pink combo
+// Color primaryColor = Color(0xFFec008c);
+// Color secondaryColor = Color(0xFFfc6767);
+
+// //good purple combo
+Color primaryColor = Color(0xFF8360c3);
+Color secondaryColor = Color(0xFF2ebf91);
+
+//good purple combo
+// Color primaryColor = Color(0xFF556270);
+// Color secondaryColor = Color(0xFFFF6B6B);
 
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;
-Color darkNight = Color(0xFF263238);
+Color darkNight = darkMode ? Color(0xFF232931) : Color(0xFF263238);
+
+//base background color to be used by main body
+Color bodyBackground = darkMode ? darkNight : Colors.white;
+Color itemBackground = darkMode ? Color(0xFF393e46) : Colors.white;
+Color bodyFontColor = darkMode ? dFontColor : fontColor;
 
 //default background Image
 String defaultBackgroundImage;
@@ -652,16 +674,21 @@ enum logoShape {
 Color gradientColor1 = primaryColor;
 Color gradientColor2 = secondaryColor;
 Color gradientColor3 = accentColor;
+bool gradientColor3Active = false;
 
 enum GradientOrientations {
   horizontal,
   vertical,
+  reverseVertical,
   diagonal,
   topLeft,
   bottomLeft,
   topRight,
   bottomRight,
-  radial
+  radial,
+  nav,
+  navFade,
+  blurFade
 }
 
 GradientOrientations currentGradientOrientation = GradientOrientations.diagonal;
@@ -670,7 +697,8 @@ Gradient getGradient(
     {Color gradientFirstColor,
     Color gradientSecondColor,
     Color gradientThirdColor,
-    GradientOrientations gradientOrientation}) {
+    GradientOrientations gradientOrientation,
+    double angle}) {
   print("in getGradient first color: $gradientFirstColor");
   gradientFirstColor =
       null != gradientFirstColor ? gradientFirstColor : gradientColor1;
@@ -715,6 +743,34 @@ Gradient getGradient(
           end: Alignment.bottomCenter,
           stops: gradientStops,
           colors: colorsList);
+      break;
+
+    case GradientOrientations.reverseVertical:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.navFade:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          stops: [
+            0.00,
+            0.20,
+            0.75,
+            1.0,
+          ],
+          colors: colorsList = [
+            gradientFirstColor,
+            gradientFirstColor,
+            gradientSecondColor,
+            gradientThirdColor
+          ]);
       break;
 
     case GradientOrientations.diagonal:
@@ -771,6 +827,29 @@ Gradient getGradient(
           colors: colorsList);
       break;
 
+    case GradientOrientations.nav:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.topRight,
+          end: Alignment.bottomCenter,
+          stops: gradientStops,
+          colors: colorsList);
+      break;
+
+    case GradientOrientations.blurFade:
+      gradient = LinearGradient(
+          //maybe in future versions you can have an advanced tool for users to create gradients
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          stops: [
+            0.0,
+            0.4,
+            0.6,
+            1.0,
+          ],
+          colors: colorsList);
+      break;
+
     default:
   }
 
@@ -806,7 +885,7 @@ Map contentLayouts = {
 
     headerOptions.logoShape: logoShape.circle,
     headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.gradientDiagonalLine,
+    headerOptions.backgroundStyle: backgroundStyles.image,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
@@ -826,15 +905,15 @@ Map contentLayouts = {
     headerOptions.diagonalBarShadowBlurRadius: 15.0,
     headerOptions.diagonalBarShadowLift: 0.75,
     headerOptions.diagonalMaxOpacity: 1.0,
-    headerOptions.topLeftBar: true,
-    headerOptions.topRightBar: true,
+    headerOptions.topLeftBar: false,
+    headerOptions.topRightBar: false,
     headerOptions.bottomLeftBar: false,
     headerOptions.bottomRightBar: false,
     headerOptions.topLeftBarColor: primaryColor,
     headerOptions.topRightBarColor: primaryColor,
     headerOptions.bottomLeftBarColor: primaryColor,
     headerOptions.bottomRightBarColor: primaryColor,
-    headerOptions.landingPageMode: {landingPageMode.active: false}
+    headerOptions.landingPageMode: {landingPageMode.active: true}
   },
   "default": [
     sections.announcements,
@@ -877,7 +956,10 @@ enum TabBarStyle {
   dot,
   hoverLine,
   inverseHalfRound,
-  border
+  border,
+  unicornBorder,
+  gradientBubble,
+  gradientSquare,
 }
 
 //These are the expanded tabbar , i.e default
@@ -889,28 +971,73 @@ Color unselectedTabBarColor = primaryColor;
 Color tabBarSelectedFontColor = primaryColor;
 Color tabBarUnselectedFontColor = Colors.grey[200];
 Color tabBarGlowColor = primaryColor;
-bool tabBarBlurGlow = true;
+bool tabBarBlurGlow = false;
 bool tabBarLabelGlow = false;
 bool tabBarBlurHue = false;
 bool tabBarSolidAppBar = true;
-Color tabBarBlurOverlayColor = primaryColor.withOpacity(0.4);
-double tabBarBlurOverlayOpacity = 0.4;
-double tabBarBlurSigma = 7.0;
+Color tabBarBlurOverlayColor =
+    darkMode ? Colors.black38 : Colors.grey[300].withOpacity(0.4);
+double tabBarBlurOverlayOpacity = 0.0;
+double tabBarBlurSigma =
+    0.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
+/*If the tabBarBlurSigma is more than zero then the whole Appbar and toolbar will
+background will be blurred
+
+Thus the AppBar and ToolBar styles will only work if headerOptions.blurredAppBar: true
+Otherwise they'll have solid background.
+
+To activate traditional background blur. set AppBarStyle and ToolBarStyle to material
+ */
 
 //these are the collapsed tabbar styles
-TabBarStyle cSelectedTabBarStyle = TabBarStyle.bubble;
+TabBarStyle cSelectedTabBarStyle = TabBarStyle.gradientBubble;
 TabBarStyle cUnselectedTabBarStyle = TabBarStyle
-    .dot; //this will just overlap under the selected style -- doesnt disappear
-Color cSelectedTabBarColor = Colors.white;
+    .bubble; //this will just overlap under the selected style -- doesnt disappear
+Color cSelectedTabBarColor = primaryColor;
 Color cUnselectedTabBarColor = primaryColor;
-Color cTabBarSelectedFontColor = primaryColor;
-Color cTabBarUnselectedFontColor = Colors.white;
+Color cTabBarSelectedFontColor = Colors.white;
+Color cTabBarUnselectedFontColor = Colors.black38;
 Color cTabBarGlowColor = primaryColor;
+
+Color toolBarExpandedFontColor = primaryColor.withOpacity(0.1);
+Color toolBarFontColor = Colors.white;
+
+bool collapsableToolBar =
+    false; //if true also collapses toolbar when user scrolls up
+
+bool hideTabBarWhenScroll = true;
+
+enum AppBarStyle {
+  //style for the top part that contains the title and icons when collapsed
+  material,
+  rounded, //works but needs more fixing
+  roundedTop,
+  roundedBottom,
+  roundedLeft,
+  roundedRight,
+  rectangle,
+}
+enum ToolBarStyle {
+  //style for the part that contains the tab bar
+  material,
+  traditional,
+  rounded,
+  roundedFrosted,
+  rectangle
+}
+
+AppBarStyle appBarStyle = AppBarStyle.material;
+ToolBarStyle toolBarStyle = ToolBarStyle.roundedFrosted;
+
+CollapseMode appBarCollapseMode = CollapseMode.parallax;
 
 //modalBottomSheet blur settings
 bool modalBottomSheetBlur = true;
 double mbsSigmaX = 7.0;
 double mbsSigmaY = 7.0;
+
+//bottom Nav Bar Blur sigma
+double bottomNavSigma = 10.0;
 
 //custom scroll settings
 enum CTS {
@@ -924,7 +1051,7 @@ Map customTabScrollSettings = {
   CTS.tabBackgroundImage:
       false, //should tabbar be solid(false) or show background image (true)
   CTS.appBarBackgroundImage:
-      false, //should appbar be solid(false) or show background image(true) -- overrides dynamic diagonal bar if true
+      false, //should appbar be solid(false) or show background image(true) -- overrides dynamic diagonal and also covers tabbar bar if true
   CTS.dynamicDiagnonalBar:
       false //should diagonal effect fade in (true) or be consistent (false)
 };
@@ -941,3 +1068,6 @@ Function toggleTBIconColors = () {};
 Function toggleHomeTabBar = () {};
 
 //Homestate object containing values
+
+//Images high res and low res for memory management
+String homeBackgroundImageURL = "assets/images/home_background.jpg";

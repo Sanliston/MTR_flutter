@@ -26,6 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
     //stateCallback declaration
     stateCallback['login_screen'] = setState;
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.transparent));
   }
 
   void _onFocusChange() {
@@ -185,6 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
+      height: 60,
       child: RaisedButton(
         elevation: 0.0,
         onPressed: () {
@@ -356,7 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(flex: 5, child: _buildPasswordTF()),
                     Expanded(flex: 1, child: _buildForgotPasswordBtn()),
                     Expanded(flex: 2, child: _buildRememberMeCheckbox()),
-                    Expanded(flex: 5, child: _buildLoginBtn(context)),
+                    Expanded(flex: 6, child: _buildLoginBtn(context)),
                     Expanded(flex: 3, child: _buildSignInWithText()),
                     Expanded(flex: 4, child: _buildSocialBtnRow()),
                     Expanded(flex: 1, child: _buildSignupBtn()),

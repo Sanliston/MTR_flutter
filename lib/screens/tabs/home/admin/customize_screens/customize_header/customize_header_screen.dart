@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:io';
 
 import 'package:MTR_flutter/blur_on_scroll.dart';
 import 'package:MTR_flutter/components/buttons.dart';
@@ -9,6 +10,7 @@ import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
+import 'package:image_picker/image_picker.dart';
 
 enum Options {
   titleColor,
@@ -70,6 +72,12 @@ class CustomizeHeaderScreen extends StatefulWidget {
 }
 
 class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
+  Color uiBackgroundColor = darkMode ? itemBackground : Colors.white;
+  Color uiDividerColor =
+      darkMode ? bodyBackground : Colors.grey[400].withOpacity(0.2);
+  double uiDividerThickness = darkMode ? 3.0 : 1.0;
+  Color uiInactiveLabelColor = darkMode ? Colors.white : Colors.black54;
+
   ScrollController mainScrollController = new ScrollController();
   List list;
   List
@@ -175,10 +183,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       "assets/images/home_background_3.jpg",
     ];
 
-    selectedBackgroundImageList = [
-      "assets/images/home_background.jpg",
-      "assets/images/home_background_3.jpg",
-    ];
+    selectedBackgroundImageList = ["assets/images/home_background.jpg"];
 
     workingColors = {
       WorkingColors.titleColor: contentLayouts['header']
@@ -274,6 +279,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         contentLayouts['header'][headerOptions.diagonalMaxOpacity];
     workingLandingPageMode = contentLayouts['header']
         [headerOptions.landingPageMode][landingPageMode.active];
+
+    gradientThirdColorEnabled = gradientColor3Active;
 
     customButtonFocusNode = new FocusNode();
     customButtonActionFocusNode = new FocusNode();
@@ -510,6 +517,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     gradientColor2 = workingColors[WorkingColors.gradientSecondColor];
     gradientColor3 = workingColors[WorkingColors.gradientThirdColor];
     currentGradientOrientation = workingGradientOrientation;
+    gradientColor3Active = gradientThirdColorEnabled;
+
+    print("Saving gradient color 3: $gradientColor3");
 
     contentLayouts[header][headerOptions.tagLineText] = taglineController.text;
     contentLayouts[header][headerOptions.titleText] = placeNameController.text;
@@ -574,7 +584,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Scaffold(
-          backgroundColor: Colors.grey[100],
+          backgroundColor: darkMode ? bodyBackground : Colors.grey[100],
           appBar: AppBar(
               title: Text('Customize Header', style: homeTextStyleBoldWhite),
               centerTitle: true,
@@ -657,7 +667,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       padding: const EdgeInsets.only(bottom: 10.0),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 500),
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.only(
               top: sidePadding, bottom: sidePadding, left: 0, right: 0),
@@ -717,8 +727,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: sidePadding),
           child: Divider(
-            thickness: 1.0,
-            color: Colors.grey[400].withOpacity(0.2),
+            thickness: uiDividerThickness,
+            color: uiDividerColor,
           ),
         ),
         Padding(
@@ -805,8 +815,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: sidePadding),
           child: Divider(
-            thickness: 1.0,
-            color: Colors.grey[400].withOpacity(0.2),
+            thickness: uiDividerThickness,
+            color: uiDividerColor,
           ),
         ),
         Padding(
@@ -869,8 +879,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: sidePadding),
           child: Divider(
-            thickness: 1.0,
-            color: Colors.grey[400].withOpacity(0.2),
+            thickness: uiDividerThickness,
+            color: uiDividerColor,
           ),
         ),
         Padding(
@@ -963,7 +973,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       padding: const EdgeInsets.only(bottom: 10.0),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 500),
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
           child: Column(
@@ -1061,7 +1071,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               : 12,
                           color: customButtonFocusNode.hasFocus
                               ? workingColors[WorkingColors.primaryColor]
-                              : Colors.black54)),
+                              : uiInactiveLabelColor)),
                   alignLabelWithHint: true, //stops it being so high
                   border: new UnderlineInputBorder(
                       borderSide: new BorderSide(color: Colors.grey[300])),
@@ -1078,7 +1088,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                           height: 2.5,
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
-                          color: Colors.black54))),
+                          color: uiInactiveLabelColor))),
             ),
           ),
           Container(
@@ -1194,7 +1204,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   contentPadding: EdgeInsets.only(top: 0.0, bottom: 5.0),
                   floatingLabelBehavior: FloatingLabelBehavior.auto,
                   labelText: customButtonActionController.text.isEmpty
-                      ? 'Choose an action'
+                      ? 'Choose what the button will do'
                       : 'Selected action: ',
                   labelStyle: GoogleFonts.heebo(
                       textStyle: TextStyle(
@@ -1205,7 +1215,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               : 12,
                           color: customButtonActionFocusNode.hasFocus
                               ? workingColors[WorkingColors.primaryColor]
-                              : Colors.black54)),
+                              : uiInactiveLabelColor)),
                   alignLabelWithHint: true, //stops it being so high
                   border: new UnderlineInputBorder(
                       borderSide: new BorderSide(color: Colors.grey[300])),
@@ -1223,9 +1233,37 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                           height: 2.5,
                           fontWeight: FontWeight.normal,
                           fontSize: 12,
-                          color: Colors.black54))),
+                          color: uiInactiveLabelColor))),
             ),
           ),
+          buildColorRow(
+              "Button Color", workingColors[WorkingColors.customButtonColor],
+              onTapCallback: () {
+            toggleColorEditor(Options.customButtonColor);
+          }, longpressCallback: () {
+            displayPopupColorEditor(Options.customButtonColor);
+          }),
+          AnimatedCrossFade(
+              duration: crossFadeDuration,
+              firstChild: colorPickerContainers[Options.customButtonColor],
+              secondChild: Container(height: 0.0),
+              crossFadeState: Options.customButtonColor == activeColorEditor
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond),
+          buildColorRow("Button Text Color",
+              workingColors[WorkingColors.customButtonTextColor],
+              onTapCallback: () {
+            toggleColorEditor(Options.customButtonTextColor);
+          }, longpressCallback: () {
+            displayPopupColorEditor(Options.customButtonTextColor);
+          }),
+          AnimatedCrossFade(
+              duration: crossFadeDuration,
+              firstChild: colorPickerContainers[Options.customButtonTextColor],
+              secondChild: Container(height: 0.0),
+              crossFadeState: Options.customButtonTextColor == activeColorEditor
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond)
         ],
       ),
     );
@@ -1237,31 +1275,82 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
-          padding: const EdgeInsets.all(sidePadding),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          padding: const EdgeInsets.only(bottom: 15.0),
+          child: Column(
             children: [
-              Text("Show Invite Button", style: homeTextStyleBold),
-              IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  setState(() {
-                    workingInviteButtonActive = !workingInviteButtonActive;
-                  });
-                },
-                icon: Icon(
-                  workingInviteButtonActive
-                      ? UniconsSolid.toggle_on
-                      : UniconsSolid.toggle_off,
-                  color: workingInviteButtonActive
-                      ? workingColors[WorkingColors.primaryColor]
-                      : Colors.grey[400],
-                  size: 40.0,
+              Padding(
+                padding: const EdgeInsets.only(
+                    top: sidePadding, left: sidePadding, right: sidePadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Show Invite Button", style: homeTextStyleBold),
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        setState(() {
+                          workingInviteButtonActive =
+                              !workingInviteButtonActive;
+                        });
+                      },
+                      icon: Icon(
+                        workingInviteButtonActive
+                            ? UniconsSolid.toggle_on
+                            : UniconsSolid.toggle_off,
+                        color: workingInviteButtonActive
+                            ? workingColors[WorkingColors.primaryColor]
+                            : Colors.grey[400],
+                        size: 40.0,
+                      ),
+                    )
+                  ],
                 ),
-              )
+              ),
+              AnimatedCrossFade(
+                  firstChild: Column(
+                    children: [
+                      buildColorRow("Button Color",
+                          workingColors[WorkingColors.inviteButtonColor],
+                          onTapCallback: () {
+                        toggleColorEditor(Options.inviteButtonColor);
+                      }, longpressCallback: () {
+                        displayPopupColorEditor(Options.inviteButtonColor);
+                      }),
+                      AnimatedCrossFade(
+                          duration: crossFadeDuration,
+                          firstChild:
+                              colorPickerContainers[Options.inviteButtonColor],
+                          secondChild: Container(height: 0.0),
+                          crossFadeState:
+                              Options.inviteButtonColor == activeColorEditor
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond),
+                      buildColorRow("Button Text Color",
+                          workingColors[WorkingColors.inviteButtonTextColor],
+                          onTapCallback: () {
+                        toggleColorEditor(Options.inviteButtonTextColor);
+                      }, longpressCallback: () {
+                        displayPopupColorEditor(Options.inviteButtonTextColor);
+                      }),
+                      AnimatedCrossFade(
+                          duration: crossFadeDuration,
+                          firstChild: colorPickerContainers[
+                              Options.inviteButtonTextColor],
+                          secondChild: Container(height: 0.0),
+                          crossFadeState:
+                              Options.inviteButtonTextColor == activeColorEditor
+                                  ? CrossFadeState.showFirst
+                                  : CrossFadeState.showSecond)
+                    ],
+                  ),
+                  secondChild: Container(),
+                  crossFadeState: workingInviteButtonActive
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  duration: crossFadeDuration)
             ],
           ),
         ),
@@ -1273,7 +1362,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
           child: Row(
@@ -1312,7 +1401,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       padding: const EdgeInsets.only(bottom: 10.0),
       child: AnimatedContainer(
         duration: Duration(milliseconds: 300),
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.only(top: sidePadding, bottom: sidePadding),
           child: Column(
@@ -1384,7 +1473,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           padding: const EdgeInsets.only(
               top: 8.0, left: sidePadding, right: sidePadding),
           child: Divider(
-            thickness: 1.0,
+            thickness: uiDividerThickness,
             color: workingColors[WorkingColors.gradientFirstColor]
                 .withOpacity(0.15),
           ),
@@ -1497,7 +1586,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 15.0),
           child: Divider(
-            thickness: 1.0,
+            thickness: uiDividerThickness,
             color: workingColors[WorkingColors.gradientFirstColor]
                 .withOpacity(0.1),
           ),
@@ -1663,7 +1752,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               : 12,
                           color: gradientOFocusNode.hasFocus
                               ? workingColors[WorkingColors.primaryColor]
-                              : Colors.black54)),
+                              : uiInactiveLabelColor)),
                   alignLabelWithHint: true, //stops it being so high
                   border: new UnderlineInputBorder(
                       borderSide: new BorderSide(color: Colors.grey[300])),
@@ -1742,7 +1831,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.only(top: sidePadding, bottom: sidePadding),
           child: Column(
@@ -1890,7 +1979,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         targetColor = WorkingColors.customButtonColor;
         break;
 
-      case Options.customButtonColor:
+      case Options.customButtonTextColor:
         targetColor = WorkingColors.customButtonTextColor;
         break;
 
@@ -2048,12 +2137,12 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2125,6 +2214,87 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     : CrossFadeState.showSecond,
                 duration: Duration(milliseconds: 300),
               ),
+              Padding(
+                padding: const EdgeInsets.only(top: 25.0, bottom: 15.0),
+                child: SolidButton(
+                    text: "Add new image",
+                    width: 140,
+                    height: 30,
+                    backgroundColor: primaryColor,
+                    iconData: EvaIcons.plusCircle,
+                    onPressed: () {
+                      List options = [
+                        {
+                          "iconData": EvaIcons.smartphoneOutline,
+                          "title": "Take a photo",
+                          "onPressed": () async {
+                            PickedFile pickedFile = await getImageFromCamera();
+
+                            //check if null
+                            if (null == pickedFile) {
+                              return;
+                            }
+
+                            //check if image is already in backgroundImageList
+                            bool exists =
+                                backgroundImageList.contains(pickedFile.path);
+
+                            print("backgroundImageList: $backgroundImageList");
+
+                            if (!exists) {
+                              setState(() {
+                                backgroundImageList.add(pickedFile.path);
+                              });
+                            }
+
+                            Navigator.pop(context);
+                          }
+                        },
+                        {
+                          "iconData": EvaIcons.imageOutline,
+                          "title": "Choose from device",
+                          "onPressed": () async {
+                            PickedFile pickedFile = await getImageFromGallery(
+                                maxWidth: 750,
+                                maxHeight:
+                                    750); //get highres image then scale to get thumbnail image
+
+                            //check if null
+                            if (null == pickedFile) {
+                              return;
+                            }
+
+                            // //save highres image
+                            // backgroundImagesHighRes.add(pickedFile.path);
+
+                            //check if image is already in backgroundImageList
+                            bool exists =
+                                backgroundImageList.contains(pickedFile.path);
+
+                            print("backgroundImageList: $backgroundImageList");
+
+                            if (!exists) {
+                              setState(() {
+                                backgroundImageList.add(pickedFile.path);
+                              });
+                            }
+
+                            pickedFile = null;
+
+                            Navigator.pop(context);
+                          }
+                        }
+                      ];
+
+                      Map params = {
+                        "context": context,
+                        "title": "Upload Media",
+                        "options": options
+                      };
+
+                      displayNavigationDrawer(context, params);
+                    }),
+              ),
             ],
           ),
         ),
@@ -2153,6 +2323,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                     workingBGOption != backgroundStyles.imageDiagonalLine)) {
               selectWorkingBGOption(backgroundStyles.image);
             }
+
+            /*This section is to ensure only one is selected
+            To select multiple just remove this line
+            ======================================= */
+
+            selectedBackgroundImageList.clear();
+
+            /*====================================== */
 
             if (selected) {
               selectedBackgroundImageList.remove(image);
@@ -2229,9 +2407,25 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                         size: 15.0,
                       ),
                       onPressed: () {
-                        String displayText = length > 1
+                        //stop removal of selected image
+                        int contextualLength = length;
+                        String alternateText =
+                            "You must have atleast one image available.";
+                        TextStyle textStyle = homeTextStyleBold;
+                        TextOverflow overflow = TextOverflow.visible;
+                        int maxlines = 3;
+
+                        if (selected) {
+                          contextualLength = 1;
+                          alternateText =
+                              "You can't remove a selected image. Select a different image and try to remove this one again.";
+                          textStyle = homeSubTextStyle;
+                          overflow = TextOverflow.ellipsis;
+                        }
+
+                        String displayText = contextualLength > 1
                             ? "Are you sure you want to remove this image?"
-                            : "You must have atleast one image available.";
+                            : alternateText;
 
                         Widget customHeader = Padding(
                           padding: const EdgeInsets.only(
@@ -2243,10 +2437,18 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                displayText,
-                                style: homeTextStyleBold,
-                                overflow: TextOverflow.visible,
+                              Container(
+                                width: MediaQuery.of(context).size.width -
+                                    4 * sidePadding,
+                                child: Center(
+                                  child: Text(
+                                    displayText,
+                                    style: textStyle,
+                                    overflow: overflow,
+                                    maxLines: maxlines,
+                                    softWrap: true,
+                                  ),
+                                ),
                               ),
 
                               //button which takes you to user profile
@@ -2260,7 +2462,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                                 bottom: 10.0,
                                 left: sidePadding,
                                 right: sidePadding),
-                            child: length > 1
+                            child: contextualLength > 1
                                 ? Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -2334,7 +2536,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
           child: Column(
@@ -2420,7 +2622,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2502,7 +2704,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                                   : 12,
                               color: taglineFocusNode.hasFocus
                                   ? workingColors[WorkingColors.tagLineColor]
-                                  : Colors.black54)),
+                                  : uiInactiveLabelColor)),
                       alignLabelWithHint: true, //stops it being so high
                       border: new UnderlineInputBorder(
                           borderSide: new BorderSide(color: Colors.grey[300])),
@@ -2519,7 +2721,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               height: 2.5,
                               fontWeight: FontWeight.normal,
                               fontSize: 12,
-                              color: Colors.black54))),
+                              color: uiInactiveLabelColor))),
                 ),
               ),
             ),
@@ -2543,7 +2745,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -2595,7 +2797,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                                   : 12,
                               color: placeNameFocusNode.hasFocus
                                   ? workingColors[WorkingColors.primaryColor]
-                                  : Colors.black54)),
+                                  : uiInactiveLabelColor)),
                       alignLabelWithHint: true, //stops it being so high
                       border: new UnderlineInputBorder(
                           borderSide: new BorderSide(color: Colors.grey[300])),
@@ -2612,7 +2814,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               height: 2.5,
                               fontWeight: FontWeight.normal,
                               fontSize: 12,
-                              color: Colors.black54))),
+                              color: uiInactiveLabelColor))),
                 ),
               ),
             ),
@@ -2643,7 +2845,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
-        color: Colors.white,
+        color: uiBackgroundColor,
         child: Padding(
           padding: const EdgeInsets.all(sidePadding),
           child: Row(
@@ -2695,8 +2897,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             gradientSecondColor:
                 workingColors[WorkingColors.gradientSecondColor],
             gradientThirdColor: thirdColor,
+            gradientThirdColorEnabled: gradientThirdColorEnabled,
             gradientOrientation: workingGradientOrientation,
             backgroundStyle: getWorkingBGOption(),
+            backgroundImageURL: selectedBackgroundImageList[0],
             diagonalBarColor: workingColors[WorkingColors.diagonalColor],
             diagonalBarShadow: workingDiagonalBarShadow,
             diagonalBarShadowBlurRadius: workingDiagonalBarShadowBlurRadius,

@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 
 class ForumPostsSection extends StatefulWidget {
@@ -67,7 +68,7 @@ Solved the janky animation issue by combining 2 animations together
       "options": options
     };
 
-    sharedStateManagement['display_navigation_drawer'](params);
+    displayNavigationDrawer(context, params);
   }
 
   void _onNewPost() {
@@ -140,7 +141,7 @@ Solved the janky animation issue by combining 2 animations together
                             "##########################################adding new post using setState");
                         Map newPost = {
                           'user': 'New Post 3',
-                          'title': 'Flocka Bitches',
+                          'title': 'Hello this is a new post',
                           'date': '5 months ago',
                           'body':
                               'Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc manLorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man Lorem ipsum etc man',
@@ -196,7 +197,7 @@ Solved the janky animation issue by combining 2 animations together
           ],
         ),
         Container(
-          color: Colors.grey[50],
+          color: darkMode ? bodyBackground : Colors.grey[50],
           child: Padding(
             padding: const EdgeInsets.only(top: 5.0, bottom: 10.0),
             child: AnimatedList(
@@ -206,12 +207,11 @@ Solved the janky animation issue by combining 2 animations together
               shrinkWrap: true,
               itemBuilder:
                   (BuildContext context, int index, Animation animation) {
-                Color dividerColor = Colors.white;
+                Color dividerColor = itemBackground;
                 if (0 < index) {
-                  dividerColor = Colors.grey[100];
+                  dividerColor = darkMode ? bodyBackground : Colors.grey[100];
                 }
 
-                print("Dividerthickness: $dividerColor");
                 return SizeTransition(
                   sizeFactor: animation.drive(CurveTween(
                       curve: Interval(0.0, 0.7, curve: Curves.easeIn))),
@@ -224,7 +224,7 @@ Solved the janky animation issue by combining 2 animations together
                         end: const Offset(0.0, 0.0),
                       )),
                       child: Container(
-                        color: Colors.white,
+                        color: itemBackground,
                         child: Column(
                           children: [
                             Divider(
@@ -272,7 +272,7 @@ Solved the janky animation issue by combining 2 animations together
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                   style:
-                                                      forumTextStyleBold), //set a global style to be shared
+                                                      homeSubTextStyleBold), //set a global style to be shared
                                               SizedBox(
                                                   height:
                                                       5), //sized box to create space between
@@ -359,9 +359,8 @@ Solved the janky animation issue by combining 2 animations together
                                             "options": options
                                           };
 
-                                          sharedStateManagement[
-                                                  'display_navigation_drawer'](
-                                              params);
+                                          displayNavigationDrawer(
+                                              context, params);
                                           // do something
                                         },
                                       )
@@ -407,7 +406,8 @@ Solved the janky animation issue by combining 2 animations together
                                                   padding: EdgeInsets.all(0),
                                                   icon: Icon(
                                                     EvaIcons.heartOutline,
-                                                    color: Colors.black26,
+                                                    color: bodyFontColor
+                                                        .withOpacity(0.3),
                                                   ),
                                                   onPressed: () {
                                                     // do something
@@ -436,7 +436,8 @@ Solved the janky animation issue by combining 2 animations together
                                                     padding: EdgeInsets.all(0),
                                                     icon: Icon(
                                                       UniconsLine.comment,
-                                                      color: Colors.black26,
+                                                      color: bodyFontColor
+                                                          .withOpacity(0.3),
                                                     ),
                                                     onPressed: () {
                                                       // do something

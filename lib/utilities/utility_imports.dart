@@ -12,6 +12,7 @@ import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
+import 'package:image_picker/image_picker.dart';
 
 void rebuildMainScreen(BuildContext context) {
   /*this approach fixes the issue with the customTabScroll no longer calling
@@ -69,4 +70,26 @@ Color hexToColor(String code) {
 
 void unfocus(BuildContext context) {
   FocusScope.of(context).requestFocus(new FocusNode());
+}
+
+Future<PickedFile> getImageFromGallery(
+    {double maxWidth = 750, double maxHeight = 750}) async {
+  PickedFile pickedFile = await ImagePicker().getImage(
+    source: ImageSource.gallery,
+    maxWidth: maxWidth,
+    maxHeight: maxHeight,
+  );
+
+  return pickedFile;
+}
+
+Future<PickedFile> getImageFromCamera(
+    {double maxWidth = 750, double maxHeight = 750}) async {
+  PickedFile pickedFile = await ImagePicker().getImage(
+    source: ImageSource.camera,
+    maxWidth: maxWidth,
+    maxHeight: maxHeight,
+  );
+
+  return pickedFile;
 }

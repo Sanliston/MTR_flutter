@@ -294,9 +294,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     double bottomBase = landingPage ? screenHeight * 0.9 : 350;
     double calculatedOpacity = _calculateOpacity();
     lastOpacity = calculatedOpacity;
-    calculatedOpacity = customTabScrollSettings[CTS.appBarBackgroundImage]
-        ? 1.0
-        : calculatedOpacity;
+    // calculatedOpacity = customTabScrollSettings[CTS.appBarBackgroundImage]
+    //     ? 1.0
+    //     : calculatedOpacity;
     double barOpacity = widget.maxOpacity - calculatedOpacity;
     barOpacity = barOpacity > 0 ? barOpacity : 0.05;
     double rotateAngle = 220.0 >= _offset ? (1 - (_offset / 220)) / 4 : 0;
@@ -313,6 +313,10 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
 
     double dynamicBarOpacity =
         customTabScrollSettings[CTS.dynamicDiagnonalBar] ? barOpacity : 1.0;
+
+    dynamicBarOpacity = customTabScrollSettings[CTS.appBarBackgroundImage]
+        ? 0.2
+        : dynamicBarOpacity;
 
     //landingPage Bar scrolling opacity
     double landingPageBarOpacity =
@@ -435,23 +439,6 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
           )
         : Container();
 
-    Widget landingPageAppBar = landingPage && tabBarSolidAppBar
-        ? HeaderBar(
-            bottom: 50,
-            rotateAngle: 0,
-            landingPage: landingPage,
-            minHeight: MediaQuery.of(context).size.height,
-            landingPageBarOpacity: 1,
-            dynamicBarOpacity: 1,
-            widget: widget,
-            alignment: Alignment.bottomCenter,
-            color: primaryColor,
-            shadow: widget.shadow,
-            shadowLift: widget.shadowLift,
-            blurRadius: widget.shadowBlurRadius,
-          )
-        : Container();
-
     if (blurBackground) {
       //This is very intensive and a better solution will need to found
 
@@ -481,7 +468,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
           // ),
           Positioned.fill(
             child: Opacity(
-              opacity: tabBarOpacity,
+              opacity: customTabScrollSettings[CTS.appBarBackgroundImage]
+                  ? 1.0
+                  : tabBarOpacity,
               child: child,
             ),
           ),
@@ -551,10 +540,12 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         //     ),
         //   ),
         // ),
-        landingPageAppBar,
+        getLandingPageAppBar(),
         Positioned.fill(
           child: Opacity(
-            opacity: tabBarOpacity,
+            opacity: customTabScrollSettings[CTS.appBarBackgroundImage]
+                ? 1.0
+                : tabBarOpacity,
             child: widget.child,
           ),
         ),
@@ -564,6 +555,58 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         bottomRightBarWidget,
       ],
     );
+  }
+
+  Widget getLandingPageAppBar() {
+    Widget landingPageAppBar = Container();
+
+    //for non landing page
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        landingPageAppBar = tabBarSolidAppBar
+            ? HeaderBar(
+                bottom: 50,
+                rotateAngle: 0,
+                landingPage: landingPage,
+                minHeight: MediaQuery.of(context).size.height,
+                landingPageBarOpacity: 1,
+                dynamicBarOpacity: 1,
+                widget: widget,
+                alignment: Alignment.bottomCenter,
+                color: primaryColor,
+                shadow: widget.shadow,
+                shadowLift: widget.shadowLift,
+                blurRadius: widget.shadowBlurRadius,
+              )
+            : Container();
+        break;
+
+      case AppBarStyle.roundedBottom:
+        landingPageAppBar = landingPage && tabBarSolidAppBar
+            ? HeaderBar(
+                padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                bottom: 50,
+                rotateAngle: 0,
+                landingPage: landingPage,
+                minHeight: MediaQuery.of(context).size.height,
+                landingPageBarOpacity: 1,
+                dynamicBarOpacity: 1,
+                widget: widget,
+                alignment: Alignment.bottomCenter,
+                color: primaryColor,
+                shadow: widget.shadow,
+                shadowLift: widget.shadowLift,
+                blurRadius: widget.shadowBlurRadius,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(15),
+                    bottomRight: Radius.circular(15)),
+              )
+            : Container();
+        break;
+    }
+
+    return landingPageAppBar;
   }
 }
 
@@ -581,7 +624,9 @@ class HeaderBar extends StatelessWidget {
       @required this.color,
       @required this.shadow,
       @required this.blurRadius,
-      @required this.shadowLift})
+      @required this.shadowLift,
+      this.padding,
+      this.borderRadius})
       : super(key: key);
 
   final double bottom;
@@ -596,10 +641,16 @@ class HeaderBar extends StatelessWidget {
   final bool shadow;
   final double shadowLift;
   final double blurRadius;
+  final BorderRadius borderRadius;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
     Color usedColor = null != color ? color : primaryColor;
+    BorderRadius usedBorderRadius =
+        null != borderRadius ? borderRadius : BorderRadius.zero;
+
+    EdgeInsets usedPadding = null != padding ? padding : EdgeInsets.zero;
 
     List<BoxShadow> shadowList = shadow
         ? <BoxShadow>[
@@ -617,18 +668,22 @@ class HeaderBar extends StatelessWidget {
           minHeight: minHeight,
           maxWidth: MediaQuery.of(context).size.width,
         ),
-        child: Transform(
-          alignment: alignment,
-          transform: Matrix4.skewY(-rotateAngle),
-          child: Opacity(
-            opacity: landingPage ? landingPageBarOpacity : dynamicBarOpacity,
-            child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 100.0,
-                decoration: BoxDecoration(
-                  boxShadow: shadowList,
-                  color: usedColor,
-                )),
+        child: Padding(
+          padding: usedPadding,
+          child: Transform(
+            alignment: alignment,
+            transform: Matrix4.skewY(-rotateAngle),
+            child: Opacity(
+              opacity: landingPage ? landingPageBarOpacity : dynamicBarOpacity,
+              child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 100.0,
+                  decoration: BoxDecoration(
+                    boxShadow: shadowList,
+                    borderRadius: usedBorderRadius,
+                    color: usedColor,
+                  )),
+            ),
           ),
         ),
       ),

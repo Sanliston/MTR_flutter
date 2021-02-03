@@ -93,20 +93,22 @@ class AnnoucementsSection extends StatelessWidget {
                   ),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: itemBackground,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(5),
                       topRight: Radius.circular(5),
                       bottomLeft: Radius.circular(5),
                       bottomRight: Radius.circular(5)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.30),
-                      spreadRadius: 1,
-                      blurRadius: 9,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
+                  boxShadow: darkMode
+                      ? null
+                      : [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.30),
+                            spreadRadius: 1,
+                            blurRadius: 9,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
                 ),
               );
             },

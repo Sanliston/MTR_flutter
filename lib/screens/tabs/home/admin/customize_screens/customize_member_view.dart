@@ -371,7 +371,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     double smallButtonHeight = 24.0;
 
     return Container(
-      color: darkNight,
+      color: darkMode ? darkNight.withOpacity(0.8) : darkNight,
       child: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: ListView(
@@ -468,6 +468,9 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
           print("component: $component");
           String sectionName = sectionStringMap[component];
 
+          Color sectionStripBase = darkMode ? bodyBackground : Colors.white;
+          Color sectionStripTop = darkMode ? itemBackground : Colors.blue[100];
+
           if (index >= contentList.length - 1) {
             widget = Stack(alignment: Alignment.topCenter, children: [
               Padding(
@@ -484,16 +487,16 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                         end: Alignment(-0.9, -0.7),
                         stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
                         colors: [
-                          Colors.white,
+                          sectionStripBase,
 
-                          Colors.white,
-                          Colors.blue[100],
-                          Colors.blue[100],
-                          Colors.white,
+                          sectionStripBase,
+                          sectionStripTop,
+                          sectionStripTop,
+                          sectionStripBase,
 
-                          Colors.white,
-                          Colors.blue[100],
-                          Colors.blue[100],
+                          sectionStripBase,
+                          sectionStripTop,
+                          sectionStripTop,
                           //red
                           //orange
                         ],
@@ -537,14 +540,16 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                           end: Alignment(-0.9, -0.5),
                           stops: [0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1],
                           colors: [
-                            Colors.white,
-                            Colors.blue[100],
-                            Colors.white,
-                            Colors.blue[100],
-                            Colors.white,
-                            Colors.blue[100],
-                            Colors.white,
-                            Colors.blue[100], //red
+                            sectionStripBase,
+                            sectionStripTop,
+                            sectionStripBase,
+                            sectionStripTop,
+                            sectionStripBase,
+                            sectionStripTop,
+                            sectionStripBase,
+                            sectionStripTop,
+
+                            //red
                             //orange
                           ],
                           tileMode: TileMode.repeated,
@@ -576,7 +581,7 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                       right: memberViewPadding,
                       top: 12.0),
                   child: Container(
-                      color: Colors.white,
+                      color: bodyBackground,
                       child: FlatButton(
                           onPressed: () {
                             displayEditDrawer(context, sectionName);

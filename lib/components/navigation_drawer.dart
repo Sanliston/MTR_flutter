@@ -32,14 +32,16 @@ void displayNavigationDrawer(BuildContext context, Map params) {
 
 Widget buildNavigationDrawer(BuildContext context, Map params) {
   Color dividerColor = Colors.grey[200];
-  Color handleBarColor = Colors.grey[200]; //that little grey line at the top
+  Color handleBarColor = darkMode
+      ? bodyBackground
+      : Colors.grey[200]; //that little grey line at the top
   double blurSigmaX = 0;
   double blurSigmaY = 0;
   double navSidePadding = sidePadding;
   Widget header = Container(height: 1.0);
   Widget topDivider = Divider(
-    thickness: 1.0,
-    color: dividerColor,
+    thickness: darkMode ? 5.0 : 1.0,
+    color: darkMode ? bodyBackground : dividerColor,
   );
   Widget body = Container(height: 1.0);
   Widget container = Container(height: 1.0);
@@ -159,7 +161,7 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
               padding: const EdgeInsets.only(right: 15.0),
               child: Icon(
                 iconData,
-                color: Colors.black,
+                color: bodyFontColor,
               ),
             );
           }
@@ -239,7 +241,7 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
           ),
         ),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: itemBackground,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(10),
               topRight: Radius.circular(10),

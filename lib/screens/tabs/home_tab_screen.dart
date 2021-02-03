@@ -2,11 +2,13 @@ import 'dart:collection';
 import 'dart:ui';
 
 import 'package:MTR_flutter/components/navigation_drawer.dart';
+import 'package:MTR_flutter/screens/tabs/home/landing_page/landing_page.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
@@ -66,6 +68,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   Color _tabBarSelectedFontColor;
   Color _tabBarUnselectedFontColor;
   bool _expanded;
+  double screenHeight;
+  double screenWidth;
+  bool appBarVisible;
 
   void tabControllerCb(index) {
     setState(() {
@@ -142,8 +147,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     Color newIconColor = null != expanded && expanded
-        ? Colors.white
-        : contentLayouts['header'][headerOptions.toolBarIconColor];
+        ? toolBarExpandedFontColor
+        : toolBarFontColor;
 
     TabBarStyle newSelectedTabBarStyle = selectedTabBarStyle;
     TabBarStyle newUnselectedTabBarStyle = unselectedTabBarStyle;
@@ -161,9 +166,9 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       newTabBarUnselectedFontColor = cTabBarUnselectedFontColor;
     }
 
-    if (_selectedTabBarStyle == newSelectedTabBarStyle) {
-      return;
-    }
+    // if (_selectedTabBarStyle == newSelectedTabBarStyle) {
+    //   return;
+    // }
 
     setState(() {
       toolBarIconColor = newIconColor;
@@ -222,6 +227,26 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     });
   }
 
+  Color getAppBarColor() {
+    Color color = Colors.transparent;
+
+    color = contentLayouts['header'][headerOptions.blurredAppBar]
+        ? Colors.transparent
+        : contentLayouts['header'][headerOptions.appBarColor];
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        // color = _expanded ? primaryColor : Colors.transparent;
+        break;
+
+      case AppBarStyle.rounded:
+        color = Colors.transparent;
+        break;
+    }
+
+    return color;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -238,6 +263,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     _tabBarSelectedFontColor = tabBarSelectedFontColor;
     _tabBarUnselectedFontColor = tabBarUnselectedFontColor;
     _expanded = true;
+    appBarVisible = true;
 
     //set controller list based on obtained list
     controller = TabController(
@@ -303,10 +329,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
   @override
   Widget build(BuildContext context) {
-    var screenHeight = MediaQuery.of(context).size.height;
-    var screenWidth = MediaQuery.of(context).size.width;
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
     double landingPageHeight =
-        persistentNavBar ? screenHeight : screenHeight + 58;
+        persistentNavBar ? screenHeight : screenHeight + 40;
 
     var minimumHeaderHeight = landingPage
         ? landingPageHeight
@@ -322,7 +348,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     print("header height: $homeHeaderHeight");
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: bodyBackground,
+      extendBodyBehindAppBar: false,
       body: DefaultTabController(
         length: _tabs.length, // This is the number of tabs.
         child: NestedScrollView(
@@ -343,281 +370,32 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 handle:
                     NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 sliver: SliverAppBar(
+                    pinned: true,
+                    snap: false,
+                    forceElevated: true,
+                    floating: collapsableToolBar,
+                    toolbarHeight: appBarVisible ? 45 : 0,
+                    // collapsedHeight: null,
+                    leading: buildLeadingIconButton(),
+                    automaticallyImplyLeading: false,
                     stretch: true,
                     onStretchTrigger: () {
                       print("stretch event triggered");
                     },
-                    title: FadeOnScroll(
-                        scrollController: scrollController,
-                        fullOpacityOffset: landingPage
-                            ? homeHeaderHeight * 0.6
-                            : homeHeaderHeight * 0.3,
-                        zeroOpacityOffset: 0,
-                        child: AnimatedContainer(
-                            duration: Duration(milliseconds: 300),
-                            child: Text(
-                              contentLayouts['header'][headerOptions.titleText],
-                              style: TextStyle(color: toolBarIconColor),
-                            ))),
-                    pinned: true,
-                    snap: false,
-                    forceElevated: true,
+                    title: buildAppBarTitle(homeHeaderHeight),
                     elevation: contentLayouts['header']
                         [headerOptions.shadowHeight],
                     shadowColor: accentColor,
-                    floating: false,
                     expandedHeight: homeHeaderHeight,
-                    backgroundColor: contentLayouts['header']
-                            [headerOptions.blurredAppBar]
-                        ? Colors.transparent
-                        : contentLayouts['header'][headerOptions.appBarColor],
+                    backgroundColor: getAppBarColor(),
                     actionsIconTheme: IconThemeData(opacity: 1.0),
-                    actions: <Widget>[
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.notifications,
-                            color: toolBarIconColor,
-                          ),
-                          onPressed: () {
-                            // do something
-                          },
-                        ),
-                      ),
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.more_vert,
-                            color: toolBarIconColor,
-                          ),
-                          onPressed: () {
-                            List options = [
-                              {
-                                "title": "Admin Actions",
-                                "type": "subtitle",
-                              },
-                              {
-                                "iconData": EvaIcons.browserOutline,
-                                "title": "Dashboard",
-                                "onPressed": () {
-                                  //takes them to dashboard page, with analytics etc
-                                  Navigator.pop(context);
-                                }
-                              },
-                              {
-                                "iconData": EvaIcons.brushOutline,
-                                "title": "Customize",
-                                "onPressed": () {
-                                  Navigator.pop(context);
-                                  Navigator.push(
-                                      context,
-                                      new MaterialPageRoute(
-                                          builder: (context) =>
-                                              HomeCustomizeScreen()));
-                                }
-                              },
-                              {"title": "More Actions", "type": "subtitle"},
-                              {
-                                "iconData": EvaIcons.personAddOutline,
-                                "title": "Invite Members",
-                                "onPressed": () {
-                                  //close this menu
-                                  Navigator.pop(context);
-
-                                  //open invite menue
-                                  sharedStateManagement[
-                                      'display_invite_menu']();
-                                }
-                              },
-                              {
-                                "iconData": EvaIcons.bellOutline,
-                                "title": "Manage Notifications",
-                                "onPressed": () {
-                                  Navigator.pop(context);
-                                }
-                              },
-                              {
-                                "iconData": UniconsLine.mobile_android,
-                                "title": "Add to Home Screen",
-                                "onPressed": () {
-                                  Navigator.pop(context);
-                                }
-                              }
-                            ];
-
-                            Widget customHeader = Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 10.0,
-                                  bottom: 10.0,
-                                  left: sidePadding,
-                                  right: sidePadding),
-                              child: FlatButton(
-                                padding: EdgeInsets.zero,
-                                onPressed: () {
-                                  if (null != stateCallback[screen.main]) {
-                                    stateCallback[screen.main](() {
-                                      Navigator.pop(context);
-                                      mainScreenState[
-                                          mainScreen.selectedIndex] = 2;
-                                    });
-                                  }
-                                },
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                            width: avatarWidth,
-                                            height: avatarHeight,
-                                            margin: const EdgeInsets.only(
-                                                right: 15, bottom: 5),
-                                            decoration: new BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(
-                                                        avatarRadius)),
-                                                image: new DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: AssetImage(
-                                                      'assets/images/profile_images/default_user.png'),
-                                                ))),
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: <Widget>[
-                                            Text(
-                                              "Sanliston",
-                                              style: homeTextStyleBold,
-                                              overflow: TextOverflow.visible,
-                                            ),
-                                            Text(
-                                              "Owner",
-                                              style: homeSubTextStyle,
-                                              overflow: TextOverflow.visible,
-                                            )
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-
-                                    //button which takes you to user profile
-                                    IconButton(
-                                      icon: Icon(
-                                        EvaIcons.chevronRightOutline,
-                                        color: Colors.black,
-                                      ),
-                                      onPressed: () {
-                                        // Take user to their profile page
-                                      },
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                            Map params = {
-                              "context": context,
-                              "custom_header": customHeader,
-                              "options": options
-                            };
-
-                            displayNavigationDrawer(context, params);
-                          },
-                        ),
-                      )
-                    ],
-                    flexibleSpace: Stack(
-                      children: <Widget>[
-                        contentLayouts['header'][headerOptions.blurredAppBar] &&
-                                tabBarBlurGlow
-                            ? Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                    height: screenHeight,
-                                    width: screenWidth - 0,
-                                    decoration: new BoxDecoration(
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            tabBarGlowColor,
-                                            tabBarGlowColor.withOpacity(0.2),
-                                            Colors.white.withOpacity(0.0)
-                                          ]),
-                                      borderRadius: BorderRadius.circular(0),
-                                    )),
-                              )
-                            : Container(),
-                        contentLayouts['header'][headerOptions.blurredAppBar] &&
-                                tabBarLabelGlow
-                            ? Align(
-                                alignment: Alignment.bottomCenter,
-                                child: HomeTabBar(
-                                  tabs: _tabs,
-                                  controller: controller,
-                                  tabBarSelectedFontColor:
-                                      _tabBarSelectedFontColor,
-                                  tabBarUnselectedFontColor:
-                                      _tabBarUnselectedFontColor,
-                                  tabControllerCb: tabControllerCb,
-                                  selectedTabBarColor: selectedTabBarColor,
-                                  selectedTabBarStyle: selectedTabBarStyle,
-                                ))
-                            : Container(), //so there's a bleeding effect
-                        contentLayouts['header'][headerOptions.blurredAppBar] &&
-                                !_expanded //for performance reasons
-                            ? ClipRect(
-                                child: new BackdropFilter(
-                                    filter: new ImageFilter.blur(
-                                        sigmaX: tabBarBlurSigma,
-                                        sigmaY: tabBarBlurSigma),
-                                    child: Container(
-                                        height:
-                                            homeHeaderHeight, //needs to be this height so it covers screen and doesnt cut in half when transitioning
-                                        color:
-                                            tabBarBlurOverlayColor.withOpacity(
-                                                tabBarBlurOverlayOpacity))))
-                            : Container(height: 1.0),
-                        contentLayouts['header'][headerOptions.blurredAppBar] &&
-                                tabBarBlurHue
-                            ? Align(
-                                alignment: Alignment.topCenter,
-                                child: Container(
-                                    height: screenHeight,
-                                    width: screenWidth - 0,
-                                    decoration: new BoxDecoration(
-                                      gradient: LinearGradient(
-                                          begin: Alignment.topCenter,
-                                          end: Alignment.bottomCenter,
-                                          colors: [
-                                            tabBarGlowColor,
-                                            Colors.white.withOpacity(0.0)
-                                          ]),
-                                      borderRadius: BorderRadius.circular(0),
-                                    )),
-                              )
-                            : Container(),
-                        buildHeaderBackground(homeHeaderHeight, screenWidth),
-                        FlexibleSpaceBar(
-                          collapseMode: CollapseMode.pin,
-                          background: FadeOnScroll(
-                            scrollController: scrollController,
-                            zeroOpacityOffset: landingPage ? 300 : 50,
-                            fullOpacityOffset: 0,
-                            child: landingPage
-                                ? buildExpHeader(context)
-                                : buildHeader(
-                                    context), //Just proof of concept that you can have a swiper here
-                          ),
-                        ),
-                      ],
-                    ),
+                    actions: buildAppBarActions(context),
+                    flexibleSpace: buildFlexibleSpace(
+                        screenHeight, screenWidth, homeHeaderHeight, context),
                     bottom: HomeTabBar(
                       tabs: _tabs,
                       controller: controller,
+                      scrollController: scrollController,
                       tabBarSelectedFontColor: _tabBarSelectedFontColor,
                       tabBarUnselectedFontColor: _tabBarUnselectedFontColor,
                       tabControllerCb: tabControllerCb,
@@ -641,7 +419,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                   // find the NestedScrollView.
                   builder: (BuildContext context) {
                     return Container(
-                      color: Colors.white,
+                      color: bodyBackground,
                       child: CustomScrollView(
                         // The "controller" and "primary" members should be left
                         // unset, so that the NestedScrollView can control this
@@ -703,6 +481,665 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             }).toList(),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildFlexibleSpace(double screenHeight, double screenWidth,
+      double homeHeaderHeight, BuildContext context) {
+    Widget coreWidget = Stack(
+      children: <Widget>[
+        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarBlurGlow
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                    height: screenHeight,
+                    width: screenWidth - 0,
+                    decoration: new BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            tabBarGlowColor,
+                            tabBarGlowColor.withOpacity(0.2),
+                            Colors.white.withOpacity(0.0)
+                          ]),
+                      borderRadius: BorderRadius.circular(0),
+                    )),
+              )
+            : Container(),
+        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarLabelGlow
+            ? Align(
+                alignment: Alignment.bottomCenter,
+                child: HomeTabBar(
+                  tabs: _tabs,
+                  controller: controller,
+                  tabBarSelectedFontColor: _tabBarSelectedFontColor,
+                  tabBarUnselectedFontColor: _tabBarUnselectedFontColor,
+                  tabControllerCb: tabControllerCb,
+                  selectedTabBarColor: selectedTabBarColor,
+                  selectedTabBarStyle: selectedTabBarStyle,
+                ))
+            : Container(), //so there's a bleeding effect
+        contentLayouts['header'][headerOptions.blurredAppBar] &&
+                !_expanded //for performance reasons
+            ? ClipRect(
+                child: new BackdropFilter(
+                    filter: new ImageFilter.blur(
+                        sigmaX: tabBarBlurSigma, sigmaY: tabBarBlurSigma),
+                    child: Container(
+                        height:
+                            homeHeaderHeight, //needs to be this height so it covers screen and doesnt cut in half when transitioning
+                        color: tabBarBlurOverlayColor
+                            .withOpacity(tabBarBlurOverlayOpacity))))
+            : Container(height: 1.0),
+        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarBlurHue
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: Container(
+                    height: screenHeight,
+                    width: screenWidth - 0,
+                    decoration: new BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            tabBarGlowColor,
+                            Colors.white.withOpacity(0.0)
+                          ]),
+                      borderRadius: BorderRadius.circular(0),
+                    )),
+              )
+            : Container(),
+        buildHeaderBackground(homeHeaderHeight, screenWidth),
+        FlexibleSpaceBar(
+          collapseMode: appBarCollapseMode,
+          background: FadeOnScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: landingPage ? screenHeight - 150 : 50,
+            fullOpacityOffset: 0,
+            child: landingPage
+                ? buildExpHeader(context) //LandingPage()
+                : buildHeader(
+                    context), //Just proof of concept that you can have a swiper here
+          ),
+        ),
+      ],
+    );
+
+    Widget widget;
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        widget = coreWidget;
+
+        break;
+
+      case AppBarStyle.rounded:
+        widget = coreWidget;
+        break;
+      default:
+        widget = coreWidget;
+    }
+
+    return widget;
+  }
+
+  Widget buildAppBarTitle(double homeHeaderHeight) {
+    Widget widget;
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        widget = collapsableToolBar
+            ? Container()
+            : FadeOnScroll(
+                scrollController: scrollController,
+                fullOpacityOffset: landingPage
+                    ? homeHeaderHeight * 0.6
+                    : homeHeaderHeight * 0.3,
+                zeroOpacityOffset: 0,
+                child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    child: Text(
+                      contentLayouts['header'][headerOptions.titleText],
+                      style: TextStyle(color: toolBarIconColor),
+                    )));
+        break;
+
+      case AppBarStyle.rounded:
+        widget = Container();
+        break;
+
+      default:
+        widget = collapsableToolBar
+            ? Container()
+            : FadeOnScroll(
+                scrollController: scrollController,
+                fullOpacityOffset: landingPage
+                    ? homeHeaderHeight * 0.6
+                    : homeHeaderHeight * 0.3,
+                zeroOpacityOffset: 0,
+                child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    child: Text(
+                      contentLayouts['header'][headerOptions.titleText],
+                      style: TextStyle(color: toolBarIconColor),
+                    )));
+    }
+
+    return widget;
+  }
+
+  Widget buildLeadingIconButton() {
+    bool leadingButton = true;
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        break;
+
+      case AppBarStyle.rounded:
+        leadingButton = false;
+        break;
+    }
+
+    return leadingButton
+        ? IconButton(
+            icon: Icon(
+              EvaIcons.arrowIosBackOutline,
+              color:
+                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                      ? Colors.white
+                      : toolBarIconColor,
+            ),
+            onPressed: () {
+              // do something
+            },
+          )
+        : null;
+  }
+
+  List<Widget> buildAppBarActions(BuildContext context) {
+    List<Widget> list = [];
+
+    switch (appBarStyle) {
+      case AppBarStyle.material:
+        list = [
+          collapsableToolBar
+              ? Padding(
+                  padding:
+                      const EdgeInsets.only(top: 15, right: sidePadding + 5),
+                  child: Text(
+                    contentLayouts['header'][headerOptions.titleText],
+                    style: TextStyle(fontSize: 24.0, color: Colors.white),
+                  ),
+                )
+              : Container(),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            child: IconButton(
+              icon: Icon(
+                EvaIcons.bell,
+                color:
+                    collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                        ? Colors.white
+                        : toolBarIconColor,
+              ),
+              onPressed: () {
+                // do something
+              },
+            ),
+          ),
+          buildAppBarMenuButton(context)
+        ];
+        break;
+
+      case AppBarStyle.rounded:
+        list = [
+          Container(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
+              child: Row(children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 700),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: _expanded ? Colors.transparent : primaryColor),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            EvaIcons.arrowIosBackOutline,
+                            color:
+                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                    ? Colors.white
+                                    : toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            // do something
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0, right: 0),
+                          child: Text(
+                            contentLayouts['header'][headerOptions.titleText],
+                            style:
+                                TextStyle(fontSize: 20.0, color: Colors.white),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          child: IconButton(
+                            icon: Icon(
+                              EvaIcons.bell,
+                              color:
+                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                      ? Colors.white
+                                      : toolBarIconColor,
+                            ),
+                            onPressed: () {
+                              // do something
+                            },
+                          ),
+                        ),
+                        buildAppBarMenuButton(context),
+                        //button for minimising appbar
+                        // IconButton(
+                        //   icon: Icon(
+                        //     EvaIcons.eyeOffOutline,
+                        //     color:
+                        //         collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                        //             ? Colors.white
+                        //             : toolBarIconColor,
+                        //   ),
+                        //   onPressed: () {
+                        //     // do something
+
+                        //     setState(() {
+                        //       appBarVisible = !appBarVisible;
+
+                        //       print("appBarVisible: $appBarVisible");
+                        //     });
+                        //   },
+                        // )
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          )
+        ];
+        break;
+
+      case AppBarStyle.roundedTop:
+        list = [
+          Container(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
+              child: Row(children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 700),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(45),
+                            topRight: Radius.circular(45)),
+                        color: _expanded ? Colors.transparent : primaryColor),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            EvaIcons.arrowIosBackOutline,
+                            color:
+                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                    ? Colors.white
+                                    : toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            // do something
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0, right: 0),
+                          child: Text(
+                            contentLayouts['header'][headerOptions.titleText],
+                            style:
+                                TextStyle(fontSize: 20.0, color: Colors.white),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          child: IconButton(
+                            icon: Icon(
+                              EvaIcons.bell,
+                              color:
+                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                      ? Colors.white
+                                      : toolBarIconColor,
+                            ),
+                            onPressed: () {
+                              // do something
+                            },
+                          ),
+                        ),
+                        buildAppBarMenuButton(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          )
+        ];
+        break;
+
+      case AppBarStyle.roundedBottom:
+
+        /*Same as rounded because the change is actually made in custom_tab_scroll,
+      as the concerned background element exceeds the natural app bar, and goes offscreen. Go look
+      in the method getLandingPageAppBar in custom_tab_scroll.dart */
+        list = [
+          Container(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
+              child: Row(children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 700),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: _expanded ? Colors.transparent : primaryColor),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            EvaIcons.arrowIosBackOutline,
+                            color:
+                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                    ? Colors.white
+                                    : toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            // do something
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0, right: 0),
+                          child: Text(
+                            contentLayouts['header'][headerOptions.titleText],
+                            style:
+                                TextStyle(fontSize: 20.0, color: Colors.white),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          child: IconButton(
+                            icon: Icon(
+                              EvaIcons.bell,
+                              color:
+                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                      ? Colors.white
+                                      : toolBarIconColor,
+                            ),
+                            onPressed: () {
+                              // do something
+                            },
+                          ),
+                        ),
+                        buildAppBarMenuButton(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          )
+        ];
+        break;
+
+      case AppBarStyle.rectangle:
+        list = [
+          Container(
+            width: screenWidth,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
+              child: Row(children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 700),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: _expanded ? Colors.transparent : primaryColor),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            EvaIcons.arrowIosBackOutline,
+                            color:
+                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                    ? Colors.white
+                                    : toolBarIconColor,
+                          ),
+                          onPressed: () {
+                            // do something
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 0, right: 0),
+                          child: Text(
+                            contentLayouts['header'][headerOptions.titleText],
+                            style:
+                                TextStyle(fontSize: 20.0, color: Colors.white),
+                          ),
+                        ),
+                        AnimatedContainer(
+                          duration: Duration(milliseconds: 300),
+                          child: IconButton(
+                            icon: Icon(
+                              EvaIcons.bell,
+                              color:
+                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                      ? Colors.white
+                                      : toolBarIconColor,
+                            ),
+                            onPressed: () {
+                              // do something
+                            },
+                          ),
+                        ),
+                        buildAppBarMenuButton(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          )
+        ];
+
+        break;
+
+      default:
+        list = [
+          collapsableToolBar
+              ? Padding(
+                  padding:
+                      const EdgeInsets.only(top: 15, right: sidePadding + 5),
+                  child: Text(
+                    contentLayouts['header'][headerOptions.titleText],
+                    style: TextStyle(fontSize: 24.0, color: Colors.white),
+                  ),
+                )
+              : Container(),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            child: IconButton(
+              icon: Icon(
+                EvaIcons.bell,
+                color:
+                    collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                        ? Colors.white
+                        : toolBarIconColor,
+              ),
+              onPressed: () {
+                // do something
+              },
+            ),
+          ),
+          buildAppBarMenuButton(context)
+        ];
+    }
+    return list;
+  }
+
+  AnimatedContainer buildAppBarMenuButton(BuildContext context) {
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 300),
+      child: IconButton(
+        icon: Icon(
+          EvaIcons.menu,
+          color: toolBarFontColor,
+        ),
+        onPressed: () {
+          List options = [
+            {
+              "title": "Admin Actions",
+              "type": "subtitle",
+            },
+            {
+              "iconData": EvaIcons.browserOutline,
+              "title": "Dashboard",
+              "onPressed": () {
+                //takes them to dashboard page, with analytics etc
+                Navigator.pop(context);
+              }
+            },
+            {
+              "iconData": EvaIcons.brushOutline,
+              "title": "Customize",
+              "onPressed": () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) => HomeCustomizeScreen()));
+              }
+            },
+            {"title": "More Actions", "type": "subtitle"},
+            {
+              "iconData": EvaIcons.personAddOutline,
+              "title": "Invite Members",
+              "onPressed": () {
+                //close this menu
+                Navigator.pop(context);
+
+                //open invite menue
+                sharedStateManagement['display_invite_menu']();
+              }
+            },
+            {
+              "iconData": EvaIcons.bellOutline,
+              "title": "Manage Notifications",
+              "onPressed": () {
+                Navigator.pop(context);
+              }
+            },
+            {
+              "iconData": UniconsLine.mobile_android,
+              "title": "Add to Home Screen",
+              "onPressed": () {
+                Navigator.pop(context);
+              }
+            }
+          ];
+
+          Widget customHeader = Padding(
+            padding: const EdgeInsets.only(
+                top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
+            child: FlatButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                if (null != stateCallback[screen.main]) {
+                  stateCallback[screen.main](() {
+                    Navigator.pop(context);
+                    mainScreenState[mainScreen.selectedIndex] = 2;
+                  });
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                          width: avatarWidth,
+                          height: avatarHeight,
+                          margin: const EdgeInsets.only(right: 15, bottom: 5),
+                          decoration: new BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                  Radius.circular(avatarRadius)),
+                              image: new DecorationImage(
+                                fit: BoxFit.cover,
+                                image: AssetImage(
+                                    'assets/images/profile_images/default_user.png'),
+                              ))),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Sanliston",
+                            style: homeTextStyleBold,
+                            overflow: TextOverflow.visible,
+                          ),
+                          Text(
+                            "Owner",
+                            style: homeSubTextStyle,
+                            overflow: TextOverflow.visible,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+
+                  //button which takes you to user profile
+                  IconButton(
+                    icon: Icon(
+                      EvaIcons.chevronRightOutline,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      // Take user to their profile page
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+          Map params = {
+            "context": context,
+            "custom_header": customHeader,
+            "options": options
+          };
+
+          displayNavigationDrawer(context, params);
+        },
       ),
     );
   }
@@ -797,7 +1234,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.heebo(
                                   textStyle: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.w300,
                                       fontSize: 14,
                                       color: Colors.white))),
                         ),
@@ -826,7 +1263,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.heebo(
                                   textStyle: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.w300,
                                       fontSize: 14,
                                       color: Colors.white))),
                         ),
@@ -855,7 +1292,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                               textAlign: TextAlign.center,
                               style: GoogleFonts.heebo(
                                   textStyle: TextStyle(
-                                      fontWeight: FontWeight.normal,
+                                      fontWeight: FontWeight.w300,
                                       fontSize: 14,
                                       color: Colors.white))),
                         ),
@@ -904,7 +1341,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: new Text(
                         'This is an example of an announcement or something.',
-                        style: homeTextStyleBoldWhite,
+                        style: homeTextStyleWhite,
                       ),
                     ),
                   ),
@@ -950,7 +1387,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                       padding: const EdgeInsets.all(8.0),
                       child: new Text(
                         'This is an example of an announcement or something.',
-                        style: homeTextStyleBoldWhite,
+                        style: homeTextStyleWhite,
                       ),
                     ),
                   ),
@@ -1006,7 +1443,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     ];
 
     Widget swiper = Padding(
-        padding: EdgeInsets.only(bottom: 80),
+        padding: EdgeInsets.only(bottom: 40),
         child: new Swiper(
           itemCount: slides.length,
           pagination: new SwiperPagination(
@@ -1153,9 +1590,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientFirstColor,
       Color gradientSecondColor,
       Color gradientThirdColor,
+      bool gradientThirdColorEnabled,
       Color diagonalBarColor,
       GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
+      String backgroundImageURL,
       bool diagonalBarShadow,
       double diagonalBarShadowBlurRadius,
       double diagonalBarShadowLift,
@@ -1223,17 +1662,37 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? bottomRightBarColor
         : contentLayouts["header"][headerOptions.bottomRightBarColor];
 
-    //gradient orientation
+    //gradient orientation and colors
+
     gradientOrientation = null != gradientOrientation
         ? gradientOrientation
         : currentGradientOrientation;
 
+    gradientFirstColor =
+        null != gradientFirstColor ? gradientFirstColor : gradientColor1;
+
+    gradientSecondColor =
+        null != gradientSecondColor ? gradientSecondColor : gradientColor2;
+
+    gradientThirdColor =
+        null != gradientThirdColor ? gradientThirdColor : gradientColor3;
+
+    gradientThirdColorEnabled = null != gradientThirdColorEnabled
+        ? gradientThirdColorEnabled
+        : gradientColor3Active;
+
+    gradientThirdColor = gradientThirdColorEnabled
+        ? gradientThirdColor
+        : null; //enabling disabling third color
+
+    backgroundImageURL = null != backgroundImageURL
+        ? backgroundImageURL
+        : homeBackgroundImageURL;
+
     //setting default bars until when i create the landing page settings page
-    if (landingPage) {
-      topLeftBar = true;
-      topRightBar = true;
-      bottomLeftBar = true;
-      bottomRightBar = true;
+    if (!landingPage) {
+      bottomLeftBar = false;
+      bottomRightBar = false;
     }
 
     //default background style
@@ -1301,7 +1760,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           child: Stack(
             children: <Widget>[
               Image.asset(
-                "assets/images/home_background.jpg",
+                homeBackgroundImageURL,
                 height: homeHeaderHeight * 1.1,
                 width: screenWidth,
                 fit: BoxFit.cover,
@@ -1350,7 +1809,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               child: Stack(
                 children: <Widget>[
                   Image.asset(
-                    "assets/images/home_background.jpg",
+                    backgroundImageURL,
                     height: homeHeaderHeight * 1.1,
                     width: screenWidth,
                     fit: BoxFit.cover,
@@ -1401,7 +1860,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               child: Stack(
                 children: <Widget>[
                   Image.asset(
-                    "assets/images/home_background.jpg",
+                    backgroundImageURL,
                     height: homeHeaderHeight * 1.1,
                     width: screenWidth,
                     fit: BoxFit.cover,
@@ -1479,7 +1938,10 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradientDiagonalLine:
-        print("gradient diagonal line switch, topleftbar: $topLeftBar");
+        print(
+            "-------------------------third gradient color enabled: $gradientThirdColorEnabled");
+        print(
+            "---------------------------gradient diagonal line, third gradient color: $gradientThirdColor");
         Widget gradient = Container(
           decoration: BoxDecoration(
               gradient: getGradient(
@@ -1550,6 +2012,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color gradientFirstColor,
       Color gradientSecondColor,
       Color gradientThirdColor,
+      bool gradientThirdColorEnabled,
       Color diagonalBarColor,
       GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
@@ -1620,19 +2083,41 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? bottomRightBarColor
         : contentLayouts["header"][headerOptions.bottomRightBarColor];
 
-    //gradient orientation
+    //gradient orientation and colors
+
     gradientOrientation = null != gradientOrientation
         ? gradientOrientation
         : currentGradientOrientation;
 
+    gradientFirstColor =
+        null != gradientFirstColor ? gradientFirstColor : gradientColor1;
+
+    gradientSecondColor =
+        null != gradientSecondColor ? gradientSecondColor : gradientColor2;
+
+    gradientThirdColor =
+        null != gradientThirdColor ? gradientThirdColor : gradientColor3;
+
+    gradientThirdColorEnabled = null != gradientThirdColorEnabled
+        ? gradientThirdColorEnabled
+        : gradientColor3Active;
+
+    gradientThirdColor = gradientThirdColorEnabled
+        ? gradientThirdColor
+        : null; //enabling disabling third color
+
     //setting default bars until when i create the landing page settings page
-    if (landingPage) {
-      topLeftBar = true;
-      topRightBar = true;
+    // if (landingPage) {
+    //   topLeftBar = true;
+    //   topRightBar = true;
+    //   bottomLeftBar = false;
+    //   bottomRightBar = false;
+    // }
+
+    if (!landingPage) {
       bottomLeftBar = false;
       bottomRightBar = false;
     }
-
     print(
         "Build Header background called ***********************************************************************************");
 
@@ -2518,13 +3003,15 @@ class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
       @required Color tabBarUnselectedFontColor,
       @required Function tabControllerCb,
       @required Color selectedTabBarColor,
-      @required TabBarStyle selectedTabBarStyle})
+      @required TabBarStyle selectedTabBarStyle,
+      ScrollController scrollController})
       : _tabs = tabs,
         _tabBarSelectedFontColor = tabBarSelectedFontColor,
         _tabBarUnselectedFontColor = tabBarUnselectedFontColor,
         _tabControllerCB = tabControllerCb,
         _selectedTabBarColor = selectedTabBarColor,
         _selectedTabBarStyle = selectedTabBarStyle,
+        _scrollController = scrollController,
         super(key: key);
 
   final List<String> _tabs;
@@ -2534,6 +3021,7 @@ class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
   final Color _selectedTabBarColor;
   final TabBarStyle _selectedTabBarStyle;
   final Function _tabControllerCB;
+  final ScrollController _scrollController;
 
   Size get preferredSize {
     return new Size.fromHeight(50.0);
@@ -2548,19 +3036,26 @@ class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
       tabControllerCb: this._tabControllerCB,
       selectedTabBarColor: this._selectedTabBarColor,
       selectedTabBarStyle: this._selectedTabBarStyle,
+      scrollController: this._scrollController,
       key: this.key);
 }
 
 class _HomeTabBarState extends State<HomeTabBar> {
   List<String> _tabs;
   TabController controller;
+  ScrollController scrollController;
   Color _tabBarSelectedFontColor;
   Color _tabBarUnselectedFontColor;
   Color _selectedTabBarColor;
+  Color _unselectedTabBarColor;
   TabBarStyle _selectedTabBarStyle;
+  TabBarStyle _unselectedTabBarStyle;
   Function _tabControllerCB;
   List<Widget> tabList;
   bool _flexExpanded;
+  int unselectedTabBarsBuilt = 0;
+  bool tabBarVisible;
+  ScrollDirection lastScrollDirection;
 
   _HomeTabBarState(
       {Key key,
@@ -2570,7 +3065,8 @@ class _HomeTabBarState extends State<HomeTabBar> {
       @required Color tabBarUnselectedFontColor,
       @required Function tabControllerCb,
       @required Color selectedTabBarColor,
-      @required TabBarStyle selectedTabBarStyle})
+      @required TabBarStyle selectedTabBarStyle,
+      this.scrollController})
       : _tabs = tabs,
         _tabBarSelectedFontColor = tabBarSelectedFontColor,
         _tabBarUnselectedFontColor = tabBarUnselectedFontColor,
@@ -2616,15 +3112,15 @@ class _HomeTabBarState extends State<HomeTabBar> {
 
     setState(() {
       _selectedTabBarStyle = newSelectedTabBarStyle;
-
+      _unselectedTabBarStyle = newUnselectedTabBarStyle;
       _selectedTabBarColor = newSelectedTabBarColor;
-
+      _unselectedTabBarColor = newUnselectedTabBarColor;
       _tabBarSelectedFontColor = newTabBarSelectedFontColor;
       _tabBarUnselectedFontColor = newTabBarUnselectedFontColor;
 
       _flexExpanded = expanded;
 
-      print("set state selected tabbar style: $selectedTabBarStyle");
+      print("set state unselected tabbar style: $_unselectedTabBarStyle");
     });
   }
 
@@ -2632,57 +3128,239 @@ class _HomeTabBarState extends State<HomeTabBar> {
   initState() {
     super.initState();
 
+    _tabBarSelectedFontColor = tabBarUnselectedFontColor;
+    _unselectedTabBarColor = unselectedTabBarColor;
+    _flexExpanded = true;
+
     //create tab list
-    tabList = _tabs.map((String name) {
-      //only called at initial build
-      //to force rebuild, set state and put dependant variable in here?: Yes
-      //the variable is _currentTabIndex
+    // tabList = _tabs.map((String name) {
+    //   //only called at initial build
+    //   //to force rebuild, set state and put dependant variable in here?: Yes
+    //   //the variable is _currentTabIndex
 
-      //if index is current index remove styling
+    //   //if index is current index remove styling
 
-      Widget widget = Tab(
-        child: Container(
-          // decoration: buildSelectedTabStyle(
-          //     color: _unselectedTabBarColor,
-          //     tabBarStyle: _unselectedTabBarStyle),
-          child: Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: Text(name),
-            ),
-          ),
-        ),
-      );
+    //   Widget widget = Tab(
+    //     child: Container(
+    //       decoration: buildSelectedTabStyle(
+    //           color: _unselectedTabBarColor,
+    //           tabBarStyle: _unselectedTabBarStyle),
+    //       child: Align(
+    //         alignment: Alignment.center,
+    //         child: Padding(
+    //           padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+    //           child: Text(name),
+    //         ),
+    //       ),
+    //     ),
+    //   );
 
-      if ("AddTabButton" == name) {
-        widget = Icon(
-          EvaIcons.plusCircle,
-          color: Colors.white,
-        );
-      }
+    //   if ("AddTabButton" == name) {
+    //     widget = Icon(
+    //       EvaIcons.plusCircle,
+    //       color: Colors.white,
+    //     );
+    //   }
 
-      return widget;
-    }).toList();
+    //   return widget;
+    // }).toList();
 
     toggleHomeTabBar = _toggleHomeTabBar;
+    tabBarVisible = true;
+
+    // if (null != scrollController) {
+    //   scrollController.addListener(scrollDirectionListener);
+    // }
+
+    // controller.addListener(tabScrollListener);
+  }
+
+  void scrollDirectionListener() {
+    ScrollDirection direction = scrollController.position.userScrollDirection;
+
+    if (direction == lastScrollDirection || _flexExpanded) {
+      return;
+    }
+
+    print("============user scroll direction: $direction");
+
+    bool visible = true;
+
+    if (ScrollDirection.reverse == direction) {
+      visible = false;
+    } else {
+      visible = true;
+    }
+
+    setState(() {
+      tabBarVisible = visible;
+    });
+
+    lastScrollDirection = direction;
+  }
+
+  void tabScrollListener() {
+    if (!tabBarVisible) {
+      setState(() {
+        tabBarVisible = true;
+      });
+    }
   }
 
   @override
   dispose() {
     super.dispose();
+
+    // if (null != scrollController) {
+    //   //remove listener
+    //   scrollController.removeListener(scrollDirectionListener);
+    // }
+
+    // controller.removeListener(tabScrollListener);
   }
 
   @override
   Widget build(BuildContext context) {
     print("tabbar widget rebuilt");
+
+    // if (_flexExpanded) {
+    //   return buildTabBar(context);
+    // }
+
+    Widget tabBar;
+
+    switch (toolBarStyle) {
+      case ToolBarStyle.material:
+        tabBar = buildTabBar(context);
+        break;
+
+      case ToolBarStyle.rounded:
+        tabBar = Padding(
+          padding: const EdgeInsets.only(left: sidePadding, right: sidePadding),
+          child: Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30), color: primaryColor),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 5.0, right: 5.0, top: 5, bottom: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30)),
+                      child: buildTabBar(context)),
+                ),
+              )),
+        );
+        break;
+
+      case ToolBarStyle.roundedFrosted:
+        tabBar = Padding(
+          padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: new BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                  child: Container(
+                      //needs to be this height so it covers screen and doesnt cut in half when transitioning
+                      color: tabBarBlurOverlayColor
+                          .withOpacity(tabBarBlurOverlayOpacity),
+                      child: Container(
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: tabBarBlurOverlayColor),
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 5.0, right: 5.0, top: 5, bottom: 5),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(40),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: buildTabBar(context)),
+                            ),
+                          ))))),
+        );
+        break;
+
+      case ToolBarStyle.rectangle:
+        tabBar = Padding(
+          padding: const EdgeInsets.only(
+              left: sidePadding * 2, right: sidePadding * 2),
+          child: Container(
+              height: 40.0,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5), color: primaryColor),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 5.0, right: 5.0, top: 5, bottom: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: Container(
+                      decoration:
+                          BoxDecoration(borderRadius: BorderRadius.circular(5)),
+                      child: buildTabBar(context)),
+                ),
+              )),
+        );
+        break;
+    }
+
+    return AnimatedCrossFade(
+      firstChild: AnimatedOpacity(
+          opacity: tabBarVisible ? 1.0 : 0.0,
+          duration: Duration(milliseconds: 300),
+          child: tabBar),
+      secondChild: buildTabBar(context),
+      crossFadeState:
+          _flexExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      duration: Duration(milliseconds: 50),
+    );
+  }
+
+  TabBar buildTabBar(BuildContext context) {
     return TabBar(
       physics: BouncingScrollPhysics(),
       labelPadding:
           EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
       indicatorSize: TabBarIndicatorSize.label,
       isScrollable: true,
-      tabs: tabList,
+      tabs: _tabs.map((String name) {
+        //only called at initial build
+        //to force rebuild, set state and put dependant variable in here?: Yes
+        //the variable is _currentTabIndex
+
+        //if index is current index remove styling
+
+        Widget widget = Tab(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 0.0),
+            child: Container(
+              // decoration: buildUnselectedTabStyle(
+              //     color: _unselectedTabBarColor,
+              //     tabBarStyle: _unselectedTabBarStyle),
+              child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                  child: Text(name),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        if ("AddTabButton" == name) {
+          widget = Icon(
+            EvaIcons.plusCircle,
+            color: Colors.white,
+          );
+        }
+
+        return widget;
+      }).toList(),
       controller: controller,
       labelColor: _tabBarSelectedFontColor,
       unselectedLabelColor: _tabBarUnselectedFontColor,
@@ -2713,7 +3391,7 @@ class _HomeTabBarState extends State<HomeTabBar> {
   }
 
   buildSelectedTabStyle({Color color, TabBarStyle tabBarStyle}) {
-    print("selected tabbarstyle: $selectedTabBarStyle");
+    print("selected tabbarstyle: $tabBarStyle");
     var decoration = BoxDecoration(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10), topRight: Radius.circular(10)),
@@ -2735,10 +3413,7 @@ class _HomeTabBarState extends State<HomeTabBar> {
         break;
 
       case TabBarStyle.border:
-        decoration = BoxDecoration(
-            borderRadius: BorderRadius.circular(25.0),
-            border: Border.all(color: color, width: 1),
-            color: Colors.transparent);
+        return BorderTabIndicator(color: color, strokeWidth: 5.0);
         break;
 
       case TabBarStyle.fullRound:
@@ -2765,6 +3440,77 @@ class _HomeTabBarState extends State<HomeTabBar> {
 
       case TabBarStyle.hoverLine:
         return LineTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+
+      case TabBarStyle.gradientBubble:
+        return GradientBubbleTabIndicator(color: color, strokeWidth: 5.0);
+        break;
+    }
+
+    return decoration;
+  }
+
+  buildUnselectedTabStyle({Color color, TabBarStyle tabBarStyle}) {
+    // if (_tabs.length >= unselectedTabBarsBuilt) {
+    //   return null;
+    // }
+
+    print("selected tabbarstyle: $tabBarStyle");
+
+    // unselectedTabBarsBuilt++;
+
+    var decoration = BoxDecoration(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        color: color);
+
+    switch (tabBarStyle) {
+      case TabBarStyle.halfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.inverseHalfRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+            color: color);
+        break;
+
+      case TabBarStyle.border:
+        return BorderTabIndicator(color: color, strokeWidth: 5.0);
+        break;
+
+      case TabBarStyle.fullRound:
+        decoration = BoxDecoration(
+            borderRadius: BorderRadius.circular(50), color: color);
+        break;
+
+      case TabBarStyle.traditional:
+        return UnderlineTabIndicator(
+            borderSide: BorderSide(color: color, width: 4.0));
+        break;
+
+      case TabBarStyle.dot:
+        return CircleTabIndicator(color: color, radius: 5.0);
+        break;
+
+      case TabBarStyle.bubble:
+        return BubbleTabIndicator(color: color);
+        break;
+
+      case TabBarStyle.square:
+        return BubbleTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+
+      case TabBarStyle.hoverLine:
+        return LineTabIndicator(color: color, bubbleRadius: 5.0);
+        break;
+
+      case TabBarStyle.gradientBubble:
+        return GradientBubbleTabIndicator(color: color, strokeWidth: 5.0);
         break;
     }
 
@@ -2835,8 +3581,8 @@ class _BubbleTabPainter extends BoxPainter {
 
     //offset is the position from where the decoration should be drawn.
     //configuration.size tells us about the height and width of the tab.
-    final Rect rect = Offset(
-            offset.dx, (configuration.size.height / 2) - indicatorHeight / 2) &
+    final Rect rect = Offset(offset.dx,
+            (configuration.size.height / 2) - (indicatorHeight / 2) + 1) &
         Size(configuration.size.width, indicatorHeight);
     final Paint paint = Paint();
     paint.color = color;
@@ -2893,4 +3639,254 @@ class _LineTabPainter extends BoxPainter {
     canvas.drawRRect(
         RRect.fromRectAndRadius(rect, Radius.circular(bubbleRadius)), paint);
   }
+}
+
+//=======Experimental Buttons ==========//
+class BorderTabIndicator extends Decoration {
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+  final double strokeWidth;
+  final double borderWidth;
+
+  BorderTabIndicator(
+      {this.color = Colors.grey,
+      this.indicatorHeight = 30.0,
+      this.bubbleRadius = 20.0,
+      this.strokeWidth = 2.0,
+      this.borderWidth = 2.5});
+  @override
+  _BorderTabPainter createBoxPainter([VoidCallback onChanged]) {
+    return new _BorderTabPainter(this, onChanged,
+        color: this.color,
+        gradient: getGradient(),
+        radius: this.bubbleRadius,
+        strokeWidth: this.strokeWidth,
+        indicatorHeight: this.indicatorHeight,
+        bubbleRadius: this.bubbleRadius,
+        borderWidth: this.borderWidth);
+  }
+}
+
+class _BorderTabPainter extends BoxPainter {
+  final BorderTabIndicator decoration;
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+  final Gradient gradient;
+  final Paint _paint = Paint();
+  final double radius;
+  final double strokeWidth;
+  final double borderWidth;
+
+  _BorderTabPainter(this.decoration, VoidCallback onChanged,
+      {this.color = Colors.blue,
+      this.indicatorHeight,
+      this.bubbleRadius,
+      this.gradient,
+      this.radius,
+      this.strokeWidth,
+      this.borderWidth = 2.5})
+      : assert(decoration != null),
+        super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    // create outer rectangle equals size
+    Rect outerRect = Offset(
+            offset.dx - borderWidth,
+            ((configuration.size.height / 2) - indicatorHeight / 2) -
+                borderWidth) &
+        Size(configuration.size.width + borderWidth * 2,
+            indicatorHeight + borderWidth * 2);
+    var outerRRect =
+        RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+
+    // create inner rectangle smaller by strokeWidth
+    Rect innerRect = Offset(offset.dx + 0,
+            ((configuration.size.height / 2) - indicatorHeight / 2) + 0) &
+        Size(configuration.size.width, indicatorHeight);
+
+    var innerRRect = RRect.fromRectAndRadius(
+        innerRect, Radius.circular(radius - strokeWidth));
+
+    // apply gradient shader
+    _paint.shader = gradient.createShader(outerRect);
+
+    // create difference between outer and inner paths and draw it
+    Path path1 = Path()..addRRect(outerRRect);
+    Path path2 = Path()..addRRect(innerRRect);
+    var path = Path.combine(PathOperation.difference, path1, path2);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => oldDelegate != this;
+}
+
+class GradientBubbleTabIndicator extends Decoration {
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+  final double strokeWidth;
+  final double borderWidth;
+
+  GradientBubbleTabIndicator(
+      {this.color = Colors.grey,
+      this.indicatorHeight = 25.0,
+      this.bubbleRadius = 30.0,
+      this.strokeWidth = 2.0,
+      this.borderWidth = 2.5});
+  @override
+  _GradientBubbleTabPainter createBoxPainter([VoidCallback onChanged]) {
+    return new _GradientBubbleTabPainter(this, onChanged,
+        color: this.color,
+        gradient: getGradient(),
+        radius: this.bubbleRadius,
+        strokeWidth: this.strokeWidth,
+        indicatorHeight: this.indicatorHeight,
+        bubbleRadius: this.bubbleRadius,
+        borderWidth: this.borderWidth);
+  }
+}
+
+class _GradientBubbleTabPainter extends BoxPainter {
+  final GradientBubbleTabIndicator decoration;
+  final Color color;
+  final double indicatorHeight;
+  final double bubbleRadius;
+  final Gradient gradient;
+  final Paint _paint = Paint();
+  final double radius;
+  final double strokeWidth;
+  final double borderWidth;
+
+  _GradientBubbleTabPainter(this.decoration, VoidCallback onChanged,
+      {this.color = Colors.blue,
+      this.indicatorHeight,
+      this.bubbleRadius,
+      this.gradient,
+      this.radius,
+      this.strokeWidth,
+      this.borderWidth = 2.5})
+      : assert(decoration != null),
+        super(onChanged);
+
+  @override
+  void paint(Canvas canvas, Offset offset, ImageConfiguration configuration) {
+    // create outer rectangle equals size
+    Rect outerRect = Offset(
+            offset.dx - borderWidth,
+            ((configuration.size.height / 2) - indicatorHeight / 2) -
+                borderWidth) &
+        Size(configuration.size.width + borderWidth * 2,
+            indicatorHeight + borderWidth * 2);
+    var outerRRect =
+        RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+
+    // create inner rectangle smaller by strokeWidth
+    Rect innerRect = Offset(offset.dx + 0,
+            ((configuration.size.height / 2) - indicatorHeight / 2) + 0) &
+        Size(configuration.size.width, indicatorHeight);
+
+    var innerRRect = RRect.fromRectAndRadius(
+        innerRect, Radius.circular(radius - strokeWidth));
+
+    // apply gradient shader
+    _paint.shader = gradient.createShader(outerRect);
+
+    // create difference between outer and inner paths and draw it
+    Path path1 = Path()..addRRect(outerRRect);
+    // Path path2 = Path()..addRRect(innerRRect);
+    // var path = Path.combine(PathOperation.difference, path1, path2);
+    canvas.drawPath(path1, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => oldDelegate != this;
+}
+
+class UnicornOutlineButton extends StatelessWidget {
+  final _GradientPainter _painter;
+  final Widget _child;
+  final VoidCallback _callback;
+  final double _radius;
+
+  UnicornOutlineButton({
+    @required double strokeWidth,
+    @required double radius,
+    @required Gradient gradient,
+    @required Widget child,
+    @required VoidCallback onPressed,
+  })  : this._painter = _GradientPainter(
+            strokeWidth: strokeWidth, radius: radius, gradient: gradient),
+        this._child = child,
+        this._callback = onPressed,
+        this._radius = radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _painter,
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: _callback,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(_radius),
+          onTap: _callback,
+          child: Container(
+            constraints: BoxConstraints(minWidth: 88, minHeight: 48),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _child,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GradientPainter extends CustomPainter {
+  final Paint _paint = Paint();
+  final double radius;
+  final double strokeWidth;
+  final Gradient gradient;
+
+  _GradientPainter(
+      {@required double strokeWidth,
+      @required double radius,
+      @required Gradient gradient})
+      : this.strokeWidth = strokeWidth,
+        this.radius = radius,
+        this.gradient = gradient;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // create outer rectangle equals size
+    Rect outerRect = Offset.zero & size;
+    var outerRRect =
+        RRect.fromRectAndRadius(outerRect, Radius.circular(radius));
+
+    // create inner rectangle smaller by strokeWidth
+    Rect innerRect = Rect.fromLTWH(strokeWidth, strokeWidth,
+        size.width - strokeWidth * 2, size.height - strokeWidth * 2);
+    var innerRRect = RRect.fromRectAndRadius(
+        innerRect, Radius.circular(radius - strokeWidth));
+
+    // apply gradient shader
+    _paint.shader = gradient.createShader(outerRect);
+
+    // create difference between outer and inner paths and draw it
+    Path path1 = Path()..addRRect(outerRRect);
+    Path path2 = Path()..addRRect(innerRRect);
+    var path = Path.combine(PathOperation.difference, path1, path2);
+    canvas.drawPath(path, _paint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => oldDelegate != this;
 }

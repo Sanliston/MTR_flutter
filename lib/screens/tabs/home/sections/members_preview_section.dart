@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/components/buttons.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/screens/tabs/home/members/members_search_screen.dart';
 
@@ -132,47 +133,13 @@ class MembersPreviewSection extends StatelessWidget {
                       overflow: TextOverflow.visible,
                       style: homeTextStyle),
                 ),
-                RaisedButton(
-                  elevation: 0.0,
+                TransparentButton(
+                  text: "Invite Members",
+                  width: 120,
+                  height: 30,
                   onPressed: () {
                     sharedStateManagement['display_invite_menu']();
                   },
-                  padding: EdgeInsets.only(
-                      top: 0.0, left: 15.0, right: 15.0, bottom: 0.0),
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: primaryColor,
-                      width: 1.2,
-                    ),
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                  color: Colors.white,
-                  child: SizedBox(
-                    width: 130.0,
-                    child: Row(
-                      children: <Widget>[
-                        Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
-                          child: Icon(
-                            EvaIcons.personAddOutline,
-                            color: primaryColor,
-                            size: 14.0,
-                          ),
-                        ),
-                        Text(
-                          'Invite Members',
-                          overflow: TextOverflow.clip,
-                          style: GoogleFonts.heebo(
-                              textStyle: TextStyle(
-                            color: primaryColor,
-                            letterSpacing: 1.5,
-                            fontSize: 11.0,
-                            fontWeight: FontWeight.bold,
-                          )),
-                        ),
-                      ],
-                    ),
-                  ),
                 )
               ],
             ),

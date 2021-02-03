@@ -108,7 +108,9 @@ class MembersSection extends StatelessWidget {
                             height: containerHeight,
                             width: 300,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(opacity),
+                              color: darkMode
+                                  ? itemBackground.withOpacity(0.8)
+                                  : Colors.white.withOpacity(opacity),
                               borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
@@ -339,7 +341,7 @@ class MembersSection extends StatelessWidget {
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.ellipsis,
                           style:
-                              forumTextStyleBold), //set a global style to be shared
+                              homeSubTextStyleBold), //set a global style to be shared
                       SizedBox(height: 5),
                       role,
                       followsYouWidget //sized box to create space between
@@ -398,23 +400,25 @@ class MembersSection extends StatelessWidget {
         ),
         Divider(thickness: 1),
         ListView.builder(
-          padding: EdgeInsets.zero,
+          padding: darkMode
+              ? EdgeInsets.symmetric(horizontal: 10.0)
+              : EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: membersList.length,
           shrinkWrap: true,
           itemBuilder: (BuildContext context, int index) {
-            Color dividerColor = Colors.white;
+            Color dividerColor = darkMode ? itemBackground : Colors.white;
             if (0 < index) {
-              dividerColor = Colors.grey[100];
+              dividerColor = darkMode ? bodyBackground : Colors.grey[100];
             }
 
             return Container(
-              color: Colors.white,
+              color: itemBackground,
               child: Column(
                 children: [
                   Divider(
                     color: dividerColor,
-                    thickness: 1.0,
+                    thickness: darkMode ? 5.0 : 1.0,
                   ),
                   buildMemberInfo(index, context)
                 ],

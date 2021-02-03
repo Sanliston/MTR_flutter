@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:MTR_flutter/components/nav_bars.dart';
 import 'package:MTR_flutter/external/hsv_colorpicker.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/services.dart';
@@ -25,14 +26,9 @@ class _MainScreenState extends State<MainScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeTabScreen(),
-    Text(
-      'Index 2: Personal',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Personal',
-      style: optionStyle,
-    ),
+    HomeTabScreen(),
+    HomeTabScreen(),
+    HomeTabScreen(),
   ];
 
   List<BottomNavigationBarItem> bottomNavBarItems = [
@@ -69,12 +65,16 @@ class _MainScreenState extends State<MainScreen> {
     bottomIcons[2]["normal"]
   ];
 
-  bool navBarVisible = true;
+  bool navBarVisible = !headerSettings[headerOptions.landingPageMode]
+              [landingPageMode.active] ||
+          persistentNavBar
+      ? true
+      : false;
 
   navBar({bool visible, int index}) {
     index = null != index ? index : 0;
 
-    if (persistentNavBar || (1 == index || 2 == index)) {
+    if (persistentNavBar || (1 == index || 2 == index || 3 == index)) {
       return;
     }
 
@@ -98,13 +98,33 @@ class _MainScreenState extends State<MainScreen> {
       indexedPageIcons = [
         bottomIcons[0]["normal"],
         bottomIcons[1]["normal"],
-        bottomIcons[2]["normal"]
+        bottomIcons[2]["normal"],
       ];
 
       indexedPageIcons[index] = bottomIcons[index]["selected"];
     });
 
-    toggleNavBar(visible: false, index: index);
+    toggleNavBar(
+        visible: !headerSettings[headerOptions.landingPageMode]
+                    [landingPageMode.active] ||
+                persistentNavBar
+            ? true
+            : false,
+        index: index);
+  }
+
+  void _onNavItemTapped(int index) {
+    setState(() {
+      mainScreenState[mainScreen.selectedIndex] = index;
+    });
+
+    toggleNavBar(
+        visible: !headerSettings[headerOptions.landingPageMode]
+                    [landingPageMode.active] ||
+                persistentNavBar
+            ? true
+            : false,
+        index: index);
   }
 
   @override
@@ -118,6 +138,8 @@ class _MainScreenState extends State<MainScreen> {
     stateCallback[screen.main] = setState;
 
     mainScreenState = {mainScreen.selectedIndex: 0};
+
+    //SystemChrome.setEnabledSystemUIOverlays([]);
   }
 
   @override
@@ -149,54 +171,65 @@ class _MainScreenState extends State<MainScreen> {
               : CrossFadeState.showSecond,
         ),
       )),
-      Positioned.fill(
+      Positioned(
         child: Align(
-          alignment: Alignment.bottomCenter,
-          child: AnimatedCrossFade(
-            firstChild: Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                      top: BorderSide(
-                          color: secondaryColor.withOpacity(0.0), width: 0.5))),
-              child: ClipRect(
-                child: new BackdropFilter(
-                  filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: BottomNavigationBar(
-                    elevation: 0.0,
-                    backgroundColor: Colors.grey[300].withOpacity(0.4),
-                    showSelectedLabels: false,
-                    showUnselectedLabels: false,
-                    items: <BottomNavigationBarItem>[
-                      BottomNavigationBarItem(
-                        icon: Icon(indexedPageIcons[0]),
-                        label: 'Home',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(indexedPageIcons[1]),
-                        label: 'Inbox',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(indexedPageIcons[2]),
-                        label: 'Personal',
-                      ),
-                    ],
-                    currentIndex: mainScreenState[mainScreen.selectedIndex],
-                    selectedItemColor: primaryColor,
-                    unselectedItemColor: Colors.black38,
-                    onTap: _onItemTapped,
-                  ),
-                ),
-              ),
+            alignment: Alignment.bottomCenter,
+            child: navBarVisible
+                ? LeanNavBar(onItemTapped: _onNavItemTapped)
+                : null
+            // child: AnimatedCrossFade(
+            //   firstChild: Container(
+            //     decoration: BoxDecoration(
+            //         border: Border(
+            //             top: BorderSide(
+            //                 color: secondaryColor.withOpacity(0.0), width: 0.5))),
+            //     child: SimpleNavBar(onItemTapped: _onItemTapped),
+            //   ),
+            //   secondChild:
+            //       Container(height: 0.0, width: 0.0, color: Colors.transparent),
+            //   duration: Duration(milliseconds: 0),
+            //   crossFadeState: navBarVisible
+            //       ? CrossFadeState.showFirst
+            //       : CrossFadeState.showSecond,
+            // ),
             ),
-            secondChild:
-                Container(height: 0.0, width: 0.0, color: Colors.transparent),
-            duration: Duration(milliseconds: 200),
-            crossFadeState: navBarVisible
-                ? CrossFadeState.showFirst
-                : CrossFadeState.showSecond,
-          ),
-        ),
       ),
     ]);
+  }
+
+  Widget buildBottomNavBar({int version = 0}) {
+    if (version == 1) {
+      return SimpleNavBar(onItemTapped: _onItemTapped);
+    }
+
+    return ClipRect(
+      child: new BackdropFilter(
+        filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        child: BottomNavigationBar(
+          elevation: 0.0,
+          backgroundColor: Colors.grey[300].withOpacity(0.4),
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[0]),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[1]),
+              label: 'Inbox',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(indexedPageIcons[2]),
+              label: 'Personal',
+            ),
+          ],
+          currentIndex: mainScreenState[mainScreen.selectedIndex],
+          selectedItemColor: primaryColor,
+          unselectedItemColor: Colors.black38,
+          onTap: _onItemTapped,
+        ),
+      ),
+    );
   }
 }

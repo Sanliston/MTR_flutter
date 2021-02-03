@@ -1070,4 +1070,7 @@ Function toggleHomeTabBar = () {};
 //Homestate object containing values
 
 //Images high res and low res for memory management
-String homeBackgroundImageURL = "assets/images/home_background.jpg";
+Map homeBackgroundImage = {
+  "data": "assets/images/home_background.jpg",
+  "type": "asset"
+};

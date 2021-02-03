@@ -1594,7 +1594,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color diagonalBarColor,
       GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
-      String backgroundImageURL,
+      Map backgroundImage,
       bool diagonalBarShadow,
       double diagonalBarShadowBlurRadius,
       double diagonalBarShadowLift,
@@ -1685,9 +1685,28 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? gradientThirdColor
         : null; //enabling disabling third color
 
-    backgroundImageURL = null != backgroundImageURL
-        ? backgroundImageURL
-        : homeBackgroundImageURL;
+    backgroundImage =
+        null != backgroundImage ? backgroundImage : homeBackgroundImage;
+
+    var imageProvider;
+
+    if ("asset" == backgroundImage["type"]) {
+      imageProvider = AssetImage(backgroundImage["data"]);
+    } else if ("file" == backgroundImage["type"]) {
+      imageProvider = FileImage(backgroundImage["data"]);
+    }
+
+    Widget backgroundImageWidget = Container(
+      height: homeHeaderHeight * 1.1,
+      width: screenWidth,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: imageProvider,
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: null /* add child content here */,
+    );
 
     //setting default bars until when i create the landing page settings page
     if (!landingPage) {
@@ -1759,12 +1778,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         widget = Positioned.fill(
           child: Stack(
             children: <Widget>[
-              Image.asset(
-                homeBackgroundImageURL,
-                height: homeHeaderHeight * 1.1,
-                width: screenWidth,
-                fit: BoxFit.cover,
-              ),
+              backgroundImageWidget,
+              // Image.asset(
+              //   homeBackgroundImageURL,
+              //   height: homeHeaderHeight * 1.1,
+              //   width: screenWidth,
+              //   fit: BoxFit.cover,
+              // ),
               Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
@@ -1808,12 +1828,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               width: screenWidth,
               child: Stack(
                 children: <Widget>[
-                  Image.asset(
-                    backgroundImageURL,
-                    height: homeHeaderHeight * 1.1,
-                    width: screenWidth,
-                    fit: BoxFit.cover,
-                  ),
+                  // Image.asset(
+                  //   backgroundImageURL,
+                  //   height: homeHeaderHeight * 1.1,
+                  //   width: screenWidth,
+                  //   fit: BoxFit.cover,
+                  // ),
+                  backgroundImageWidget,
                   Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -1859,12 +1880,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               width: screenWidth,
               child: Stack(
                 children: <Widget>[
-                  Image.asset(
-                    backgroundImageURL,
-                    height: homeHeaderHeight * 1.1,
-                    width: screenWidth,
-                    fit: BoxFit.cover,
-                  ),
+                  // Image.asset(
+                  //   backgroundImageURL,
+                  //   height: homeHeaderHeight * 1.1,
+                  //   width: screenWidth,
+                  //   fit: BoxFit.cover,
+                  // ),
+                  backgroundImageWidget,
                   Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -2016,6 +2038,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color diagonalBarColor,
       GradientOrientations gradientOrientation,
       backgroundStyles backgroundStyle,
+      Map backgroundImage,
       bool diagonalBarShadow,
       double diagonalBarShadowBlurRadius,
       double diagonalBarShadowLift,
@@ -2106,82 +2129,77 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? gradientThirdColor
         : null; //enabling disabling third color
 
-    //setting default bars until when i create the landing page settings page
-    // if (landingPage) {
-    //   topLeftBar = true;
-    //   topRightBar = true;
-    //   bottomLeftBar = false;
-    //   bottomRightBar = false;
-    // }
+    backgroundImage =
+        null != backgroundImage ? backgroundImage : homeBackgroundImage;
 
+    var imageProvider;
+
+    if ("asset" == backgroundImage["type"]) {
+      imageProvider = AssetImage(backgroundImage["data"]);
+    } else if ("file" == backgroundImage["type"]) {
+      imageProvider = FileImage(backgroundImage["data"]);
+    }
+
+    Widget backgroundImageWidget = Container(
+      height: homeHeaderHeight * 1.1,
+      width: screenWidth,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: imageProvider,
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: null /* add child content here */,
+    );
+
+    //setting default bars until when i create the landing page settings page
     if (!landingPage) {
       bottomLeftBar = false;
       bottomRightBar = false;
     }
-    print(
-        "Build Header background called ***********************************************************************************");
-
-    homeHeaderHeight = null != homeHeaderHeight
-        ? homeHeaderHeight
-        : MediaQuery.of(context).size.height * 0.5;
-
-    print("background style: $backgroundStyle");
 
     //default background style
     Positioned widget = Positioned.fill(
       child: SizedBox(
-          width: screenWidth,
-          height: homeHeaderHeight * heightFactor,
-          child: Container(color: primaryColor)),
+        width: screenWidth,
+        height: homeHeaderHeight * heightFactor,
+        child: Container(color: primaryColor),
+      ),
     );
+
+    homeHeaderHeight = null != homeHeaderHeight
+        ? homeHeaderHeight
+        : MediaQuery.of(context).size.height * heightFactor;
+
+    print("preview header background style: $backgroundStyle");
+    print("in function gradient first color: $gradientFirstColor");
 
     switch (backgroundStyle) {
       case backgroundStyles.solid:
-        Widget solid = SizedBox(
-            width: screenWidth,
-            height: homeHeaderHeight * heightFactor,
-            child: Container(color: primaryColor));
-        widget = Positioned.fill(
-          child: CustomTabScroll(
-            scrollController: scrollController,
-            zeroOpacityOffset: homeHeaderHeight * heightFactor,
-            fullOpacityOffset: 0,
-            diagonalLine: false,
-            scrollFade: true,
-            child: Stack(
-              children: <Widget>[
-                solid,
-                Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.black38,
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 0.4],
-                    tileMode: TileMode.clamp,
-                  )),
-                ),
-              ],
-            ),
-          ),
-        );
-
-        break;
-
-      case backgroundStyles.solidDiagonalLine:
-        Widget solid = Container(color: primaryColor);
         widget = Positioned.fill(
           child: CustomTabScroll(
             scrollController: scrollController,
             zeroOpacityOffset: homeHeaderHeight * heightFactor,
             fullOpacityOffset: 0,
             diagonalLine: true,
+            fixedMode: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
-                solid,
+                SizedBox(
+                    width: screenWidth, child: Container(color: primaryColor)),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -2199,39 +2217,32 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             ),
           ),
         );
-
         break;
-
       case backgroundStyles.diagonalLine:
         widget = Positioned.fill(
-          child: CustomTabScroll(
-            scrollController: scrollController,
-            zeroOpacityOffset: homeHeaderHeight * heightFactor,
-            fullOpacityOffset: 0,
-            diagonalLine: true,
-            child: Stack(
-              children: <Widget>[
-                Image.asset(
-                  "assets/images/home_background.jpg",
-                  height: homeHeaderHeight * 1.1,
-                  width: screenWidth,
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Colors.black38,
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.topRight,
-                    end: Alignment.bottomRight,
-                    stops: [0.0, 0.4],
-                    tileMode: TileMode.clamp,
-                  )),
-                ),
-              ],
-            ),
+          child: Stack(
+            children: <Widget>[
+              backgroundImageWidget,
+              // Image.asset(
+              //   homeBackgroundImageURL,
+              //   height: homeHeaderHeight * 1.1,
+              //   width: screenWidth,
+              //   fit: BoxFit.cover,
+              // ),
+              Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                  colors: [
+                    Colors.black38,
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 0.4],
+                  tileMode: TileMode.clamp,
+                )),
+              ),
+            ],
           ),
         );
         break;
@@ -2261,12 +2272,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               width: screenWidth,
               child: Stack(
                 children: <Widget>[
-                  Image.asset(
-                    "assets/images/home_background.jpg",
-                    height: homeHeaderHeight * 1.1,
-                    width: screenWidth,
-                    fit: BoxFit.cover,
-                  ),
+                  // Image.asset(
+                  //   backgroundImageURL,
+                  //   height: homeHeaderHeight * 1.1,
+                  //   width: screenWidth,
+                  //   fit: BoxFit.cover,
+                  // ),
+                  backgroundImageWidget,
                   Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -2312,12 +2324,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               width: screenWidth,
               child: Stack(
                 children: <Widget>[
-                  Image.asset(
-                    "assets/images/home_background.jpg",
-                    height: homeHeaderHeight * 1.1,
-                    width: screenWidth,
-                    fit: BoxFit.cover,
-                  ),
+                  // Image.asset(
+                  //   backgroundImageURL,
+                  //   height: homeHeaderHeight * 1.1,
+                  //   width: screenWidth,
+                  //   fit: BoxFit.cover,
+                  // ),
+                  backgroundImageWidget,
                   Container(
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -2339,6 +2352,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradient:
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
+        );
+
         widget = Positioned.fill(
           child: CustomTabScroll(
             scrollController: scrollController,
@@ -2361,16 +2383,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
-                SizedBox(
-                    width: screenWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: getGradient(
-                              gradientFirstColor: gradientFirstColor,
-                              gradientSecondColor: gradientSecondColor,
-                              gradientThirdColor: gradientThirdColor,
-                              gradientOrientation: gradientOrientation)),
-                    )),
+                SizedBox(width: screenWidth, child: gradient),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -2391,6 +2404,19 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case backgroundStyles.gradientDiagonalLine:
+        print(
+            "-------------------------third gradient color enabled: $gradientThirdColorEnabled");
+        print(
+            "---------------------------gradient diagonal line, third gradient color: $gradientThirdColor");
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
+        );
+
         widget = Positioned.fill(
           child: CustomTabScroll(
             scrollController: scrollController,
@@ -2413,16 +2439,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             bottomRightBarColor: bottomRightBarColor,
             child: Stack(
               children: <Widget>[
-                SizedBox(
-                    width: screenWidth,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          gradient: getGradient(
-                              gradientFirstColor: gradientFirstColor,
-                              gradientSecondColor: gradientSecondColor,
-                              gradientThirdColor: gradientThirdColor,
-                              gradientOrientation: gradientOrientation)),
-                    )),
+                SizedBox(width: screenWidth, child: gradient),
                 Container(
                   decoration: BoxDecoration(
                       gradient: LinearGradient(

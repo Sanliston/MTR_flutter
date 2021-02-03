@@ -80,7 +80,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
   ScrollController mainScrollController = new ScrollController();
   List list;
-  List
+  List<Map>
       backgroundImageList; //linkedhashmap not necessary as we access using keys so order is dictated by us at access time
 
   List selectedBackgroundImageList;
@@ -178,12 +178,12 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     ];
 
     backgroundImageList = [
-      "assets/images/home_background.jpg",
-      "assets/images/home_background_2.jpg",
-      "assets/images/home_background_3.jpg",
+      {"data": "assets/images/home_background.jpg", "type": "asset"},
+      {"data": "assets/images/home_background_2.jpg", "type": "asset"},
+      {"data": "assets/images/home_background_3.jpg", "type": "asset"},
     ];
 
-    selectedBackgroundImageList = ["assets/images/home_background.jpg"];
+    selectedBackgroundImageList = [homeBackgroundImage];
 
     workingColors = {
       WorkingColors.titleColor: contentLayouts['header']
@@ -421,8 +421,14 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
       if (imageIsEmpty) {
         //insert default backgroundImage into list
+
+        Map image = {
+          "data": "assets/images/home_background.jpg",
+          "type": "asset"
+        };
+
         setState(() {
-          backgroundImageList.add(defaultBackgroundImage);
+          backgroundImageList.add(image);
         });
       }
 
@@ -569,6 +575,9 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
     contentLayouts[header][headerOptions.appBarColor] =
         workingColors[WorkingColors.primaryColor];
+
+    //save background image
+    homeBackgroundImage = selectedBackgroundImageList[0];
 
     print("Saved backgroundStyle: $workingBackgroundStyle");
   }
@@ -2187,7 +2196,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                             scrollDirection: Axis.horizontal,
                             children: buildPhotoList(),
                             onReorder: (oldIndex, newIndex) {
-                              String old = backgroundImageList[oldIndex];
+                              Map old = backgroundImageList[oldIndex];
                               if (oldIndex > newIndex) {
                                 for (int i = oldIndex; i > newIndex; i--) {
                                   backgroundImageList[i] =
@@ -2235,17 +2244,19 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               return;
                             }
 
-                            //check if image is already in backgroundImageList
-                            bool exists =
-                                backgroundImageList.contains(pickedFile.path);
+                            //create object
+                            Map fileMap = {
+                              "data": File(pickedFile.path),
+                              "type": "file"
+                            };
 
                             print("backgroundImageList: $backgroundImageList");
 
-                            if (!exists) {
-                              setState(() {
-                                backgroundImageList.add(pickedFile.path);
-                              });
-                            }
+                            setState(() {
+                              backgroundImageList.add(fileMap);
+                            });
+
+                            pickedFile = null;
 
                             Navigator.pop(context);
                           }
@@ -2264,20 +2275,17 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               return;
                             }
 
-                            // //save highres image
-                            // backgroundImagesHighRes.add(pickedFile.path);
-
-                            //check if image is already in backgroundImageList
-                            bool exists =
-                                backgroundImageList.contains(pickedFile.path);
+                            //create object
+                            Map fileMap = {
+                              "data": File(pickedFile.path),
+                              "type": "file"
+                            };
 
                             print("backgroundImageList: $backgroundImageList");
 
-                            if (!exists) {
-                              setState(() {
-                                backgroundImageList.add(pickedFile.path);
-                              });
-                            }
+                            setState(() {
+                              backgroundImageList.add(fileMap);
+                            });
 
                             pickedFile = null;
 
@@ -2308,8 +2316,18 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     int length = backgroundImageList.length;
 
     for (int i = 0; i < length; i++) {
-      String image = backgroundImageList[i];
+      Map image = backgroundImageList[i];
       bool selected = selectedBackgroundImageList.contains(image);
+      var imageProvider;
+
+      print("=============================contains image: $selected");
+
+      //get image depending on whether asset or file
+      if ("asset" == image["type"]) {
+        imageProvider = AssetImage(image["data"]);
+      } else if ("file" == image["type"]) {
+        imageProvider = FileImage(image["data"]);
+      }
 
       temp = GestureDetector(
         key: GlobalKey(),
@@ -2370,7 +2388,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(5)),
                     image: DecorationImage(
-                      image: AssetImage(image),
+                      image: imageProvider,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -2900,7 +2918,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             gradientThirdColorEnabled: gradientThirdColorEnabled,
             gradientOrientation: workingGradientOrientation,
             backgroundStyle: getWorkingBGOption(),
-            backgroundImageURL: selectedBackgroundImageList[0],
+            backgroundImage: selectedBackgroundImageList[0],
             diagonalBarColor: workingColors[WorkingColors.diagonalColor],
             diagonalBarShadow: workingDiagonalBarShadow,
             diagonalBarShadowBlurRadius: workingDiagonalBarShadowBlurRadius,

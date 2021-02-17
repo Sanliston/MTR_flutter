@@ -1,6 +1,9 @@
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:MTR_flutter/components/animated_cliprrect.dart';
+import 'package:MTR_flutter/components/background_video.dart';
+import 'package:MTR_flutter/components/inner_shadow.dart';
 import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/screens/tabs/home/landing_page/landing_page.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dart';
@@ -405,84 +408,225 @@ class _HomeTabScreenState extends State<HomeTabScreen>
               ),
             ];
           },
-          body: TabBarView(
-            // These are the contents of the tab views, below the tabs.
-            controller: controller,
-            physics: BouncingScrollPhysics(),
-            children: _tabs.map((String name) {
-              return SafeArea(
-                top: false,
-                bottom: false,
-                child: Builder(
-                  // This Builder is needed to provide a BuildContext that is "inside"
-                  // the NestedScrollView, so that sliverOverlapAbsorberHandleFor() can
-                  // find the NestedScrollView.
-                  builder: (BuildContext context) {
-                    return Container(
-                      color: bodyBackground,
-                      child: CustomScrollView(
-                        // The "controller" and "primary" members should be left
-                        // unset, so that the NestedScrollView can control this
-                        // inner scroll view.
-                        // If the "controller" property is set, then this scroll
-                        // view will not be associated with the NestedScrollView.
-                        // The PageStorageKey should be unique to this ScrollView;
-                        // it allows the list to remember its scroll position when
-                        // the tab view is not on the screen.
-                        key: PageStorageKey<String>(name),
-                        physics: BouncingScrollPhysics(),
-                        slivers: <Widget>[
-                          SliverOverlapInjector(
-                            // This is the flip side of the SliverOverlapAbsorber above.
-                            handle:
-                                NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                    context),
-                          ),
-                          SliverPadding(
-                            padding: const EdgeInsets.only(
-                                left: 0.0, right: 0.0, top: 8.0, bottom: 100.0),
-                            // In this example, the inner scroll view has
-                            // fixed-height list items, hence the use of
-                            // SliverFixedExtentList. However, one could use any
-                            // sliver widget here, e.g. SliverList or SliverGrid.
-                            sliver: SliverList(
-                              // The items in this example are fixed to 48 pixels
-                              // high. This matches the Material Design spec for
-                              // ListTile widgets.
-
-                              delegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  // This builder is called for each child.
-
-                                  //set the selectedHomeTab state variable
-                                  selectedHomeTab = name;
-
-                                  //here we return the corresponding view depending on the given index, so we need to create an array of views to return
-                                  /*The array of views will vary depending on the current active tab
-                                tab index is decided by: name 
-                                So we create a map containing the arrays and the views for the relevant tab
-                                And then we index that map using the value of the name variable*/
-                                  return buildTab(context, name)[index];
-                                },
-                                // The childCount of the SliverChildBuilderDelegate
-                                // specifies how many children this inner list
-                                // has. In this example, each tab has a list of
-                                // exactly 30 items, but this is arbitrary.
-                                childCount: contentLayouts[name].length,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
-            }).toList(),
-          ),
+          body: buildTabBarView(),
         ),
       ),
     );
+  }
+
+  Widget buildTabBarView() {
+    Widget tabBarView = TabBarView(
+      // These are the contents of the tab views, below the tabs.
+      controller: controller,
+      physics: BouncingScrollPhysics(),
+      children: _tabs.map((String name) {
+        return SafeArea(
+          top: false,
+          bottom: false,
+          child: Builder(
+            // This Builder is needed to provide a BuildContext that is "inside"
+            // the NestedScrollView, so that sliverOverlapAbsorberHandleFor() can
+            // find the NestedScrollView.
+            builder: (BuildContext context) {
+              return Container(
+                color: bodyBackground,
+                child: CustomScrollView(
+                  // The "controller" and "primary" members should be left
+                  // unset, so that the NestedScrollView can control this
+                  // inner scroll view.
+                  // If the "controller" property is set, then this scroll
+                  // view will not be associated with the NestedScrollView.
+                  // The PageStorageKey should be unique to this ScrollView;
+                  // it allows the list to remember its scroll position when
+                  // the tab view is not on the screen.
+                  key: PageStorageKey<String>(name),
+                  physics: BouncingScrollPhysics(),
+                  slivers: <Widget>[
+                    // SliverOverlapInjector(
+                    //   // This is the flip side of the SliverOverlapAbsorber above.
+                    //   handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    //       context),
+                    // ),
+                    SliverPadding(
+                      padding: const EdgeInsets.only(
+                          left: 0.0, right: 0.0, top: 8.0, bottom: 100.0),
+                      // In this example, the inner scroll view has
+                      // fixed-height list items, hence the use of
+                      // SliverFixedExtentList. However, one could use any
+                      // sliver widget here, e.g. SliverList or SliverGrid.
+                      sliver: SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int index) {
+                            // This builder is called for each child.
+
+                            //set the selectedHomeTab state variable
+                            selectedHomeTab = name;
+
+                            //here we return the corresponding view depending on the given index, so we need to create an array of views to return
+                            /*The array of views will vary depending on the current active tab
+                              tab index is decided by: name 
+                              So we create a map containing the arrays and the views for the relevant tab
+                              And then we index that map using the value of the name variable*/
+                            return buildTab(context, name)[index];
+                          },
+                          // The childCount of the SliverChildBuilderDelegate
+                          // specifies how many children this inner list
+                          // has. In this example, each tab has a list of
+                          // exactly 30 items, but this is arbitrary.
+                          childCount: contentLayouts[name].length,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      }).toList(),
+    );
+
+    Widget view = tabBarView;
+
+    switch (bodyStyle) {
+      case BodyStyle.halfTop:
+        view = Container(
+          color: halfTopColor,
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: collapsableToolBar
+                    ? 85
+                    : halfTopBodyShadow
+                        ? 130.0
+                        : 120.0,
+                left: 0.0,
+                right: 0.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: _expanded && !bodyHalfTopFixed
+                    ? BorderRadius.zero
+                    : halfTopBorderRadius,
+                boxShadow: halfTopBodyShadow
+                    ? <BoxShadow>[
+                        BoxShadow(
+                            color: halfTopBodyShadowColor,
+                            blurRadius: 8.0,
+                            offset: Offset(0.0, 0.0))
+                      ]
+                    : null,
+              ),
+              child: AnimatedClipRRect(
+                duration: Duration(milliseconds: 400),
+                borderRadius: _expanded && !bodyHalfTopFixed
+                    ? BorderRadius.zero
+                    : halfTopBorderRadius,
+                child: Container(
+                  child: Stack(children: [
+                    tabBarView,
+                    Container(
+                      width: screenWidth,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        boxShadow: halfTopInnerBodyShadow && !_expanded
+                            ? <BoxShadow>[
+                                BoxShadow(
+                                    color: halfTopInnerBodyShadowColor,
+                                    blurRadius: 5.0,
+                                    offset: Offset(0.0, -4.0))
+                              ]
+                            : null,
+                      ),
+                    )
+                  ]),
+                  decoration: BoxDecoration(
+
+                      // color: Colors.grey[200],
+
+                      borderRadius: _expanded && !bodyHalfTopFixed
+                          ? BorderRadius.zero
+                          : halfTopBorderRadius),
+                ),
+              ),
+            ),
+          ),
+        );
+        break;
+      default:
+        view = TabBarView(
+          // These are the contents of the tab views, below the tabs.
+          controller: controller,
+          physics: BouncingScrollPhysics(),
+          children: _tabs.map((String name) {
+            return SafeArea(
+              top: false,
+              bottom: false,
+              child: Builder(
+                // This Builder is needed to provide a BuildContext that is "inside"
+                // the NestedScrollView, so that sliverOverlapAbsorberHandleFor() can
+                // find the NestedScrollView.
+                builder: (BuildContext context) {
+                  return Container(
+                    color: bodyBackground,
+                    child: CustomScrollView(
+                      // The "controller" and "primary" members should be left
+                      // unset, so that the NestedScrollView can control this
+                      // inner scroll view.
+                      // If the "controller" property is set, then this scroll
+                      // view will not be associated with the NestedScrollView.
+                      // The PageStorageKey should be unique to this ScrollView;
+                      // it allows the list to remember its scroll position when
+                      // the tab view is not on the screen.
+                      key: PageStorageKey<String>(name),
+                      physics: BouncingScrollPhysics(),
+                      slivers: <Widget>[
+                        SliverOverlapInjector(
+                          // This is the flip side of the SliverOverlapAbsorber above.
+                          handle:
+                              NestedScrollView.sliverOverlapAbsorberHandleFor(
+                                  context),
+                        ),
+                        SliverPadding(
+                          padding: const EdgeInsets.only(
+                              left: 0.0, right: 0.0, top: 8.0, bottom: 100.0),
+                          // In this example, the inner scroll view has
+                          // fixed-height list items, hence the use of
+                          // SliverFixedExtentList. However, one could use any
+                          // sliver widget here, e.g. SliverList or SliverGrid.
+                          sliver: SliverList(
+                            delegate: SliverChildBuilderDelegate(
+                              (BuildContext context, int index) {
+                                // This builder is called for each child.
+
+                                //set the selectedHomeTab state variable
+                                selectedHomeTab = name;
+
+                                //here we return the corresponding view depending on the given index, so we need to create an array of views to return
+                                /*The array of views will vary depending on the current active tab
+                              tab index is decided by: name 
+                              So we create a map containing the arrays and the views for the relevant tab
+                              And then we index that map using the value of the name variable*/
+                                return buildTab(context, name)[index];
+                              },
+                              // The childCount of the SliverChildBuilderDelegate
+                              // specifies how many children this inner list
+                              // has. In this example, each tab has a list of
+                              // exactly 30 items, but this is arbitrary.
+                              childCount: contentLayouts[name].length,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          }).toList(),
+        );
+        ;
+    }
+
+    return view;
   }
 
   Widget buildFlexibleSpace(double screenHeight, double screenWidth,
@@ -661,6 +805,68 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   List<Widget> buildAppBarActions(BuildContext context) {
     List<Widget> list = [];
 
+    //declaring here as it will be used multiple times
+    List<Widget> rounded = [
+      Container(
+        width: screenWidth,
+        child: Padding(
+          padding: const EdgeInsets.only(
+              left: sidePadding, right: sidePadding, top: 5.0, bottom: 0.0),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            Expanded(
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 700),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: _expanded ? Colors.transparent : primaryColor),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        EvaIcons.arrowIosBackOutline,
+                        color:
+                            collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                ? Colors.white
+                                : toolBarIconColor,
+                      ),
+                      onPressed: () {
+                        // do something
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 0, right: 0),
+                      child: Text(
+                        contentLayouts['header'][headerOptions.titleText],
+                        style: TextStyle(fontSize: 20.0, color: Colors.white),
+                      ),
+                    ),
+                    AnimatedContainer(
+                      duration: Duration(milliseconds: 300),
+                      child: IconButton(
+                        icon: Icon(
+                          EvaIcons.bell,
+                          color:
+                              collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                                  ? Colors.white
+                                  : toolBarIconColor,
+                        ),
+                        onPressed: () {
+                          // do something
+                        },
+                      ),
+                    ),
+                    buildAppBarMenuButton(context),
+                  ],
+                ),
+              ),
+            ),
+          ]),
+        ),
+      )
+    ];
+
     switch (appBarStyle) {
       case AppBarStyle.material:
         list = [
@@ -694,86 +900,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         break;
 
       case AppBarStyle.rounded:
-        list = [
-          Container(
-            width: screenWidth,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
-              child: Row(children: [
-                Expanded(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 700),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: _expanded ? Colors.transparent : primaryColor),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            EvaIcons.arrowIosBackOutline,
-                            color:
-                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
-                                    ? Colors.white
-                                    : toolBarIconColor,
-                          ),
-                          onPressed: () {
-                            // do something
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 0, right: 0),
-                          child: Text(
-                            contentLayouts['header'][headerOptions.titleText],
-                            style:
-                                TextStyle(fontSize: 20.0, color: Colors.white),
-                          ),
-                        ),
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          child: IconButton(
-                            icon: Icon(
-                              EvaIcons.bell,
-                              color:
-                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
-                                      ? Colors.white
-                                      : toolBarIconColor,
-                            ),
-                            onPressed: () {
-                              // do something
-                            },
-                          ),
-                        ),
-                        buildAppBarMenuButton(context),
-                        //button for minimising appbar
-                        // IconButton(
-                        //   icon: Icon(
-                        //     EvaIcons.eyeOffOutline,
-                        //     color:
-                        //         collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
-                        //             ? Colors.white
-                        //             : toolBarIconColor,
-                        //   ),
-                        //   onPressed: () {
-                        //     // do something
-
-                        //     setState(() {
-                        //       appBarVisible = !appBarVisible;
-
-                        //       print("appBarVisible: $appBarVisible");
-                        //     });
-                        //   },
-                        // )
-                      ],
-                    ),
-                  ),
-                ),
-              ]),
-            ),
-          )
-        ];
+        list = rounded;
         break;
 
       case AppBarStyle.roundedTop:
@@ -847,66 +974,41 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         /*Same as rounded because the change is actually made in custom_tab_scroll,
       as the concerned background element exceeds the natural app bar, and goes offscreen. Go look
       in the method getLandingPageAppBar in custom_tab_scroll.dart */
+        list = rounded;
+        break;
+
+      case AppBarStyle.halfTop:
+
+        /*Same as material because the change is actually made in custom_tab_scroll,
+      as the concerned background element exceeds the natural app bar, and goes offscreen. Go look
+      in the method getLandingPageAppBar in custom_tab_scroll.dart */
         list = [
-          Container(
-            width: screenWidth,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: sidePadding, right: sidePadding, top: 5.0, bottom: 5.0),
-              child: Row(children: [
-                Expanded(
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 700),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: _expanded ? Colors.transparent : primaryColor),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            EvaIcons.arrowIosBackOutline,
-                            color:
-                                collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
-                                    ? Colors.white
-                                    : toolBarIconColor,
-                          ),
-                          onPressed: () {
-                            // do something
-                          },
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 0, right: 0),
-                          child: Text(
-                            contentLayouts['header'][headerOptions.titleText],
-                            style:
-                                TextStyle(fontSize: 20.0, color: Colors.white),
-                          ),
-                        ),
-                        AnimatedContainer(
-                          duration: Duration(milliseconds: 300),
-                          child: IconButton(
-                            icon: Icon(
-                              EvaIcons.bell,
-                              color:
-                                  collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
-                                      ? Colors.white
-                                      : toolBarIconColor,
-                            ),
-                            onPressed: () {
-                              // do something
-                            },
-                          ),
-                        ),
-                        buildAppBarMenuButton(context),
-                      ],
-                    ),
+          collapsableToolBar
+              ? Padding(
+                  padding:
+                      const EdgeInsets.only(top: 15, right: sidePadding + 5),
+                  child: Text(
+                    contentLayouts['header'][headerOptions.titleText],
+                    style: TextStyle(fontSize: 24.0, color: Colors.white),
                   ),
-                ),
-              ]),
+                )
+              : Container(),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            child: IconButton(
+              icon: Icon(
+                EvaIcons.bell,
+                color:
+                    collapsableToolBar //icons always visible if toolbar collapsable, disappear when expanded if not
+                        ? Colors.white
+                        : toolBarIconColor,
+              ),
+              onPressed: () {
+                // do something
+              },
             ),
-          )
+          ),
+          buildAppBarMenuButton(context)
         ];
         break;
 
@@ -1401,7 +1503,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         children: <Widget>[
           Image.asset(
             "assets/images/home_background_3.jpg",
-            height: MediaQuery.of(context).size.height + 100,
+            height: MediaQuery.of(context).size.height + 150,
             width: MediaQuery.of(context).size.width,
             fit: BoxFit.cover,
           ),
@@ -1443,12 +1545,13 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     ];
 
     Widget swiper = Padding(
-        padding: EdgeInsets.only(bottom: 40),
+        padding: EdgeInsets.only(bottom: 64),
         child: new Swiper(
           itemCount: slides.length,
           pagination: new SwiperPagination(
             alignment: Alignment.bottomCenter,
             builder: new DotSwiperPaginationBuilder(
+                activeSize: 15.0,
                 color: Colors.grey[300].withOpacity(0.3),
                 activeColor: primaryColor),
           ),
@@ -2015,6 +2118,60 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.video:
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
+        );
+
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: true,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(width: screenWidth, child: backgroundImageWidget),
+                SizedBox.expand(
+                    child: VideoPlayerScreen(autoPlay: true, loop: false)),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
       default:
     }
 
@@ -2459,6 +2616,60 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         );
         break;
 
+      case backgroundStyles.video:
+        Widget gradient = Container(
+          decoration: BoxDecoration(
+              gradient: getGradient(
+                  gradientFirstColor: gradientFirstColor,
+                  gradientSecondColor: gradientSecondColor,
+                  gradientThirdColor: gradientThirdColor,
+                  gradientOrientation: gradientOrientation)),
+        );
+
+        widget = Positioned.fill(
+          child: CustomTabScroll(
+            scrollController: scrollController,
+            zeroOpacityOffset: homeHeaderHeight * heightFactor,
+            fullOpacityOffset: 0,
+            diagonalLine: true,
+            fixedMode: false,
+            color: diagonalBarColor,
+            shadow: diagonalBarShadow,
+            shadowBlurRadius: diagonalBarShadowBlurRadius,
+            shadowLift: diagonalBarShadowLift,
+            maxOpacity: diagonalMaxOpacity,
+            topLeftBar: topLeftBar,
+            topRightBar: topRightBar,
+            bottomLeftBar: bottomLeftBar,
+            bottomRightBar: bottomRightBar,
+            topLeftBarColor: topLeftBarColor,
+            topRightBarColor: topRightBarColor,
+            bottomLeftBarColor: bottomLeftBarColor,
+            bottomRightBarColor: bottomRightBarColor,
+            child: Stack(
+              children: <Widget>[
+                SizedBox(width: screenWidth, child: backgroundImageWidget),
+                SizedBox.expand(
+                    child: VideoPlayerScreen(autoPlay: true, loop: true)),
+                Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Colors.black38,
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.topRight,
+                    end: Alignment.bottomRight,
+                    stops: [0.0, 0.4],
+                    tileMode: TileMode.clamp,
+                  )),
+                ),
+              ],
+            ),
+          ),
+        );
+        break;
+
       default:
     }
 
@@ -2481,7 +2692,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       Color tagLineColor,
       String titleText,
       String tagLineText,
-      String customButtonText}) {
+      String customButtonText,
+      Map placeImage}) {
     placeLogo = null != placeLogo
         ? placeLogo
         : contentLayouts['header'][headerOptions.placeLogo];
@@ -2593,12 +2805,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                                     child: headerBuilders['member_preview'](
                                         context,
                                         sizeFactor: sizeFactor,
+                                        color: tagLineColor,
                                         memberPreview: memberPreview))
                               ]),
                         ),
                       ),
                       headerBuilders['place_logo'](context,
-                          sizeFactor: sizeFactor, placeLogo: placeLogo)
+                          sizeFactor: sizeFactor,
+                          placeLogo: placeLogo,
+                          placeImage: placeImage)
                     ],
                   ),
                 ),
@@ -2675,6 +2890,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                             flex: 10,
                             child: headerBuilders['member_preview'](context,
                                 sizeFactor: sizeFactor,
+                                color: tagLineColor,
                                 memberPreview: memberPreview),
                           )
                         ]),
@@ -2865,10 +3081,22 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   Widget buildHeaderPlaceLogo(BuildContext context,
-      {sizeFactor: 1.0, bool placeLogo}) {
+      {sizeFactor: 1.0, bool placeLogo, Map placeImage}) {
     placeLogo = null != placeLogo
         ? placeLogo
         : contentLayouts['header'][headerOptions.placeLogo];
+
+    placeImage = null != placeImage ? placeImage : homePlaceImage;
+
+    var imageProvider;
+
+    //get image depending on whether asset or file
+    if ("asset" == placeImage["type"]) {
+      imageProvider = AssetImage(placeImage["data"]);
+    } else if ("file" == placeImage["type"]) {
+      imageProvider = FileImage(placeImage["data"]);
+    }
+
     Widget widget = Container();
 
     double radius = 8.0;
@@ -2898,8 +3126,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         BorderRadius.all(Radius.circular(radius * sizeFactor)),
                     image: new DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(
-                          'assets/images/profile_images/default_user.png'),
+                      image: imageProvider,
                     ))),
             onPressed: () {
               Navigator.push(
@@ -2916,7 +3143,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   Widget buildHeaderMemberPreview(BuildContext context,
-      {sizeFactor: 1.0, bool memberPreview}) {
+      {sizeFactor: 1.0, bool memberPreview, Color color}) {
     memberPreview = null != memberPreview
         ? memberPreview
         : contentLayouts['header'][headerOptions.memberPreview];
@@ -2993,7 +3220,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                 child: Text(
                   "87 Members",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: color,
                     letterSpacing: 1.5 * sizeFactor,
                     fontSize: 11.0 * sizeFactor,
                     fontWeight: FontWeight.normal,
@@ -3114,7 +3341,7 @@ class _HomeTabBarState extends State<HomeTabBar> {
     Color newTabBarSelectedFontColor = tabBarSelectedFontColor;
     Color newTabBarUnselectedFontColor = tabBarUnselectedFontColor;
 
-    if (!expanded) {
+    if (!_flexExpanded) {
       newSelectedTabBarStyle = cSelectedTabBarStyle;
       newUnselectedTabBarStyle = cUnselectedTabBarStyle;
       newSelectedTabBarColor = cSelectedTabBarColor;
@@ -3123,9 +3350,9 @@ class _HomeTabBarState extends State<HomeTabBar> {
       newTabBarUnselectedFontColor = cTabBarUnselectedFontColor;
     }
 
-    if (_selectedTabBarStyle == newSelectedTabBarStyle) {
-      return;
-    }
+    // if (_selectedTabBarStyle == newSelectedTabBarStyle) {
+    //   return;
+    // }
 
     setState(() {
       _selectedTabBarStyle = newSelectedTabBarStyle;
@@ -3145,7 +3372,7 @@ class _HomeTabBarState extends State<HomeTabBar> {
   initState() {
     super.initState();
 
-    _tabBarSelectedFontColor = tabBarUnselectedFontColor;
+    _tabBarSelectedFontColor = tabBarSelectedFontColor;
     _unselectedTabBarColor = unselectedTabBarColor;
     _flexExpanded = true;
 
@@ -3246,6 +3473,24 @@ class _HomeTabBarState extends State<HomeTabBar> {
 
     Widget tabBar;
 
+    tabBar = buildToolBarStyle(context: context, toolBarStyle: toolBarStyle);
+
+    return AnimatedCrossFade(
+      firstChild: AnimatedOpacity(
+          opacity: tabBarVisible ? 1.0 : 0.0,
+          duration: Duration(milliseconds: 300),
+          child:
+              buildToolBarStyle(context: context, toolBarStyle: toolBarStyle)),
+      secondChild:
+          buildToolBarStyle(context: context, toolBarStyle: cToolBarStyle),
+      crossFadeState:
+          _flexExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+      duration: Duration(milliseconds: 50),
+    );
+  }
+
+  Widget buildToolBarStyle({BuildContext context, ToolBarStyle toolBarStyle}) {
+    Widget tabBar;
     switch (toolBarStyle) {
       case ToolBarStyle.material:
         tabBar = buildTabBar(context);
@@ -3323,21 +3568,36 @@ class _HomeTabBarState extends State<HomeTabBar> {
               )),
         );
         break;
-    }
 
-    return AnimatedCrossFade(
-      firstChild: AnimatedOpacity(
-          opacity: tabBarVisible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 300),
-          child: tabBar),
-      secondChild: buildTabBar(context),
-      crossFadeState:
-          _flexExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-      duration: Duration(milliseconds: 50),
-    );
+      case ToolBarStyle.halfTop:
+        tabBar = Padding(
+          padding: const EdgeInsets.only(left: 0.0, right: 0.0, top: 0),
+          child: Container(
+              height: 50.0,
+              decoration: BoxDecoration(
+                  borderRadius: halfTopBorderRadius, color: halfTopColor),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 25.0, right: 25.0, top: 10, bottom: 10),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(halfTopRadius),
+                  child: Container(
+                      decoration:
+                          BoxDecoration(borderRadius: halfTopBorderRadius),
+                      child: buildTabBar(context)),
+                ),
+              )),
+        );
+        break;
+
+      default:
+        buildTabBar(context);
+    }
+    return tabBar;
   }
 
   TabBar buildTabBar(BuildContext context) {
+    print("selected tab label color: $_tabBarSelectedFontColor");
     return TabBar(
       physics: BouncingScrollPhysics(),
       labelPadding:
@@ -3381,7 +3641,7 @@ class _HomeTabBarState extends State<HomeTabBar> {
       controller: controller,
       labelColor: _tabBarSelectedFontColor,
       unselectedLabelColor: _tabBarUnselectedFontColor,
-      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w400),
+      unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w300),
       indicatorColor: _tabBarSelectedFontColor,
       indicator: buildSelectedTabStyle(
           color: _selectedTabBarColor, tabBarStyle: _selectedTabBarStyle),

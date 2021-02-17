@@ -37,6 +37,10 @@ dependencies:
   unicons:
   intl:
   image_picker: ^0.6.7+6
+  image_cropper: ^1.3.1
+
+  #for video
+  video_player:
   
 
 dev_dependencies:
@@ -63,6 +67,10 @@ flutter:
     - assets/logos/google.jpg
     - assets/images/
     - assets/images/profile_images/
+    - assets/videos/background_video.mp4
+    - assets/videos/background_video_2.mp4
+    - assets/videos/background_video_3.mp4
+    - assets/videos/
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

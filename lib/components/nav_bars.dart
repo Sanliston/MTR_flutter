@@ -659,6 +659,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
   bool blurEffect;
   Color blurBackground;
   double baseHeight = 30;
+  double centerBorderSpace = 1.2;
 
   // ···
 
@@ -683,12 +684,12 @@ class _LeanNavBarState extends State<LeanNavBar> {
       )
     ];
 
-    backgroundColor = Colors.white;
+    backgroundColor = darkMode ? darkNight : Colors.white;
     blurBackground =
         darkMode ? Colors.black38 : Colors.grey[100].withOpacity(0.4);
     glowColor = Colors.grey[400];
 
-    blurEffect = true;
+    blurEffect = blurredNavBar;
 
     super.initState();
   }
@@ -802,8 +803,8 @@ class _LeanNavBarState extends State<LeanNavBar> {
                     duration: Duration(milliseconds: 600),
                     curve: Curves.fastLinearToSlowEaseIn,
                     width: centerActive
-                        ? centerButtonWidth + 2
-                        : centerButtonWidth,
+                        ? centerButtonWidth + 0.2
+                        : centerButtonWidth + 0.4,
                     height: centerActive
                         ? centerButtonHeight + 50
                         : centerButtonHeight,
@@ -914,7 +915,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
         Positioned(
             bottom: 0,
             child: Container(
-                width: 100, height: baseHeight, color: backgroundColor)),
+                width: 100, height: baseHeight + 1, color: backgroundColor)),
         Container(
           width: MediaQuery.of(context).size.width,
           height: baseHeight + 60,
@@ -991,7 +992,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
                     ),
                     Container(
                         //this will be just to take space
-                        width: centerButtonWidth,
+                        width: centerButtonWidth - centerBorderSpace,
                         height: 50,
                         color: Colors.transparent),
                     Expanded(
@@ -1165,7 +1166,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
                     ),
                     Container(
                         //this will be just to take space
-                        width: centerButtonWidth,
+                        width: centerButtonWidth - centerBorderSpace,
                         height: 50,
                         color: Colors.transparent),
                     Expanded(

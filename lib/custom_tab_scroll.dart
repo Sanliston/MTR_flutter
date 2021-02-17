@@ -159,6 +159,12 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
       scrollController.position.isScrollingNotifier.addListener(snap);
     }
 
+    if (fixedMode) {
+      //set to start position
+      scrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 200), curve: Curves.easeIn);
+    }
+
     performanceTracker = 0;
   }
 
@@ -575,8 +581,27 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
                 widget: widget,
                 alignment: Alignment.bottomCenter,
                 color: primaryColor,
-                shadow: widget.shadow,
+                shadow: landingPage ? widget.shadow : false,
                 shadowLift: widget.shadowLift,
+                blurRadius: widget.shadowBlurRadius,
+              )
+            : Container();
+        break;
+
+      case AppBarStyle.materialFrosted:
+        landingPageAppBar = tabBarSolidAppBar
+            ? FrostedHeaderBar(
+                bottom: 50,
+                rotateAngle: 0,
+                landingPage: landingPage,
+                minHeight: MediaQuery.of(context).size.height,
+                landingPageBarOpacity: 1,
+                dynamicBarOpacity: 1,
+                widget: widget,
+                alignment: Alignment.bottomCenter,
+                color: primaryColor.withOpacity(0.0),
+                shadow: false,
+                shadowLift: 0.0,
                 blurRadius: widget.shadowBlurRadius,
               )
             : Container();
@@ -601,6 +626,26 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(15),
                     bottomRight: Radius.circular(15)),
+              )
+            : Container();
+        break;
+
+      case AppBarStyle.halfTop:
+        landingPageAppBar = tabBarSolidAppBar
+            ? HeaderBar(
+                bottom:
+                    0, //to stop the color bleeding through at the bottom of the tabbar
+                rotateAngle: 0,
+                landingPage: landingPage,
+                minHeight: MediaQuery.of(context).size.height,
+                landingPageBarOpacity: 1,
+                dynamicBarOpacity: 1,
+                widget: widget,
+                alignment: Alignment.bottomCenter,
+                color: primaryColor,
+                shadow: widget.shadow,
+                shadowLift: widget.shadowLift,
+                blurRadius: widget.shadowBlurRadius,
               )
             : Container();
         break;
@@ -683,6 +728,93 @@ class HeaderBar extends StatelessWidget {
                     borderRadius: usedBorderRadius,
                     color: usedColor,
                   )),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FrostedHeaderBar extends StatelessWidget {
+  const FrostedHeaderBar(
+      {Key key,
+      @required this.bottom,
+      @required this.rotateAngle,
+      @required this.landingPage,
+      @required this.landingPageBarOpacity,
+      @required this.dynamicBarOpacity,
+      @required this.widget,
+      @required this.alignment,
+      @required this.minHeight,
+      @required this.color,
+      @required this.shadow,
+      @required this.blurRadius,
+      @required this.shadowLift,
+      this.padding,
+      this.borderRadius})
+      : super(key: key);
+
+  final double bottom;
+  final double rotateAngle;
+  final bool landingPage;
+  final double landingPageBarOpacity;
+  final double dynamicBarOpacity;
+  final CustomTabScroll widget;
+  final Alignment alignment;
+  final double minHeight;
+  final Color color;
+  final bool shadow;
+  final double shadowLift;
+  final double blurRadius;
+  final BorderRadius borderRadius;
+  final EdgeInsets padding;
+
+  @override
+  Widget build(BuildContext context) {
+    Color usedColor = null != color ? color : primaryColor;
+    BorderRadius usedBorderRadius =
+        null != borderRadius ? borderRadius : BorderRadius.zero;
+
+    EdgeInsets usedPadding = null != padding ? padding : EdgeInsets.zero;
+
+    List<BoxShadow> shadowList = shadow
+        ? <BoxShadow>[
+            BoxShadow(
+                color: Colors.black54,
+                blurRadius: blurRadius,
+                offset: Offset(0.0, shadowLift))
+          ]
+        : null;
+
+    return Positioned(
+      bottom: bottom,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: minHeight,
+          maxWidth: MediaQuery.of(context).size.width,
+        ),
+        child: Padding(
+          padding: usedPadding,
+          child: Transform(
+            alignment: alignment,
+            transform: Matrix4.skewY(-rotateAngle),
+            child: Opacity(
+              opacity: landingPage ? landingPageBarOpacity : dynamicBarOpacity,
+              child: ClipRRect(
+                borderRadius: usedBorderRadius,
+                child: new BackdropFilter(
+                  filter: new ImageFilter.blur(sigmaX: 7.0, sigmaY: 7.0),
+                  child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 100.0,
+                      decoration: BoxDecoration(
+                        boxShadow: shadowList,
+                        borderRadius: usedBorderRadius,
+                        color: usedColor,
+                      )),
+                ),
+              ),
             ),
           ),
         ),

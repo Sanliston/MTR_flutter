@@ -85,6 +85,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
   List selectedBackgroundImageList;
 
+  Map workingPlaceImage;
+
 //These are not actually used -- TODO REMOVE THEM
   Color workingTitleColor;
   Color workingTagLineColor;
@@ -177,13 +179,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       "assets/images/home_background.jpg",
     ];
 
-    backgroundImageList = [
-      {"data": "assets/images/home_background.jpg", "type": "asset"},
-      {"data": "assets/images/home_background_2.jpg", "type": "asset"},
-      {"data": "assets/images/home_background_3.jpg", "type": "asset"},
-    ];
+    backgroundImageList = homeBackgroundImageList;
 
     selectedBackgroundImageList = [homeBackgroundImage];
+    workingPlaceImage = homePlaceImage;
 
     workingColors = {
       WorkingColors.titleColor: contentLayouts['header']
@@ -576,8 +575,12 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     contentLayouts[header][headerOptions.appBarColor] =
         workingColors[WorkingColors.primaryColor];
 
-    //save background image
+    //save background image and list for future use
     homeBackgroundImage = selectedBackgroundImageList[0];
+    homeBackgroundImageList = backgroundImageList;
+
+    //save home logo image
+    homePlaceImage = workingPlaceImage;
 
     print("Saved backgroundStyle: $workingBackgroundStyle");
   }
@@ -2237,18 +2240,18 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                           "iconData": EvaIcons.smartphoneOutline,
                           "title": "Take a photo",
                           "onPressed": () async {
-                            PickedFile pickedFile = await getImageFromCamera();
+                            File file = await getImageFromCamera(
+                                maxWidth: 750,
+                                maxHeight:
+                                    750); //get highres image then scale to get thumbnail image
 
                             //check if null
-                            if (null == pickedFile) {
+                            if (null == file) {
                               return;
                             }
 
                             //create object
-                            Map fileMap = {
-                              "data": File(pickedFile.path),
-                              "type": "file"
-                            };
+                            Map fileMap = {"data": file, "type": "file"};
 
                             print("backgroundImageList: $backgroundImageList");
 
@@ -2256,7 +2259,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               backgroundImageList.add(fileMap);
                             });
 
-                            pickedFile = null;
+                            file = null;
 
                             Navigator.pop(context);
                           }
@@ -2265,21 +2268,18 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                           "iconData": EvaIcons.imageOutline,
                           "title": "Choose from device",
                           "onPressed": () async {
-                            PickedFile pickedFile = await getImageFromGallery(
+                            File file = await getImageFromGallery(
                                 maxWidth: 750,
                                 maxHeight:
                                     750); //get highres image then scale to get thumbnail image
 
                             //check if null
-                            if (null == pickedFile) {
+                            if (null == file) {
                               return;
                             }
 
                             //create object
-                            Map fileMap = {
-                              "data": File(pickedFile.path),
-                              "type": "file"
-                            };
+                            Map fileMap = {"data": file, "type": "file"};
 
                             print("backgroundImageList: $backgroundImageList");
 
@@ -2287,7 +2287,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                               backgroundImageList.add(fileMap);
                             });
 
-                            pickedFile = null;
+                            file = null;
 
                             Navigator.pop(context);
                           }
@@ -2317,7 +2317,16 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
     for (int i = 0; i < length; i++) {
       Map image = backgroundImageList[i];
-      bool selected = selectedBackgroundImageList.contains(image);
+      bool selected = false;
+
+      for (int j = 0; j < selectedBackgroundImageList.length; j++) {
+        if (selectedBackgroundImageList[j]["data"] == image["data"]) {
+          selected = true;
+
+          break;
+        }
+      }
+
       var imageProvider;
 
       print("=============================contains image: $selected");
@@ -2551,6 +2560,15 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   }
 
   Padding buildPlaceLogo() {
+    var imageProvider;
+
+    //get image depending on whether asset or file
+    if ("asset" == workingPlaceImage["type"]) {
+      imageProvider = AssetImage(workingPlaceImage["data"]);
+    } else if ("file" == workingPlaceImage["type"]) {
+      imageProvider = FileImage(workingPlaceImage["data"]);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
@@ -2592,41 +2610,111 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                   )
                 ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: 70,
-                          width: 70,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(5)),
-                            image: DecorationImage(
-                              image: AssetImage(
-                                  "assets/images/home_background.jpg"),
-                              fit: BoxFit.cover,
+              GestureDetector(
+                onTap: () {
+                  List options = [
+                    {
+                      "iconData": EvaIcons.smartphoneOutline,
+                      "title": "Take a photo",
+                      "onPressed": () async {
+                        File file = await getImageFromCamera(
+                            maxWidth: 750,
+                            maxHeight:
+                                750); //get highres image then scale to get thumbnail image
+
+                        //check if null
+                        if (null == file) {
+                          return;
+                        }
+
+                        //create object
+                        Map fileMap = {"data": file, "type": "file"};
+
+                        print("backgroundImageList: $backgroundImageList");
+
+                        setState(() {
+                          workingPlaceImage = fileMap;
+                        });
+
+                        file = null;
+
+                        Navigator.pop(context);
+                      }
+                    },
+                    {
+                      "iconData": EvaIcons.imageOutline,
+                      "title": "Choose from device",
+                      "onPressed": () async {
+                        File file = await getImageFromGallery(
+                            maxWidth: 750,
+                            maxHeight:
+                                750); //get highres image then scale to get thumbnail image
+
+                        //check if null
+                        if (null == file) {
+                          return;
+                        }
+
+                        //create object
+                        Map fileMap = {"data": file, "type": "file"};
+
+                        print("backgroundImageList: $backgroundImageList");
+
+                        setState(() {
+                          workingPlaceImage = fileMap;
+                        });
+
+                        file = null;
+
+                        Navigator.pop(context);
+                      }
+                    }
+                  ];
+
+                  Map params = {
+                    "context": context,
+                    "title": "Upload Media",
+                    "options": options
+                  };
+
+                  displayNavigationDrawer(context, params);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 70,
+                            width: 70,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
                             ),
+                            child: null /* add child content here */,
                           ),
-                          child: null /* add child content here */,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 15),
-                          child:
-                              Text("Replace Logo", style: homeSubTextStyleBold),
-                        ),
-                      ],
-                    ),
-                    Icon(
-                      EvaIcons.editOutline,
-                      color: workingColors[WorkingColors.primaryColor],
-                      size: 25.0,
-                    )
-                  ],
+                          Padding(
+                            padding: const EdgeInsets.only(left: 15),
+                            child: Text("Replace Logo",
+                                style: homeSubTextStyleBold),
+                          ),
+                        ],
+                      ),
+                      Icon(
+                        EvaIcons.editOutline,
+                        color: workingColors[WorkingColors.primaryColor],
+                        size: 25.0,
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -2947,6 +3035,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
                       memberViewMode: true,
                       sizeFactor: sizeFactor,
                       placeLogo: workingPlaceLogoActive,
+                      placeImage: workingPlaceImage,
                       tagLine: workingTaglineActive,
                       memberPreview: workingMemberPreviewActive,
                       customButton: workingCustomButtonActive,

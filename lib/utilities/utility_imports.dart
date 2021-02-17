@@ -8,10 +8,14 @@ export 'package:unicons/unicons.dart';
 export 'package:MTR_flutter/state_management/home_state.dart';
 
 //function for rebuilding main screen
+import 'dart:io';
+
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
+import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 
 void rebuildMainScreen(BuildContext context) {
@@ -72,24 +76,80 @@ void unfocus(BuildContext context) {
   FocusScope.of(context).requestFocus(new FocusNode());
 }
 
-Future<PickedFile> getImageFromGallery(
-    {double maxWidth = 750, double maxHeight = 750}) async {
+Future<File> getImageFromGallery(
+    {double maxWidth = 750, double maxHeight = 750, bool crop = true}) async {
   PickedFile pickedFile = await ImagePicker().getImage(
     source: ImageSource.gallery,
     maxWidth: maxWidth,
     maxHeight: maxHeight,
   );
 
-  return pickedFile;
+  File file;
+
+  if (null != pickedFile) {
+    file = File(pickedFile.path);
+  }
+
+  if (crop) {
+    file = await ImageCropper.cropImage(
+        sourcePath: file.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            statusBarColor: primaryColor,
+            toolbarTitle: 'Crop your Image',
+            toolbarColor: primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
+  }
+
+  return file;
 }
 
-Future<PickedFile> getImageFromCamera(
-    {double maxWidth = 750, double maxHeight = 750}) async {
+Future<File> getImageFromCamera(
+    {double maxWidth = 750, double maxHeight = 750, bool crop = true}) async {
   PickedFile pickedFile = await ImagePicker().getImage(
     source: ImageSource.camera,
     maxWidth: maxWidth,
     maxHeight: maxHeight,
   );
 
-  return pickedFile;
+  File file;
+
+  if (null != pickedFile) {
+    file = File(pickedFile.path);
+  }
+
+  if (crop) {
+    file = await ImageCropper.cropImage(
+        sourcePath: file.path,
+        aspectRatioPresets: [
+          CropAspectRatioPreset.square,
+          CropAspectRatioPreset.ratio3x2,
+          CropAspectRatioPreset.original,
+          CropAspectRatioPreset.ratio4x3,
+          CropAspectRatioPreset.ratio16x9
+        ],
+        androidUiSettings: AndroidUiSettings(
+            statusBarColor: primaryColor,
+            toolbarTitle: 'Crop your Image',
+            toolbarColor: primaryColor,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          minimumAspectRatio: 1.0,
+        ));
+  }
+
+  return file;
 }

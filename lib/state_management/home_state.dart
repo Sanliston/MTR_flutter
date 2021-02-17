@@ -468,7 +468,7 @@ List<Map> groupsList = [
 ];
 
 //darkMode toggle
-bool darkMode = false;
+bool darkMode = true;
 
 //core colors
 
@@ -481,12 +481,24 @@ bool darkMode = false;
 // Color secondaryColor = Color(0xFFfc6767);
 
 // //good purple combo
-Color primaryColor = Color(0xFF8360c3);
-Color secondaryColor = Color(0xFF2ebf91);
+// Color primaryColor = Color(0xFF8360c3);
+// Color secondaryColor = Color(0xFF2ebf91);
+
+//good blue combo
+// Color primaryColor = Color(0xFF0082c8);
+// Color secondaryColor = Color(0xFF667db6);
+
+//good orange combo (good for non shadow clean look)
+// Color primaryColor = Color(0xFFff5e62);
+// Color secondaryColor = Color(0xFFff9966);
+
+//good orange for no shadow style
+// Color primaryColor = Color(0xFFD66D75);
+// Color secondaryColor = Color(0xFFE29587);
 
 //good purple combo
-// Color primaryColor = Color(0xFF556270);
-// Color secondaryColor = Color(0xFFFF6B6B);
+Color primaryColor = Color(0xFF9D50BB);
+Color secondaryColor = Color(0xFF6E48AA);
 
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;
@@ -862,12 +874,12 @@ Map contentLayouts = {
   "header": {
     headerOptions.fullscreenMode: false, // deprecated, use landingPageMode
     headerOptions.titleColor: Colors.white,
-    headerOptions.titleText: "More than Rubies",
+    headerOptions.titleText: "Calcu Algorithm",
     headerOptions.headerFontColor: Colors.grey[100],
     headerOptions.toolBarIconColor: Colors.white,
     headerOptions.blurredAppBar: true,
     headerOptions.tagLine: true,
-    headerOptions.tagLineText: "Welcome to our safe space.",
+    headerOptions.tagLineText: "App coming soon.",
     headerOptions.tagLineColor: Colors.white,
     headerOptions.placeLogo: true,
     headerOptions.memberPreview: true,
@@ -883,9 +895,9 @@ Map contentLayouts = {
         "default", //idea is to have different layouts, like picture on the left, all centered, etc.
     headerOptions.blurEffect: false,
 
-    headerOptions.logoShape: logoShape.circle,
-    headerOptions.logoRadius: 4.0,
-    headerOptions.backgroundStyle: backgroundStyles.image,
+    headerOptions.logoShape: logoShape.square,
+    headerOptions.logoRadius: 10.0,
+    headerOptions.backgroundStyle: backgroundStyles.video,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
@@ -906,7 +918,7 @@ Map contentLayouts = {
     headerOptions.diagonalBarShadowLift: 0.75,
     headerOptions.diagonalMaxOpacity: 1.0,
     headerOptions.topLeftBar: false,
-    headerOptions.topRightBar: false,
+    headerOptions.topRightBar: true,
     headerOptions.bottomLeftBar: false,
     headerOptions.bottomRightBar: false,
     headerOptions.topLeftBarColor: primaryColor,
@@ -963,7 +975,7 @@ enum TabBarStyle {
 }
 
 //These are the expanded tabbar , i.e default
-TabBarStyle selectedTabBarStyle = TabBarStyle.halfRound;
+TabBarStyle selectedTabBarStyle = TabBarStyle.bubble;
 TabBarStyle unselectedTabBarStyle = TabBarStyle
     .traditional; //this will just overlap under the selected style -- doesnt disappear
 Color selectedTabBarColor = Colors.white;
@@ -979,7 +991,7 @@ Color tabBarBlurOverlayColor =
     darkMode ? Colors.black38 : Colors.grey[300].withOpacity(0.4);
 double tabBarBlurOverlayOpacity = 0.0;
 double tabBarBlurSigma =
-    0.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
+    7.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
 /*If the tabBarBlurSigma is more than zero then the whole Appbar and toolbar will
 background will be blurred
 
@@ -990,13 +1002,13 @@ To activate traditional background blur. set AppBarStyle and ToolBarStyle to mat
  */
 
 //these are the collapsed tabbar styles
-TabBarStyle cSelectedTabBarStyle = TabBarStyle.gradientBubble;
+TabBarStyle cSelectedTabBarStyle = TabBarStyle.bubble;
 TabBarStyle cUnselectedTabBarStyle = TabBarStyle
     .bubble; //this will just overlap under the selected style -- doesnt disappear
-Color cSelectedTabBarColor = primaryColor;
+Color cSelectedTabBarColor = Colors.white;
 Color cUnselectedTabBarColor = primaryColor;
-Color cTabBarSelectedFontColor = Colors.white;
-Color cTabBarUnselectedFontColor = Colors.black38;
+Color cTabBarSelectedFontColor = primaryColor;
+Color cTabBarUnselectedFontColor = Colors.grey[400];
 Color cTabBarGlowColor = primaryColor;
 
 Color toolBarExpandedFontColor = primaryColor.withOpacity(0.1);
@@ -1005,17 +1017,19 @@ Color toolBarFontColor = Colors.white;
 bool collapsableToolBar =
     false; //if true also collapses toolbar when user scrolls up
 
-bool hideTabBarWhenScroll = true;
+bool hideTabBarWhenScroll = false;
 
 enum AppBarStyle {
   //style for the top part that contains the title and icons when collapsed
   material,
+  materialFrosted,
   rounded, //works but needs more fixing
   roundedTop,
   roundedBottom,
   roundedLeft,
   roundedRight,
   rectangle,
+  halfTop //to be used only with ToolBarStyle halfTop
 }
 enum ToolBarStyle {
   //style for the part that contains the tab bar
@@ -1023,13 +1037,38 @@ enum ToolBarStyle {
   traditional,
   rounded,
   roundedFrosted,
-  rectangle
+  rectangle,
+  halfTop,
 }
 
 AppBarStyle appBarStyle = AppBarStyle.material;
-ToolBarStyle toolBarStyle = ToolBarStyle.roundedFrosted;
+ToolBarStyle toolBarStyle = ToolBarStyle.material;
+
+AppBarStyle cAppBarStyle =
+    AppBarStyle.halfTop; //not implemented -- probably will not be
+ToolBarStyle cToolBarStyle = ToolBarStyle.material; //implemented
 
 CollapseMode appBarCollapseMode = CollapseMode.parallax;
+
+enum BodyStyle {
+  auto, //hands over control to toolBarStyle
+  material,
+  halfTop, //not to be necessarily used with the toolbar & appbar half top styles, but works well
+
+}
+
+BodyStyle bodyStyle = BodyStyle.material;
+Color halfTopColor =
+    primaryColor; //Color of the tab and the body back background behind the radius
+double halfTopRadius = 25;
+BorderRadius halfTopBorderRadius = BorderRadius.only(
+    topLeft: Radius.circular(halfTopRadius),
+    topRight: Radius.circular(halfTopRadius));
+bool halfTopBodyShadow = false;
+Color halfTopBodyShadowColor = Colors.black45;
+bool halfTopInnerBodyShadow = false;
+Color halfTopInnerBodyShadowColor = Colors.black26;
+bool bodyHalfTopFixed = false;
 
 //modalBottomSheet blur settings
 bool modalBottomSheetBlur = true;
@@ -1062,6 +1101,7 @@ Map<String, Function> headerBuilders = {};
 //for toggling main navbar visiblity
 Function toggleNavBar = () {};
 bool persistentNavBar = false; //whether bottom navbar is always visible?
+bool blurredNavBar = true;
 
 //for toggling appToolBarIconColors
 Function toggleTBIconColors = () {};
@@ -1070,7 +1110,18 @@ Function toggleHomeTabBar = () {};
 //Homestate object containing values
 
 //Images high res and low res for memory management
+
+List<Map> homeBackgroundImageList = [
+  {"data": "assets/images/home_background.jpg", "type": "asset"},
+  {"data": "assets/images/home_background_2.jpg", "type": "asset"},
+  {"data": "assets/images/home_background_3.jpg", "type": "asset"},
+];
 Map homeBackgroundImage = {
   "data": "assets/images/home_background.jpg",
+  "type": "asset"
+};
+
+Map homePlaceImage = {
+  "data": "assets/images/profile_images/default_user.png",
   "type": "asset"
 };

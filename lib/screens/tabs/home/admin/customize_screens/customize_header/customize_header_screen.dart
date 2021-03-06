@@ -209,6 +209,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
           [headerOptions.customButtonColor],
       WorkingColors.customButtonTextColor: contentLayouts['header']
           [headerOptions.customButtonTextColor],
+      WorkingColors.solidBGColor: contentLayouts['header']
+          [headerOptions.solidBackgroundColor]
     };
 
     targetColor = null;
@@ -228,7 +230,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.inviteButtonColor: dormantWidget,
       Options.inviteButtonTextColor: dormantWidget,
       Options.customButtonColor: dormantWidget,
-      Options.customButtonTextColor: dormantWidget
+      Options.customButtonTextColor: dormantWidget,
+      Options.solidBGColor: dormantWidget
     };
 
     colorPickerContainerHeights = {
@@ -246,6 +249,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
       Options.inviteButtonTextColor: 1.0,
       Options.customButtonColor: 1.0,
       Options.customButtonTextColor: 1.0,
+      Options.solidBGColor: 1.0
     };
 
     workingGradientOrientation = currentGradientOrientation;
@@ -524,7 +528,8 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     currentGradientOrientation = workingGradientOrientation;
     gradientColor3Active = gradientThirdColorEnabled;
 
-    print("Saving gradient color 3: $gradientColor3");
+    contentLayouts[header][headerOptions.solidBackgroundColor] =
+        workingColors[WorkingColors.solidBGColor];
 
     contentLayouts[header][headerOptions.tagLineText] = taglineController.text;
     contentLayouts[header][headerOptions.titleText] = placeNameController.text;
@@ -581,8 +586,6 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
     //save home logo image
     homePlaceImage = workingPlaceImage;
-
-    print("Saved backgroundStyle: $workingBackgroundStyle");
   }
 
   _CustomizeHeaderScreenState(); //constructor call
@@ -658,12 +661,13 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   List _buildList() {
     List<Widget> listItems = [
       buildBGDiagonalLine(),
-      buildLandingPageMode(),
+      // buildLandingPageMode(), //disabled for MTR will be enabled for SNAAS though
       buildPlaceName(),
       buildTagLine(),
       buildPlaceLogo(),
       buildThemeColors(),
       buildCoverPhoto(),
+      buildSolidBackground(),
       buildGradientBackground(),
       buildShowMemberList(),
       buildShowInviteButton(),
@@ -1406,6 +1410,113 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
     );
   }
 
+  Padding buildSolidBackground() {
+    bool solidActive = backgroundToggleStates[backgroundStyles.solid] ||
+        backgroundToggleStates[backgroundStyles.solidDiagonalLine];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10.0),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 300),
+        color: uiBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.only(top: sidePadding, bottom: sidePadding),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: sidePadding, right: sidePadding),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Solid Background", style: homeTextStyleBold),
+                      ],
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        backgroundStyles nextStyle = backgroundStyles.solid;
+
+                        if (solidActive) {
+                          nextStyle = backgroundStyles.image;
+                        }
+                        selectWorkingBGOption(nextStyle);
+                      },
+                      padding: EdgeInsets.zero,
+                      icon: Icon(
+                        solidActive
+                            ? UniconsSolid.toggle_on
+                            : UniconsSolid.toggle_off,
+                        color: solidActive
+                            ? workingColors[WorkingColors.primaryColor]
+                            : Colors.grey[400],
+                        size: 40.0,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              AnimatedCrossFade(
+                  firstChild: Container(),
+                  secondChild: buildSBContent(),
+                  crossFadeState: solidActive
+                      ? CrossFadeState.showSecond
+                      : CrossFadeState.showFirst,
+                  duration: crossFadeDuration)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildSBContent() {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: sidePadding, right: sidePadding),
+          child: Container(
+            height: 50.0,
+            child: Text(
+                "This changes the background of the header to a solid color of your choice. Enabling this background style automatically disables any other specified background style.",
+                style: homeSubTextStyle,
+                softWrap: true,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.left),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+              top: 8.0, left: sidePadding, right: sidePadding),
+          child: Divider(
+            thickness: uiDividerThickness,
+            color: workingColors[WorkingColors.gradientFirstColor]
+                .withOpacity(0.15),
+          ),
+        ),
+        buildColorRow(
+            "Background Color", workingColors[WorkingColors.solidBGColor],
+            onTapCallback: () {
+          toggleColorEditor(Options.solidBGColor);
+        }, longpressCallback: () {
+          displayPopupColorEditor(Options.solidBGColor);
+        }),
+        AnimatedCrossFade(
+            duration: crossFadeDuration,
+            firstChild: colorPickerContainers[Options.solidBGColor],
+            secondChild: Container(height: 0.0),
+            crossFadeState: Options.solidBGColor == activeColorEditor
+                ? CrossFadeState.showFirst
+                : CrossFadeState.showSecond),
+      ],
+    );
+  }
+
   Padding buildGradientBackground() {
     bool gradientActive = backgroundToggleStates[backgroundStyles.gradient] ||
         backgroundToggleStates[backgroundStyles.gradientDiagonalLine];
@@ -1995,6 +2106,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
         targetColor = WorkingColors.customButtonTextColor;
         break;
 
+      case Options.solidBGColor:
+        targetColor = WorkingColors.solidBGColor;
+        break;
+
       default:
         targetColor = WorkingColors.primaryColor;
     }
@@ -2123,6 +2238,10 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
 
       case Options.customButtonColor:
         targetColor = WorkingColors.customButtonTextColor;
+        break;
+
+      case Options.solidBGColor:
+        targetColor = WorkingColors.solidBGColor;
         break;
 
       default:
@@ -3005,6 +3124,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
             gradientThirdColor: thirdColor,
             gradientThirdColorEnabled: gradientThirdColorEnabled,
             gradientOrientation: workingGradientOrientation,
+            solidBackgroundColor: workingColors[WorkingColors.solidBGColor],
             backgroundStyle: getWorkingBGOption(),
             backgroundImage: selectedBackgroundImageList[0],
             diagonalBarColor: workingColors[WorkingColors.diagonalColor],

@@ -468,7 +468,7 @@ List<Map> groupsList = [
 ];
 
 //darkMode toggle
-bool darkMode = true;
+bool darkMode = false;
 
 //core colors
 
@@ -485,8 +485,8 @@ bool darkMode = true;
 // Color secondaryColor = Color(0xFF2ebf91);
 
 //good blue combo
-// Color primaryColor = Color(0xFF0082c8);
-// Color secondaryColor = Color(0xFF667db6);
+Color primaryColor = Color(0xFF0082c8);
+Color secondaryColor = Color(0xFF667db6);
 
 //good orange combo (good for non shadow clean look)
 // Color primaryColor = Color(0xFFff5e62);
@@ -497,8 +497,12 @@ bool darkMode = true;
 // Color secondaryColor = Color(0xFFE29587);
 
 //good purple combo
-Color primaryColor = Color(0xFF9D50BB);
-Color secondaryColor = Color(0xFF6E48AA);
+// Color primaryColor = Color(0xFF9D50BB);
+// Color secondaryColor = Color(0xFF6E48AA);
+
+//MTR default colors
+// Color primaryColor = Color(0xFFCB356B);
+// Color secondaryColor = Color(0xFFBD3F32);
 
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;
@@ -579,7 +583,6 @@ Map sectionStringMap = {
 //home tab state
 List<String> homeTabList = <String>[
   "Home",
-  "test tab",
   "Forum",
   "Groups",
   "Members",
@@ -604,6 +607,7 @@ List<String> homeAdminTabList = <String>[
 enum headerOptions {
   titleColor,
   titleText,
+  titleFontSize,
   headerFontColor,
   toolBarIconColor,
   tagLine,
@@ -623,6 +627,7 @@ enum headerOptions {
   blurredAppBar,
   logoShape,
   logoRadius,
+  solidBackgroundColor,
   backgroundStyle,
   shadowHeight, //0.0 will represent no shadow,
   tabBarColor,
@@ -874,7 +879,8 @@ Map contentLayouts = {
   "header": {
     headerOptions.fullscreenMode: false, // deprecated, use landingPageMode
     headerOptions.titleColor: Colors.white,
-    headerOptions.titleText: "Calcu Algorithm",
+    headerOptions.titleText: "More Than Rubies",
+    headerOptions.titleFontSize: 30,
     headerOptions.headerFontColor: Colors.grey[100],
     headerOptions.toolBarIconColor: Colors.white,
     headerOptions.blurredAppBar: true,
@@ -897,7 +903,8 @@ Map contentLayouts = {
 
     headerOptions.logoShape: logoShape.square,
     headerOptions.logoRadius: 10.0,
-    headerOptions.backgroundStyle: backgroundStyles.video,
+    headerOptions.solidBackgroundColor: primaryColor,
+    headerOptions.backgroundStyle: backgroundStyles.image,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
@@ -925,7 +932,7 @@ Map contentLayouts = {
     headerOptions.topRightBarColor: primaryColor,
     headerOptions.bottomLeftBarColor: primaryColor,
     headerOptions.bottomRightBarColor: primaryColor,
-    headerOptions.landingPageMode: {landingPageMode.active: true}
+    headerOptions.landingPageMode: {landingPageMode.active: false}
   },
   "default": [
     sections.announcements,
@@ -946,7 +953,6 @@ Map contentLayouts = {
   "Events": [sections.announcements],
   "Services": [sections.announcements],
   "Pricing": [sections.announcements],
-  "test tab": [sections.membersPreview],
   "Content": [
     sections.announcements,
     sections.membersPreview,
@@ -978,10 +984,10 @@ enum TabBarStyle {
 TabBarStyle selectedTabBarStyle = TabBarStyle.bubble;
 TabBarStyle unselectedTabBarStyle = TabBarStyle
     .traditional; //this will just overlap under the selected style -- doesnt disappear
-Color selectedTabBarColor = Colors.white;
+Color selectedTabBarColor = primaryColor;
 Color unselectedTabBarColor = primaryColor;
-Color tabBarSelectedFontColor = primaryColor;
-Color tabBarUnselectedFontColor = Colors.grey[200];
+Color tabBarSelectedFontColor = Colors.white;
+Color tabBarUnselectedFontColor = Colors.black45;
 Color tabBarGlowColor = primaryColor;
 bool tabBarBlurGlow = false;
 bool tabBarLabelGlow = false;
@@ -991,7 +997,7 @@ Color tabBarBlurOverlayColor =
     darkMode ? Colors.black38 : Colors.grey[300].withOpacity(0.4);
 double tabBarBlurOverlayOpacity = 0.0;
 double tabBarBlurSigma =
-    7.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
+    10.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
 /*If the tabBarBlurSigma is more than zero then the whole Appbar and toolbar will
 background will be blurred
 
@@ -1050,6 +1056,8 @@ ToolBarStyle cToolBarStyle = ToolBarStyle.material; //implemented
 
 CollapseMode appBarCollapseMode = CollapseMode.parallax;
 
+double appBarTitleFontSize = 24.0;
+
 enum BodyStyle {
   auto, //hands over control to toolBarStyle
   material,
@@ -1087,6 +1095,7 @@ enum CTS {
 
 //only active when headerOptions.backgroundStyle is a diagonal style
 Map customTabScrollSettings = {
+  //needs to be false for blurred tabbar to work
   CTS.tabBackgroundImage:
       false, //should tabbar be solid(false) or show background image (true)
   CTS.appBarBackgroundImage:
@@ -1125,3 +1134,7 @@ Map homePlaceImage = {
   "data": "assets/images/profile_images/default_user.png",
   "type": "asset"
 };
+
+//home tab controller juggling
+Function updateTabController;
+Function updatePreviewTabController;

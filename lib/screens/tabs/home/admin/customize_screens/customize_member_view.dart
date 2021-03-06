@@ -1,4 +1,7 @@
 import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_header/customize_header_screen.dart';
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/edit_navigation/edit_navigation_screen.dart';
+import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
+import 'package:MTR_flutter/state_management/customize_page_state.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -30,6 +33,19 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
       length: _tabs.length,
       vsync: this,
     );
+
+    updatePreviewTabController = () {
+      setState(() {
+        _tabs = homeTabList;
+      });
+
+      setState(() {
+        // mVcontroller = TabController(
+        //   length: _tabs.length,
+        //   vsync: this,
+        // );
+      });
+    };
 
     int length = _tabs.length;
     landingPage = contentLayouts['header'][headerOptions.landingPageMode]
@@ -114,53 +130,71 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     return widget;
   }
 
+  void tabControllerCb(index) {
+    print("tab controller called");
+    _currentIndex.value = index;
+  }
+
   SizedBox buildTabBarPreview() {
+    print(
+        "***************tab bar preview, mvController length: ${mVcontroller.length}");
     return SizedBox(
-      height: 39.0,
-      child: TabBar(
-        labelPadding:
-            EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
-        indicatorSize: TabBarIndicatorSize.label,
-        isScrollable: true,
-        tabs: _tabs.map((String name) {
-          Widget widget = Tab(
-            child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: Colors.transparent, width: 1)),
-              child: Align(
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                  child: Text(name),
-                ),
-              ),
-            ),
-          );
+        height: 39.0,
+        child: HomeTabBar(
+          preview: true,
+          tabs: _tabs,
+          controller: mVcontroller,
+          scrollController: new ScrollController(),
+          tabBarSelectedFontColor: tabBarSelectedFontColor,
+          tabBarUnselectedFontColor: tabBarUnselectedFontColor,
+          tabControllerCb: tabControllerCb,
+          selectedTabBarColor: selectedTabBarColor,
+          selectedTabBarStyle: selectedTabBarStyle,
+        )
+        // TabBar(
+        //   labelPadding:
+        //       EdgeInsets.only(top: 0.0, bottom: 0.0, left: 5.0, right: 5.0),
+        //   indicatorSize: TabBarIndicatorSize.label,
+        //   isScrollable: true,
+        //   tabs: _tabs.map((String name) {
+        //     Widget widget = Tab(
+        //       child: Container(
+        //         decoration: BoxDecoration(
+        //             borderRadius: BorderRadius.circular(50),
+        //             border: Border.all(color: Colors.transparent, width: 1)),
+        //         child: Align(
+        //           alignment: Alignment.center,
+        //           child: Padding(
+        //             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+        //             child: Text(name),
+        //           ),
+        //         ),
+        //       ),
+        //     );
 
-          if ("AddTabButton" == name) {
-            widget = Icon(
-              EvaIcons.plusCircle,
-              color: Colors.redAccent,
-            );
-          }
+        //     if ("AddTabButton" == name) {
+        //       widget = Icon(
+        //         EvaIcons.plusCircle,
+        //         color: Colors.redAccent,
+        //       );
+        //     }
 
-          return widget;
-        }).toList(),
-        controller: mVcontroller,
-        labelColor: contentLayouts['header'][headerOptions.appBarColor],
-        unselectedLabelColor: Colors.black54,
-        indicatorColor: contentLayouts['header'][headerOptions.appBarColor],
-        indicator: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10), topRight: Radius.circular(10)),
-            color: Colors.white),
-        onTap: (index) {
-          _currentIndex.value = index;
-          print("tab clicked current tab: $currentTab");
-        },
-      ),
-    );
+        //     return widget;
+        //   }).toList(),
+        //   controller: mVcontroller,
+        //   labelColor: contentLayouts['header'][headerOptions.appBarColor],
+        //   unselectedLabelColor: Colors.black54,
+        //   indicatorColor: contentLayouts['header'][headerOptions.appBarColor],
+        //   indicator: BoxDecoration(
+        //       borderRadius: BorderRadius.only(
+        //           topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+        //       color: Colors.white),
+        //   onTap: (index) {
+        //     _currentIndex.value = index;
+        //     print("tab clicked current tab: $currentTab");
+        //   },
+        // ),
+        );
   }
 
   void displayEditDrawer(BuildContext context, String sectionName) {
@@ -347,6 +381,58 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
     displayNavigationDrawer(context, params);
   }
 
+  void displayTabDrawer(BuildContext context) {
+    Widget customHeader = Padding(
+      padding: const EdgeInsets.only(
+          top: 0.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Edit Navigation Tab Bar",
+            style: homeTextStyleBold,
+            overflow: TextOverflow.visible,
+          ),
+        ],
+      ),
+    );
+
+    Widget customBody = Padding(
+      padding:
+          const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 0.0, right: 0.0),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SolidButton(text: "Edit Styling"),
+              SolidButton(
+                text: "Edit Tabs",
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => EditNavigationScreen()));
+                },
+              )
+            ],
+          )
+        ],
+      ),
+    );
+
+    Map params = {
+      "context": context,
+      "custom_header": customHeader,
+      "custom_body": customBody,
+      "blur": false
+    };
+
+    displayNavigationDrawer(context, params);
+  }
+
   /*to do the fancy little buttons we will be taking a unique approach using stacks and lists
   
     There are 2 parts to this:
@@ -445,7 +531,15 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
             child: SmallButton(
                 height: smallButtonHeight,
                 iconData: EvaIcons.edit,
-                text: 'Edit Navigation Tabs'),
+                text: 'Edit Navigation Tabbar',
+                onPressed: () {
+                  customizable_tab_bar
+                      ? displayTabDrawer(context)
+                      : Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => EditNavigationScreen()));
+                }),
           ),
         )
       ]),

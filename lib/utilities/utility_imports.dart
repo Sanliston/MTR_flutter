@@ -10,8 +10,11 @@ export 'package:MTR_flutter/state_management/home_state.dart';
 //function for rebuilding main screen
 import 'dart:io';
 
+import 'package:MTR_flutter/components/buttons.dart';
+import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
@@ -54,6 +57,18 @@ void rebuildHomeCustomizeScreen(BuildContext context) {
   //hopefully this gets updated values from home_state
   Navigator.push(
       context, MaterialPageRoute(builder: (context) => HomeCustomizeScreen()));
+}
+
+void doubleNavigatorPop({BuildContext context, Widget screen}) {
+  //remove customize screen from navigation history and goes back to main screen
+  Navigator.pop(context);
+
+  //removes main screen from navigation history and goes back to login screen
+  Navigator.pop(context);
+
+  //reopens the main screen again as a new screen - so back button goes back to login screen now
+  //hopefully this gets updated values from home_state
+  Navigator.push(context, MaterialPageRoute(builder: (context) => screen));
 }
 
 String getColorHex(Color color) {
@@ -152,4 +167,60 @@ Future<File> getImageFromCamera(
   }
 
   return file;
+}
+
+void warn({@required BuildContext context, @required String message}) {
+  TextOverflow overflow = TextOverflow.visible;
+  int maxlines = 3;
+
+  Widget customHeader = Padding(
+    padding: const EdgeInsets.only(
+        top: 5.0, bottom: 5.0, left: sidePadding, right: sidePadding),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width - 4 * sidePadding,
+          child: Center(
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: homeSubTextStyle,
+              overflow: overflow,
+              maxLines: maxlines,
+              softWrap: true,
+            ),
+          ),
+        ),
+
+        //button which takes you to user profile
+      ],
+    ),
+  );
+
+  Widget customBody = Padding(
+      padding: const EdgeInsets.only(
+          top: 10.0, bottom: 10.0, left: sidePadding, right: sidePadding),
+      child: Center(
+        child: SolidButton(
+          height: 30,
+          width: 100,
+          backgroundColor: Colors.red,
+          fontColor: Colors.white,
+          text: "Dismiss",
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ));
+
+  Map params = {
+    "context": context,
+    "custom_header": customHeader,
+    "custom_body": customBody,
+    "blur": false
+  };
+
+  displayNavigationDrawer(context, params);
 }

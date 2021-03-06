@@ -174,9 +174,7 @@ class _MainScreenState extends State<MainScreen> {
       Positioned(
         child: Align(
             alignment: Alignment.bottomCenter,
-            child: navBarVisible
-                ? LeanNavBar(onItemTapped: _onNavItemTapped)
-                : null
+            child: navBarVisible ? buildBottomNavBar(version: 0) : null
             // child: AnimatedCrossFade(
             //   firstChild: Container(
             //     decoration: BoxDecoration(
@@ -200,6 +198,8 @@ class _MainScreenState extends State<MainScreen> {
   Widget buildBottomNavBar({int version = 0}) {
     if (version == 1) {
       return SimpleNavBar(onItemTapped: _onItemTapped);
+    } else if (version == 2) {
+      return LeanNavBar(onItemTapped: _onNavItemTapped);
     }
 
     return ClipRect(

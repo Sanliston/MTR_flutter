@@ -15,6 +15,104 @@ TODO: make function more accessible via input parameters with default values etc
 
  */
 
+class NotificationAlertDrawer {
+  final BuildContext context;
+  final Color backgroundColor;
+  final Color fontColor;
+  final IconData leadingIcon;
+  final IconData trailingIcon;
+  final String message;
+
+  NotificationAlertDrawer(
+      {@required this.context,
+      this.backgroundColor = Colors.green,
+      this.fontColor = Colors.white,
+      this.leadingIcon = EvaIcons.alertCircleOutline,
+      this.trailingIcon,
+      @required this.message}) {
+    Widget container = Padding(
+      padding: EdgeInsets.only(
+          left: sidePadding, right: sidePadding, bottom: sidePadding),
+      child: SizedBox(
+        height: 60,
+        child: Container(
+          decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    leadingIcon,
+                    color: fontColor,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: sidePadding),
+                      child: Text(
+                        message,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: GoogleFonts.heebo(
+                            textStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: fontColor)),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Map params = {
+      "context": context,
+      "custom_container": container,
+      "blur": false
+    };
+
+    displayNavigationDrawer(context, params);
+  }
+}
+
+class CustomNavigationDrawer {
+  final BuildContext context;
+  Widget body;
+  Widget header;
+  Widget container;
+
+  CustomNavigationDrawer(
+      {@required this.context, this.header, this.body, this.container}) {
+    Widget customHeader = header;
+    Widget customBody = body;
+
+    Map params = {
+      "context": context,
+      "custom_header": customHeader,
+      "custom_body": customBody,
+      "custom_container": container,
+      "blur": true
+    };
+
+    displayNavigationDrawer(context, params);
+  }
+}
+
 void displayNavigationDrawer(BuildContext context, Map params) {
   print("display navigation drawer called");
   showModalBottomSheet(
@@ -135,6 +233,7 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
         shrinkWrap: true,
         itemBuilder: (context, index) {
           String optionTitle = params['options'][index]['title'];
+          Color optionFontColor = params['options'][index]['font_color'];
 
           if (null != params['options'][index]['type'] &&
               'subtitle' == params['options'][index]['type']) {
@@ -145,7 +244,14 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
                 top: 15.0,
               ),
               child: Text(optionTitle,
-                  style: homeSubTextStyle, overflow: TextOverflow.visible),
+                  style: GoogleFonts.heebo(
+                      textStyle: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          fontSize: 12,
+                          color: null != optionFontColor
+                              ? optionFontColor
+                              : fontColor)),
+                  overflow: TextOverflow.visible),
             );
           }
 
@@ -155,13 +261,14 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
           ); //placeholder empty space
           Function onPressed = params['options'][index]['onPressed'];
           IconData iconData = params['options'][index]['iconData'];
+          Color iconColor = params['options'][index]['icon_color'];
 
           if (null != iconData) {
             icon = Padding(
               padding: const EdgeInsets.only(right: 15.0),
               child: Icon(
                 iconData,
-                color: bodyFontColor,
+                color: null != iconColor ? iconColor : bodyFontColor,
               ),
             );
           }
@@ -173,7 +280,14 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
               children: <Widget>[
                 icon,
                 Text(optionTitle,
-                    style: homeTextStyleBold, overflow: TextOverflow.visible)
+                    style: GoogleFonts.heebo(
+                        textStyle: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            color: null != optionFontColor
+                                ? optionFontColor
+                                : fontColor)),
+                    overflow: TextOverflow.visible)
               ],
             ),
           );

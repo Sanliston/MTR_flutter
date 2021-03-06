@@ -12,6 +12,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'MTR App',
       home: LoginScreen(),
+      theme: ThemeData(
+        bottomSheetTheme:
+            BottomSheetThemeData(backgroundColor: Colors.black.withOpacity(0)),
+      ),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/add_section/add_section_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_header/customize_header_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/edit_navigation/edit_navigation_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
@@ -601,6 +602,12 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                   Positioned(
                     top: 20.0,
                     child: SmallButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => AddSectionScreen()));
+                        },
                         height: smallButtonHeight,
                         iconData: EvaIcons.edit,
                         text: 'Add section'),
@@ -654,6 +661,12 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                     Positioned(
                       top: 20.0,
                       child: SmallButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => AddSectionScreen()));
+                          },
                           height: smallButtonHeight,
                           iconData: EvaIcons.edit,
                           text: 'Add section'),

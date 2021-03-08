@@ -8,8 +8,14 @@ import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_
 import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_member_view.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class AddSectionScreen extends StatefulWidget {
+  final String tab;
+  final int position;
+
+  AddSectionScreen({@required this.tab, this.position});
+
   @override
   _AddSectionScreenState createState() => _AddSectionScreenState();
 }
@@ -17,12 +23,14 @@ class AddSectionScreen extends StatefulWidget {
 class _AddSectionScreenState extends State<AddSectionScreen>
     with TickerProviderStateMixin {
   TabController controller;
-  ScrollController scrollController;
   Color backgroundColor;
   Color fontColor;
   int currentIndex;
-  bool scrollAtMin;
-  bool scrollAtMax;
+  Key firstTabKey;
+  Key lastTabKey;
+  bool firstTabVisible = true;
+  bool lastTabVisible = false;
+  Duration animationDuration = Duration(milliseconds: 10);
 
   final List<Tab> myTabs = <Tab>[
     Tab(text: 'General'),
@@ -38,9 +46,13 @@ class _AddSectionScreenState extends State<AddSectionScreen>
     Tab(text: 'Shop'),
     Tab(text: 'Shared Gallery'),
   ];
+
   @override
   void initState() {
     super.initState();
+
+    print(
+        "Add Section called, tab: ${widget.tab} and position: ${widget.position}");
 
     //state stuff here
     controller = new TabController(length: myTabs.length, vsync: this);
@@ -54,21 +66,16 @@ class _AddSectionScreenState extends State<AddSectionScreen>
         });
       }
     });
-
-    scrollController = new ScrollController();
-    scrollController.addListener(() {
-      //listen if position is at max or minimum
-      print("scroll position: ${scrollController.offset}");
-    });
     backgroundColor = bodyBackground;
     fontColor = bodyFontColor;
+    firstTabKey = new GlobalKey();
+    lastTabKey = new GlobalKey();
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller.dispose();
-    scrollController.dispose();
+    // controller.dispose();
   }
 
   @override
@@ -84,7 +91,8 @@ class _AddSectionScreenState extends State<AddSectionScreen>
               Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        bottom: BorderSide(color: Colors.black, width: 0.0))),
+                        bottom: BorderSide(
+                            color: Colors.black.withOpacity(0.0), width: 0.0))),
                 child: Padding(
                   padding: const EdgeInsets.only(top: 0.0, bottom: 0.0),
                   child: Row(
@@ -106,7 +114,21 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                         ),
                         FlatButton(
                           onPressed: () {
-                            rebuildMainScreen(context);
+                            //to simulate adding a section - for now
+
+                            print(
+                                "DEBUG: ------------Adding to tab: ${widget.tab}");
+
+                            if (null != contentLayouts[widget.tab] &&
+                                null != widget.position) {
+                              contentLayouts[widget.tab]
+                                  .insert(widget.position, sections.contactUs);
+                            } else if (null != contentLayouts[widget.tab]) {
+                              contentLayouts[widget.tab]
+                                  .add(sections.contactUs);
+                            }
+
+                            Navigator.pop(context);
                           },
                           child: Text(
                             'Done',
@@ -139,6 +161,8 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                               //to force rebuild, set state and put dependant variable in here?: Yes
                               //the variable is _currentTabIndex
 
+                              int index = myTabs.indexOf(name);
+
                               //if index is current index remove styling
 
                               Widget widget = Tab(
@@ -152,7 +176,7 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                                       alignment: Alignment.center,
                                       child: Padding(
                                         padding: const EdgeInsets.only(
-                                            left: 15.0, right: 15.0),
+                                            left: 5.0, right: 5.0),
                                         child: Text(name.text,
                                             style: homeTextStyle),
                                       ),
@@ -160,6 +184,52 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                                   ),
                                 ),
                               );
+
+                              if (0 == index) {
+                                widget = VisibilityDetector(
+                                  key: firstTabKey,
+                                  onVisibilityChanged: (visibilityInfo) {
+                                    var visiblePercentage =
+                                        visibilityInfo.visibleFraction * 100;
+
+                                    if (visiblePercentage > 85 &&
+                                        !firstTabVisible &&
+                                        this.mounted) {
+                                      setState(() {
+                                        firstTabVisible = true;
+                                      });
+                                    } else if (visiblePercentage < 85 &&
+                                        firstTabVisible &&
+                                        this.mounted) {
+                                      setState(() {
+                                        firstTabVisible = false;
+                                      });
+                                    }
+                                  },
+                                  child: widget,
+                                );
+                              } else if (myTabs.length - 1 == index) {
+                                widget = VisibilityDetector(
+                                  key: lastTabKey,
+                                  onVisibilityChanged: (visibilityInfo) {
+                                    var visiblePercentage =
+                                        visibilityInfo.visibleFraction * 100;
+
+                                    if (visiblePercentage > 85 &&
+                                        !lastTabVisible) {
+                                      setState(() {
+                                        lastTabVisible = true;
+                                      });
+                                    } else if (visiblePercentage < 85 &&
+                                        lastTabVisible) {
+                                      setState(() {
+                                        lastTabVisible = false;
+                                      });
+                                    }
+                                  },
+                                  child: widget,
+                                );
+                              }
 
                               if ("AddTabButton" == name) {
                                 widget = Icon(
@@ -175,30 +245,38 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: 55,
-                              decoration: BoxDecoration(
-                                  gradient: getGradient(
-                                      gradientFirstColor: 0 == currentIndex
-                                          ? backgroundColor.withOpacity(0.0)
-                                          : backgroundColor,
-                                      gradientSecondColor:
-                                          backgroundColor.withOpacity(0.0),
-                                      gradientOrientation:
-                                          GradientOrientations.horizontal)),
+                            IgnorePointer(
+                              ignoring: true,
+                              child: AnimatedContainer(
+                                duration: animationDuration,
+                                width: 105,
+                                decoration: BoxDecoration(
+                                    //may be better to set gradient once in initState and just swap it out as needed instead of creating it each time
+                                    gradient: getGradient(
+                                        gradientFirstColor: firstTabVisible
+                                            ? backgroundColor.withOpacity(0.0)
+                                            : backgroundColor,
+                                        gradientSecondColor:
+                                            backgroundColor.withOpacity(0.0),
+                                        gradientOrientation:
+                                            GradientOrientations.horizontal)),
+                              ),
                             ),
-                            Container(
-                              width: 55,
-                              decoration: BoxDecoration(
-                                  gradient: getGradient(
-                                      gradientFirstColor:
-                                          backgroundColor.withOpacity(0.0),
-                                      gradientSecondColor:
-                                          controller.length - 1 == currentIndex
-                                              ? backgroundColor.withOpacity(0.0)
-                                              : backgroundColor,
-                                      gradientOrientation:
-                                          GradientOrientations.horizontal)),
+                            IgnorePointer(
+                              ignoring: true,
+                              child: AnimatedContainer(
+                                duration: animationDuration,
+                                width: 105,
+                                decoration: BoxDecoration(
+                                    gradient: getGradient(
+                                        gradientFirstColor:
+                                            backgroundColor.withOpacity(0.0),
+                                        gradientSecondColor: lastTabVisible
+                                            ? backgroundColor.withOpacity(0.0)
+                                            : backgroundColor,
+                                        gradientOrientation:
+                                            GradientOrientations.horizontal)),
+                              ),
                             )
                           ],
                         )

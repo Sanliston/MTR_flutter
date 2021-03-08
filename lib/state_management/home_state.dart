@@ -949,7 +949,13 @@ Map contentLayouts = {
   "Schedule": [sections.announcements],
   "Forum": [sections.forumPosts],
   "Groups": [sections.groupsList],
-  "Members": [sections.membersPreview, sections.members],
+  "Members": [
+    sections.membersPreview,
+    sections.members,
+    sections.forumPosts,
+    sections.contactUs,
+    sections.announcements
+  ],
   "Events": [sections.announcements],
   "Services": [sections.announcements],
   "Pricing": [sections.announcements],

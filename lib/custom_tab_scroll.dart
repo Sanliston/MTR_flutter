@@ -147,8 +147,11 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     super.initState();
 
     _offset = scrollController.offset;
-    _maxOffset = scrollController.position.maxScrollExtent;
-    _minOffset = scrollController.position.minScrollExtent;
+
+    //the two lines below were causing errors, commenting them doesnt seem to affect the app
+    // _maxOffset = scrollController.position.maxScrollExtent;
+    // _minOffset = scrollController.position.minScrollExtent;
+
     landingPage = contentLayouts['header'][headerOptions.landingPageMode]
         [landingPageMode.active];
     screenHeight = sharedStateManagement['screenHeight'];

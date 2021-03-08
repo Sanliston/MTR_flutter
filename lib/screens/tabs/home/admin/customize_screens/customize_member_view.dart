@@ -606,7 +606,10 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                           Navigator.push(
                               context,
                               new MaterialPageRoute(
-                                  builder: (context) => AddSectionScreen()));
+                                  builder: (context) => AddSectionScreen(
+                                        tab: currentTab,
+                                        //no position as it is the last in the list
+                                      )));
                         },
                         height: smallButtonHeight,
                         iconData: EvaIcons.edit,
@@ -665,7 +668,8 @@ class _CustomizeMemberView extends State<CustomizeMemberView>
                             Navigator.push(
                                 context,
                                 new MaterialPageRoute(
-                                    builder: (context) => AddSectionScreen()));
+                                    builder: (context) => AddSectionScreen(
+                                        tab: currentTab, position: index)));
                           },
                           height: smallButtonHeight,
                           iconData: EvaIcons.edit,

@@ -361,6 +361,12 @@ class _HomeTabScreenState extends State<HomeTabScreen>
             ? minimumHeaderHeight
             : screenHeight * screenHeightFactor;
 
+    //set maximum home header height
+    double maxHomeHeaderHeight = landingPage ? screenHeight + 100 : 350;
+    homeHeaderHeight = homeHeaderHeight > maxHomeHeaderHeight
+        ? maxHomeHeaderHeight
+        : homeHeaderHeight;
+
     print("header height: $homeHeaderHeight");
 
     return Scaffold(
@@ -2324,7 +2330,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     Widget backgroundImageWidget = Container(
-      height: homeHeaderHeight * 1.1,
+      height: homeHeaderHeight * 1.2,
       width: screenWidth,
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -2965,7 +2971,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
           style: GoogleFonts.heebo(
               textStyle: TextStyle(
                   fontWeight: FontWeight.normal,
-                  fontSize: 11 * sizeFactor,
+                  fontSize: subtitleFontSize * sizeFactor,
                   color: color)),
         ),
       );
@@ -2986,8 +2992,8 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     if (customButton) {
       widget = SizedBox(
-        height: 25.0 * sizeFactor,
         child: FlatButton(
+          height: buttonHeight * sizeFactor,
           onPressed: () {
             sharedStateManagement['display_invite_menu']();
           },
@@ -3021,7 +3027,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                     textStyle: TextStyle(
                   color: customButtonTextColor,
                   letterSpacing: 1.5 * sizeFactor,
-                  fontSize: 11.0 * sizeFactor,
+                  fontSize: buttonFontSize * sizeFactor,
                   fontWeight: FontWeight.normal,
                 )),
               ),
@@ -3048,7 +3054,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
       widget = Padding(
         padding: EdgeInsets.only(right: 20.0 * sizeFactor),
         child: SizedBox(
-          height: 25.0 * sizeFactor,
+          height: buttonHeight * sizeFactor,
           child: FlatButton(
             onPressed: () {
               sharedStateManagement['display_invite_menu']();
@@ -3085,7 +3091,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
                         textStyle: TextStyle(
                       color: inviteButtonTextColor,
                       letterSpacing: 1.5 * sizeFactor,
-                      fontSize: 11.0 * sizeFactor,
+                      fontSize: buttonFontSize * sizeFactor,
                       fontWeight: FontWeight.normal,
                     )),
                   ),
@@ -3904,7 +3910,7 @@ class _BubbleTabPainter extends BoxPainter {
     //offset is the position from where the decoration should be drawn.
     //configuration.size tells us about the height and width of the tab.
     final Rect rect = Offset(offset.dx,
-            (configuration.size.height / 2) - (indicatorHeight / 2) + 1) &
+            (configuration.size.height / 2) - (indicatorHeight / 2) + 0) &
         Size(configuration.size.width, indicatorHeight);
     final Paint paint = Paint();
     paint.color = color;

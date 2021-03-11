@@ -130,6 +130,7 @@ class _EditNavigationScreen extends State<EditNavigationScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         color: bodyBackground,
         child: SafeArea(
@@ -159,7 +160,7 @@ class _EditNavigationScreen extends State<EditNavigationScreen>
                           overflow: TextOverflow.ellipsis,
                           style: homeTextStyleBold,
                         ),
-                        FlatButton(
+                        TextButton(
                           onPressed: () {
                             // rebuildHomeCustomizeScreen(context);
                             /*<-- the line above was causing a
@@ -304,7 +305,7 @@ class _EditNavigationScreen extends State<EditNavigationScreen>
                                                                         child:
                                                                             SizedBox(
                                                                           height:
-                                                                              180,
+                                                                              205,
                                                                           child:
                                                                               Container(
                                                                             decoration:

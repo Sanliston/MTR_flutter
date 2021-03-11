@@ -5,6 +5,14 @@ import 'package:flutter/services.dart';
 //global parameters and styles - these can all be changed via settings by the user
 
 const double sidePadding = 15.0;
+const double buttonHeight = 32.0;
+const double buttonFontSize = 14.0;
+
+const double largeFontSize = 18;
+const double normalFontSize = 15;
+const double subtitleFontSize = 15;
+const double subFontSize = 13;
+const double smallFontSize = 9;
 
 //bright red and orange theme
 // const Color primaryColor = Color(0xFFFF416C);
@@ -63,71 +71,99 @@ final homeSubtitleTextStyle = darkMode
     ? dHomeSubtitleTextStyle
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.w600, fontSize: 14, color: fontColor));
+            fontWeight: FontWeight.w600,
+            fontSize: subtitleFontSize,
+            color: fontColor));
 
 final homeLinkTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
+        fontWeight: FontWeight.w600,
+        fontSize: subtitleFontSize,
+        color: primaryColor));
 
 final homeSubtitleTextStyleAccent = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: primaryColor));
+        fontWeight: FontWeight.w600,
+        fontSize: subtitleFontSize,
+        color: primaryColor));
 
 final homeTextStyle = darkMode
     ? dHomeTextStyle
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.normal, fontSize: 14, color: fontColor));
+            fontWeight: FontWeight.normal,
+            fontSize: normalFontSize,
+            color: fontColor));
 
 final homeTextStyleBold = darkMode
     ? dHomeTextStyleBold
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.w600, fontSize: 14, color: fontColor));
+            fontWeight: FontWeight.w600,
+            fontSize: normalFontSize,
+            color: fontColor));
 
 final homeTextStyleBoldWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 14, color: Colors.white));
+        fontWeight: FontWeight.w600,
+        fontSize: normalFontSize,
+        color: Colors.white));
 
 final homeTextStyleBoldWhiteSmall = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.w600, fontSize: 9, color: Colors.white));
+        fontWeight: FontWeight.w600,
+        fontSize: smallFontSize,
+        color: Colors.white));
 
 final homeTextStyleWhite = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.white));
+        fontWeight: FontWeight.normal,
+        fontSize: normalFontSize,
+        color: Colors.white));
 
 final homeSubTextStyle = darkMode
     ? dHomeSubTextStyle
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.normal, fontSize: 12, color: fontColor));
+            fontWeight: FontWeight.normal,
+            fontSize: subFontSize,
+            color: fontColor));
 
 final homeSubTextStyleBold = darkMode
     ? dHomeSubTextStyleBold
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 12, color: fontColor));
+            fontWeight: FontWeight.bold,
+            fontSize: subFontSize,
+            color: fontColor));
 
 final homeSubTextStyleLight = darkMode
     ? dHomeSubTextStyleLight
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 12, color: fontColor));
+            fontWeight: FontWeight.bold,
+            fontSize: subFontSize,
+            color: fontColor));
 
 final homeSubTextStyleFocused = darkMode
     ? dHomeSubTextStyleFocused
     : GoogleFonts.heebo(
         textStyle: TextStyle(
-            fontWeight: FontWeight.normal, fontSize: 14, color: fontColor));
+            fontWeight: FontWeight.normal,
+            fontSize: subFontSize,
+            color: fontColor));
 
 final warningSubTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 12, color: Colors.red));
+        fontWeight: FontWeight.normal,
+        fontSize: subFontSize,
+        color: Colors.red));
 
 final warningTextStyle = GoogleFonts.heebo(
     textStyle: TextStyle(
-        fontWeight: FontWeight.normal, fontSize: 14, color: Colors.red));
+        fontWeight: FontWeight.normal,
+        fontSize: normalFontSize,
+        color: Colors.red));
 
 final kBoxDecorationStyle = BoxDecoration(
   color: Color(0xFF6CA8F1),

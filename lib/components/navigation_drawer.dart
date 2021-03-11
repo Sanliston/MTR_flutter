@@ -273,7 +273,7 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
             );
           }
 
-          return FlatButton(
+          return TextButton(
             onPressed:
                 onPressed, //passing function definition onPressed and not invoking onPressed().
             child: Row(

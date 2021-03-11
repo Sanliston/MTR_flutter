@@ -67,60 +67,63 @@ class _CreateTabScreen extends State<CreateTabScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: () {
           focusNode.unfocus();
         },
-        child: Container(
-          color: bodyBackground,
-          child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ScreenHeader(
-                  controller: controller,
-                  callback: widget.callback,
-                  notEmpty: notEmpty,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(sidePadding),
-                  child: AnimatedContainer(
-                    duration: Duration(milliseconds: 200),
-                    height: focusNode.hasFocus ? 70 : 70,
-                    child: TextFormField(
-                      focusNode: focusNode,
-                      controller: controller,
-                      maxLength: 30,
-                      style: homeSubTextStyle,
-                      onTap: () {
-                        _requestFocus(focusNode);
-                      },
-                      decoration: InputDecoration(
-                        floatingLabelBehavior: FloatingLabelBehavior.auto,
-                        contentPadding: EdgeInsets.only(top: 0.0, bottom: 0.0),
-                        labelText: 'Tab Name',
-                        labelStyle: GoogleFonts.heebo(
-                            textStyle: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: focusNode.hasFocus ||
-                                        controller.text.isNotEmpty
-                                    ? 16
-                                    : 12,
-                                color: focusNode.hasFocus
-                                    ? primaryColor
-                                    : bodyFontColor)),
-                        hintText: "Enter tab name",
-                        border: UnderlineInputBorder(
-                          borderSide: BorderSide(color: bodyFontColor),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: primaryColor),
+        child: SingleChildScrollView(
+          child: Container(
+            color: bodyBackground,
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ScreenHeader(
+                    controller: controller,
+                    callback: widget.callback,
+                    notEmpty: notEmpty,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(sidePadding),
+                    child: AnimatedContainer(
+                      duration: Duration(milliseconds: 200),
+                      height: focusNode.hasFocus ? 70 : 70,
+                      child: TextFormField(
+                        focusNode: focusNode,
+                        controller: controller,
+                        maxLength: 30,
+                        style: homeSubTextStyle,
+                        onTap: () {
+                          _requestFocus(focusNode);
+                        },
+                        decoration: InputDecoration(
+                          floatingLabelBehavior: FloatingLabelBehavior.auto,
+                          contentPadding: EdgeInsets.only(top: 0.0, bottom: 0.0),
+                          labelText: 'Tab Name',
+                          labelStyle: GoogleFonts.heebo(
+                              textStyle: TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                  fontSize: focusNode.hasFocus ||
+                                          controller.text.isNotEmpty
+                                      ? 16
+                                      : 12,
+                                  color: focusNode.hasFocus
+                                      ? primaryColor
+                                      : bodyFontColor)),
+                          hintText: "Enter tab name",
+                          border: UnderlineInputBorder(
+                            borderSide: BorderSide(color: bodyFontColor),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: primaryColor),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

@@ -87,7 +87,7 @@ class TransparentButton extends StatelessWidget {
   const TransparentButton(
       {Key key,
       this.width,
-      this.height = 25.0,
+      this.height = buttonHeight,
       this.iconData,
       this.iconSize = 18.0,
       this.onPressed,
@@ -175,7 +175,7 @@ class SolidButton extends StatelessWidget {
   const SolidButton(
       {Key key,
       this.width,
-      this.height = 25.0,
+      this.height = buttonHeight,
       this.iconData,
       this.iconSize = 18.0,
       this.onPressed,

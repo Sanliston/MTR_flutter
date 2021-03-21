@@ -15,6 +15,96 @@ TODO: make function more accessible via input parameters with default values etc
 
  */
 
+class BottomNotificationAlertDrawer {
+  final BuildContext context;
+  final Color backgroundColor;
+  final Color fontColor;
+  final IconData leadingIcon;
+  final IconData trailingIcon;
+  final String message;
+
+  BottomNotificationAlertDrawer(
+      {@required this.context,
+      this.backgroundColor = Colors.green,
+      this.fontColor = Colors.white,
+      this.leadingIcon = EvaIcons.alertCircleOutline,
+      this.trailingIcon,
+      @required this.message}) {
+    Widget container = Padding(
+      padding: EdgeInsets.only(
+          left: sidePadding, right: sidePadding, bottom: sidePadding),
+      child: SizedBox(
+        height: 60,
+        child: Container(
+          decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    leadingIcon,
+                    color: fontColor,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: sidePadding),
+                      child: Text(
+                        message,
+                        softWrap: true,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                        style: GoogleFonts.heebo(
+                            textStyle: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: fontColor)),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Map params = {
+      "context": context,
+      "custom_container": container,
+      "blur": false
+    };
+
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return new Container(
+            height: 80.0,
+            color: backgroundColor, //could change this to Color(0xFF737373),
+            //so you don't have to change MaterialApp canvasColor
+            child: new Container(
+                decoration: new BoxDecoration(
+                  color: backgroundColor,
+                ),
+                child: buildNavigationDrawer(context, params)),
+          );
+        });
+
+    // displayNavigationDrawer(context, params);
+  }
+}
+
 class NotificationAlertDrawer {
   final BuildContext context;
   final Color backgroundColor;
@@ -247,10 +337,10 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
                   style: GoogleFonts.heebo(
                       textStyle: TextStyle(
                           fontWeight: FontWeight.normal,
-                          fontSize: 12,
+                          fontSize: navOptionFontSize,
                           color: null != optionFontColor
                               ? optionFontColor
-                              : fontColor)),
+                              : bodyFontColor)),
                   overflow: TextOverflow.visible),
             );
           }
@@ -273,22 +363,25 @@ Widget buildNavigationDrawer(BuildContext context, Map params) {
             );
           }
 
-          return TextButton(
-            onPressed:
-                onPressed, //passing function definition onPressed and not invoking onPressed().
-            child: Row(
-              children: <Widget>[
-                icon,
-                Text(optionTitle,
-                    style: GoogleFonts.heebo(
-                        textStyle: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            color: null != optionFontColor
-                                ? optionFontColor
-                                : fontColor)),
-                    overflow: TextOverflow.visible)
-              ],
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: sidePadding),
+            child: TextButton(
+              onPressed:
+                  onPressed, //passing function definition onPressed and not invoking onPressed().
+              child: Row(
+                children: <Widget>[
+                  icon,
+                  Text(optionTitle,
+                      style: GoogleFonts.heebo(
+                          textStyle: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: navOptionFontSize,
+                              color: null != optionFontColor
+                                  ? optionFontColor
+                                  : bodyFontColor)),
+                      overflow: TextOverflow.visible)
+                ],
+              ),
             ),
           );
         });

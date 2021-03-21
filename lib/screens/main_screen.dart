@@ -139,7 +139,9 @@ class _MainScreenState extends State<MainScreen> {
 
     mainScreenState = {mainScreen.selectedIndex: 0};
 
-    //SystemChrome.setEnabledSystemUIOverlays([]);
+    // SystemChrome.setEnabledSystemUIOverlays([]);
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.white));
   }
 
   @override
@@ -174,7 +176,11 @@ class _MainScreenState extends State<MainScreen> {
       Positioned(
         child: Align(
             alignment: Alignment.bottomCenter,
-            child: navBarVisible ? buildBottomNavBar(version: 0) : null
+            child: navBarVisible
+                ? buildBottomNavBar(
+                    version: 2,
+                    screenHeight: MediaQuery.of(context).size.height)
+                : null
             // child: AnimatedCrossFade(
             //   firstChild: Container(
             //     decoration: BoxDecoration(
@@ -195,19 +201,24 @@ class _MainScreenState extends State<MainScreen> {
     ]);
   }
 
-  Widget buildBottomNavBar({int version = 0}) {
+  Widget buildBottomNavBar({int version = 0, double screenHeight}) {
     if (version == 1) {
       return SimpleNavBar(onItemTapped: _onItemTapped);
     } else if (version == 2) {
-      return LeanNavBar(onItemTapped: _onNavItemTapped);
+      return LeanNavBar(
+        onItemTapped: _onNavItemTapped,
+        baseheight: screenHeight * 0.06,
+      );
     }
 
     return ClipRect(
       child: new BackdropFilter(
-        filter: new ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+        filter: new ImageFilter.blur(
+            sigmaX: bottomNavSigma, sigmaY: bottomNavSigma),
         child: BottomNavigationBar(
           elevation: 0.0,
-          backgroundColor: Colors.grey[300].withOpacity(0.4),
+          backgroundColor:
+              darkMode ? Colors.black38 : Colors.grey[300].withOpacity(0.4),
           showSelectedLabels: false,
           showUnselectedLabels: false,
           items: <BottomNavigationBarItem>[
@@ -226,7 +237,7 @@ class _MainScreenState extends State<MainScreen> {
           ],
           currentIndex: mainScreenState[mainScreen.selectedIndex],
           selectedItemColor: primaryColor,
-          unselectedItemColor: Colors.black38,
+          unselectedItemColor: darkMode ? Colors.grey[400] : Colors.black38,
           onTap: _onItemTapped,
         ),
       ),

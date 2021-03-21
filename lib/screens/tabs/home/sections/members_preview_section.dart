@@ -135,7 +135,7 @@ class MembersPreviewSection extends StatelessWidget {
                 ),
                 TransparentButton(
                   text: "Invite Members",
-                  width: 120,
+                  width: 140 * sizeFactor,
                   height: 30,
                   onPressed: () {
                     sharedStateManagement['display_invite_menu']();

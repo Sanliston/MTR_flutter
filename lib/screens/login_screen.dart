@@ -187,7 +187,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
-      height: 60,
+      height: 30,
       child: RaisedButton(
         elevation: 0.0,
         onPressed: () {
@@ -204,9 +204,9 @@ class _LoginScreenState extends State<LoginScreen> {
               new LoginController.buildContext(context, screen);
           loginController.login(emailInput, passwordInput, isValid);
         },
-        padding: EdgeInsets.all(15.0),
+        padding: EdgeInsets.all(10.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30.0),
+          borderRadius: BorderRadius.circular(70.0),
         ),
         color: Colors.white,
         child: Text(
@@ -359,7 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Expanded(flex: 5, child: _buildPasswordTF()),
                     Expanded(flex: 1, child: _buildForgotPasswordBtn()),
                     Expanded(flex: 2, child: _buildRememberMeCheckbox()),
-                    Expanded(flex: 6, child: _buildLoginBtn(context)),
+                    Expanded(flex: 5, child: _buildLoginBtn(context)),
                     Expanded(flex: 3, child: _buildSignInWithText()),
                     Expanded(flex: 4, child: _buildSocialBtnRow()),
                     Expanded(flex: 1, child: _buildSignupBtn()),

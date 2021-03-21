@@ -661,7 +661,7 @@ class _CustomizeHeaderScreenState extends State<CustomizeHeaderScreen> {
   List _buildList() {
     List<Widget> listItems = [
       buildBGDiagonalLine(),
-      // buildLandingPageMode(), //disabled for MTR will be enabled for SNAAS though
+      buildLandingPageMode(), //disabled for MTR will be enabled for SNAAS though
       buildPlaceName(),
       buildTagLine(),
       buildPlaceLogo(),

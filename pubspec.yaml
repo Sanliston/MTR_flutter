@@ -42,7 +42,7 @@ dependencies:
   visibility_detector: ^0.1.5
 
   #for video
-  video_player:
+  video_player: ^0.10.12
   
 
 dev_dependencies:

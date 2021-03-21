@@ -485,8 +485,8 @@ bool darkMode = false;
 // Color secondaryColor = Color(0xFF2ebf91);
 
 //good blue combo
-Color primaryColor = Color(0xFF0082c8);
-Color secondaryColor = Color(0xFF667db6);
+// Color primaryColor = Color(0xFF0082c8);
+// Color secondaryColor = Color(0xFF667db6);
 
 //good orange combo (good for non shadow clean look)
 // Color primaryColor = Color(0xFFff5e62);
@@ -501,8 +501,8 @@ Color secondaryColor = Color(0xFF667db6);
 // Color secondaryColor = Color(0xFF6E48AA);
 
 //MTR default colors
-// Color primaryColor = Color(0xFFCB356B);
-// Color secondaryColor = Color(0xFFBD3F32);
+Color primaryColor = Color(0xFFCB356B);
+Color secondaryColor = Color(0xFFBD3F32);
 
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;
@@ -592,13 +592,13 @@ List<String> homeTabList = <String>[
   "Content"
 ];
 
-List<String> homeAdminTabList = <String>[
-  "Home",
-  "Forum",
-  "Groups",
-  "Members",
-  "AddTabButton"
-];
+// List<String> homeAdminTabList = <String>[
+//   "Home",
+//   "Forum",
+//   "Groups",
+//   "Members",
+//   "AddTabButton"
+// ];
 
 //decided to use string values in the map, as these can be
 //added during runtime allowing for the creation of custom
@@ -904,7 +904,7 @@ Map contentLayouts = {
     headerOptions.logoShape: logoShape.square,
     headerOptions.logoRadius: 10.0,
     headerOptions.solidBackgroundColor: primaryColor,
-    headerOptions.backgroundStyle: backgroundStyles.image,
+    headerOptions.backgroundStyle: backgroundStyles.video,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
       //maybe in future versions you can have an advanced tool for users to create gradients
@@ -932,7 +932,7 @@ Map contentLayouts = {
     headerOptions.topRightBarColor: primaryColor,
     headerOptions.bottomLeftBarColor: primaryColor,
     headerOptions.bottomRightBarColor: primaryColor,
-    headerOptions.landingPageMode: {landingPageMode.active: false}
+    headerOptions.landingPageMode: {landingPageMode.active: true}
   },
   "default": [
     sections.announcements,
@@ -993,7 +993,7 @@ TabBarStyle unselectedTabBarStyle = TabBarStyle
 Color selectedTabBarColor = primaryColor;
 Color unselectedTabBarColor = primaryColor;
 Color tabBarSelectedFontColor = Colors.white;
-Color tabBarUnselectedFontColor = Colors.black45;
+Color tabBarUnselectedFontColor = Colors.black38;
 Color tabBarGlowColor = primaryColor;
 bool tabBarBlurGlow = false;
 bool tabBarLabelGlow = false;
@@ -1001,9 +1001,9 @@ bool tabBarBlurHue = false;
 bool tabBarSolidAppBar = true;
 Color tabBarBlurOverlayColor =
     darkMode ? Colors.black38 : Colors.grey[300].withOpacity(0.4);
-double tabBarBlurOverlayOpacity = 0.0;
+double tabBarBlurOverlayOpacity = 0.4;
 double tabBarBlurSigma =
-    10.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
+    15.0; //the AppBarStyle and ToolBarStyle are best when this is 0.0
 /*If the tabBarBlurSigma is more than zero then the whole Appbar and toolbar will
 background will be blurred
 
@@ -1020,7 +1020,7 @@ TabBarStyle cUnselectedTabBarStyle = TabBarStyle
 Color cSelectedTabBarColor = Colors.white;
 Color cUnselectedTabBarColor = primaryColor;
 Color cTabBarSelectedFontColor = primaryColor;
-Color cTabBarUnselectedFontColor = Colors.grey[400];
+Color cTabBarUnselectedFontColor = Colors.white;
 Color cTabBarGlowColor = primaryColor;
 
 Color toolBarExpandedFontColor = primaryColor.withOpacity(0.1);
@@ -1050,7 +1050,7 @@ enum ToolBarStyle {
   rounded,
   roundedFrosted,
   rectangle,
-  halfTop,
+  halfTop, //looks funny with trailing tab icons
 }
 
 AppBarStyle appBarStyle = AppBarStyle.material;
@@ -1062,7 +1062,7 @@ ToolBarStyle cToolBarStyle = ToolBarStyle.material; //implemented
 
 CollapseMode appBarCollapseMode = CollapseMode.parallax;
 
-double appBarTitleFontSize = 24.0;
+double appBarTitleFontSize = 24.0 * sizeFactor;
 
 enum BodyStyle {
   auto, //hands over control to toolBarStyle
@@ -1084,13 +1084,16 @@ bool halfTopInnerBodyShadow = false;
 Color halfTopInnerBodyShadowColor = Colors.black26;
 bool bodyHalfTopFixed = false;
 
+//app bar expanded icons color - icons at top, back button + notifications button
+Color toolBarExpandedIconsColor = Colors.transparent;
+
 //modalBottomSheet blur settings
 bool modalBottomSheetBlur = true;
 double mbsSigmaX = 7.0;
 double mbsSigmaY = 7.0;
 
 //bottom Nav Bar Blur sigma
-double bottomNavSigma = 10.0;
+double bottomNavSigma = 15.0;
 
 //custom scroll settings
 enum CTS {
@@ -1124,6 +1127,14 @@ Function toggleHomeTabBar = () {};
 
 //Homestate object containing values
 
+//trailing elements in the tab bar
+bool leadingTabButton = true;
+IconData leadingTabButtonIcon = UniconsLine.cell;
+Function leadingTabButtonAction = () {
+  print("action clicked");
+};
+Function customTabScrollUpdate = () {};
+
 //Images high res and low res for memory management
 
 List<Map> homeBackgroundImageList = [
@@ -1144,3 +1155,22 @@ Map homePlaceImage = {
 //home tab controller juggling
 Function updateTabController;
 Function updatePreviewTabController;
+
+//home header text blur background
+
+//home header values changed during runtime
+enum HOMETABRT {
+  screenHeight,
+  headerHeight,
+  heightFactor,
+  minimumHeight,
+  maximumheight
+}
+
+Map runtimeHome = {
+  HOMETABRT.screenHeight: 844,
+  HOMETABRT.headerHeight: 350,
+  HOMETABRT.heightFactor: 0.5,
+  HOMETABRT.minimumHeight: 340,
+  HOMETABRT.maximumheight: 350
+};

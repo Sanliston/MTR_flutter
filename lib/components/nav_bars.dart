@@ -638,12 +638,13 @@ class _SimpleNavBarState extends State<SimpleNavBar> {
 
 class LeanNavBar extends StatefulWidget {
   final Function onItemTapped;
+  final double baseheight;
 
-  LeanNavBar({@required this.onItemTapped});
+  LeanNavBar({@required this.onItemTapped, @required this.baseheight});
 
   @override
-  _LeanNavBarState createState() =>
-      _LeanNavBarState(onItemTapped: this.onItemTapped);
+  _LeanNavBarState createState() => _LeanNavBarState(
+      onItemTapped: this.onItemTapped, baseHeight: this.baseheight);
 }
 
 class _LeanNavBarState extends State<LeanNavBar> {
@@ -658,12 +659,12 @@ class _LeanNavBarState extends State<LeanNavBar> {
   final Function onItemTapped;
   bool blurEffect;
   Color blurBackground;
-  double baseHeight = 30;
+  double baseHeight;
   double centerBorderSpace = 1.2;
 
   // ···
 
-  _LeanNavBarState({this.onItemTapped});
+  _LeanNavBarState({this.onItemTapped, this.baseHeight});
 
   @override
   initState() {
@@ -691,7 +692,10 @@ class _LeanNavBarState extends State<LeanNavBar> {
 
     blurEffect = blurredNavBar;
 
+    //baseHeight = 60;
+
     super.initState();
+    print("______---_-___-_-__-__-__-_____-baseHeight: $baseHeight");
   }
 
   @override
@@ -1075,7 +1079,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
       alignment: Alignment.bottomCenter,
       children: [
         Positioned(
-            bottom: 10,
+            bottom: baseHeight - 20 > 0 ? baseHeight - 20 : 10,
             child: AnimatedContainer(
                 curve: Curves.fastOutSlowIn,
                 duration: Duration(milliseconds: 400),
@@ -1084,7 +1088,7 @@ class _LeanNavBarState extends State<LeanNavBar> {
                 color: primaryColor)),
         Container(
           width: MediaQuery.of(context).size.width,
-          height: 100,
+          height: baseHeight + 100,
           decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.0),
               borderRadius: BorderRadius.only(

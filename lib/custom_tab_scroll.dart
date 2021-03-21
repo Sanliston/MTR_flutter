@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:MTR_flutter/screens/tabs/home/landing_page/landing_page.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class CustomTabScroll extends StatefulWidget {
   _CustomTabScrollState createState() =>
       _CustomTabScrollState(this.scrollController, this.child,
           diagonalLine: this.diagonalLine,
-          zeroOpacityOffset: this.zeroOpacityOffset,
+          initialZeroOpacityOffset: this.zeroOpacityOffset,
           fullOpacityOffset: this.fullOpacityOffset,
           fixedMode: this.fixedMode,
           color: this.color,
@@ -87,7 +88,7 @@ class CustomTabScroll extends StatefulWidget {
 
 class _CustomTabScrollState extends State<CustomTabScroll> {
   final ScrollController scrollController;
-  final double zeroOpacityOffset;
+  final double initialZeroOpacityOffset;
   final double fullOpacityOffset;
   final Widget child;
   final bool diagonalLine;
@@ -110,7 +111,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   final bool scrollFade;
 
   _CustomTabScrollState(this.scrollController, this.child,
-      {this.zeroOpacityOffset = 0,
+      {this.initialZeroOpacityOffset = 0,
       this.fullOpacityOffset = 0,
       this.diagonalLine = false,
       this.fixedMode = false,
@@ -141,6 +142,24 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
   double screenHeight;
   int performanceTracker;
   double lastOpacity;
+  double zeroOpacityOffset;
+
+  updateFunction(landingPageBool) {
+    setState(() {
+      landingPage = contentLayouts['header'][headerOptions.landingPageMode]
+          [landingPageMode.active];
+      screenHeight = sharedStateManagement['screenHeight'];
+      positioned = landingPage ? screenHeight * 0.5 : 50.0;
+
+      //update zero opacity
+      zeroOpacityOffset = runtimeHome[HOMETABRT.headerHeight] *
+              runtimeHome[HOMETABRT.heightFactor] -
+          (landingPage ? 100 : 50);
+
+      //update snap position
+      _maxOffsetSet = false;
+    });
+  }
 
   @override
   initState() {
@@ -169,6 +188,9 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
     }
 
     performanceTracker = 0;
+
+    customTabScrollUpdate = updateFunction;
+    zeroOpacityOffset = initialZeroOpacityOffset;
   }
 
   @override
@@ -320,6 +342,8 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
         ? 1.0
         : calculatedOpacity;
 
+    print("__________________tabBarOpacity: $tabBarOpacity");
+
     double dynamicBarOpacity =
         customTabScrollSettings[CTS.dynamicDiagnonalBar] ? barOpacity : 1.0;
 
@@ -371,7 +395,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
       bottomOffset = 30;
     }
 
-    double topLeftBottom = positioned + bottomOffset + 85;
+    double topLeftBottom = positioned + bottomOffset + 90 * sizeFactor;
     double topRightBottom = positioned + bottomOffset;
     double bottomLeftBottom = 0;
     double bottomRightBottom = 0;
@@ -513,7 +537,7 @@ class _CustomTabScrollState extends State<CustomTabScroll> {
                                         offset: Offset(0.0, shadowLift))
                                   ]
                                 : null,
-                            color: color,
+                            color: color.withOpacity(0.1),
                           )),
                     ),
                   ),

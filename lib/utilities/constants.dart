@@ -5,14 +5,16 @@ import 'package:flutter/services.dart';
 //global parameters and styles - these can all be changed via settings by the user
 
 const double sidePadding = 15.0;
-const double buttonHeight = 32.0;
-const double buttonFontSize = 14.0;
+double buttonHeight = 32.0 * sizeFactor;
+double buttonFontSize = 14.0 * sizeFactor;
 
-const double largeFontSize = 18;
-const double normalFontSize = 15;
-const double subtitleFontSize = 15;
-const double subFontSize = 13;
-const double smallFontSize = 9;
+double largeFontSize = 18 * sizeFactor;
+double normalFontSize = 15 * sizeFactor;
+double subtitleFontSize = 15 * sizeFactor;
+double subFontSize = 13 * sizeFactor;
+double smallFontSize = 9 * sizeFactor;
+
+double navOptionFontSize = 14 * sizeFactor;
 
 //bright red and orange theme
 // const Color primaryColor = Color(0xFFFF416C);
@@ -61,9 +63,9 @@ final tabTextStyle = TextStyle(
 );
 
 //home screen parameters and styles
-final double avatarWidth = 40.0;
-final double avatarHeight = 40.0;
-final double avatarRadius = 60.0;
+double avatarWidth = 40.0;
+double avatarHeight = 40.0;
+double avatarRadius = 60.0;
 
 final fontColor = Colors.black87;
 

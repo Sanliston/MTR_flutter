@@ -76,6 +76,7 @@ class TransparentButton extends StatelessWidget {
   final double width;
   final double height;
   final double iconSize;
+  final double fontSize;
   final IconData iconData;
   final String text;
   final Function onPressed;
@@ -87,9 +88,10 @@ class TransparentButton extends StatelessWidget {
   const TransparentButton(
       {Key key,
       this.width,
-      this.height = buttonHeight,
+      this.height,
       this.iconData,
       this.iconSize = 18.0,
+      this.fontSize,
       this.onPressed,
       this.backgroundColor = Colors.transparent,
       this.borderColor,
@@ -105,6 +107,9 @@ class TransparentButton extends StatelessWidget {
         null != borderColor ? borderColor : primaryColor;
     Color resultingFontColor = null != fontColor ? fontColor : primaryColor;
     Color resultingIconColor = null != iconColor ? iconColor : primaryColor;
+
+    double resultingHeight = null != height ? height : buttonHeight;
+    double resultingFontSize = null != fontSize ? fontSize : buttonFontSize;
 
     Widget icon = Container(width: 1.0);
 
@@ -126,7 +131,7 @@ class TransparentButton extends StatelessWidget {
     }
 
     return SizedBox(
-      height: height,
+      height: resultingHeight,
       width: width,
       child: FlatButton(
         onPressed: buttonOnPressed,
@@ -149,7 +154,7 @@ class TransparentButton extends StatelessWidget {
               style: GoogleFonts.heebo(
                 textStyle: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                    fontSize: resultingFontSize,
                     color: resultingFontColor),
               ),
             )
@@ -164,6 +169,7 @@ class SolidButton extends StatelessWidget {
   final double width;
   final double height;
   final double iconSize;
+  final double fontSize;
   final IconData iconData;
   final String text;
   final Function onPressed;
@@ -175,9 +181,10 @@ class SolidButton extends StatelessWidget {
   const SolidButton(
       {Key key,
       this.width,
-      this.height = buttonHeight,
+      this.height,
       this.iconData,
       this.iconSize = 18.0,
+      this.fontSize,
       this.onPressed,
       this.backgroundColor,
       this.borderColor,
@@ -194,6 +201,8 @@ class SolidButton extends StatelessWidget {
         null != backgroundColor ? backgroundColor : primaryColor;
     Color resultingBorderColor =
         null != borderColor ? borderColor : resultingBackgroundColor;
+    double resultingHeight = null != height ? height : buttonHeight;
+    double resultingFontSize = null != fontSize ? fontSize : buttonFontSize;
 
     Widget icon = Container(width: 1.0);
 
@@ -215,7 +224,7 @@ class SolidButton extends StatelessWidget {
     }
 
     return SizedBox(
-      height: height,
+      height: resultingHeight,
       width: width,
       child: FlatButton(
         onPressed: buttonOnPressed,
@@ -238,7 +247,7 @@ class SolidButton extends StatelessWidget {
               style: GoogleFonts.heebo(
                 textStyle: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 12,
+                    fontSize: resultingFontSize,
                     color: fontColor),
               ),
             )

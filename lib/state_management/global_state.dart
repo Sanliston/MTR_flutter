@@ -34,3 +34,19 @@ enum mainScreen { selectedIndex }
 Map mainScreenState = {
   mainScreen.selectedIndex: 0
 }; //states for main_screen.dart
+
+/*Size factor accounting for different screen heights,
+  allows text, button sizes etc, to scale according to screen size
+  so you don't end up with large buttons on small devices or small buttons
+  on large devices
+*/
+double sizeFactor = 1.0; //starting value
+updateSizeFactor(double screenHeight) {
+  //using 844 as the control value
+  print("screen height: $screenHeight");
+
+  screenHeight = screenHeight < 700 ? 700 : screenHeight;
+  screenHeight = screenHeight > 880 ? 880 : screenHeight;
+
+  sizeFactor = screenHeight / 844.0;
+}

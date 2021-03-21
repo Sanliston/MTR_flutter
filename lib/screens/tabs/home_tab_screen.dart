@@ -76,6 +76,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   bool appBarVisible;
 
   void tabControllerCb(index) {
+    print("--.////------///---------tab controller cb called index: $index");
     setState(() {
       controller.index = index;
     });
@@ -150,7 +151,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     }
 
     Color newIconColor = null != expanded && expanded
-        ? toolBarExpandedFontColor
+        ? toolBarExpandedIconsColor
         : toolBarFontColor;
 
     TabBarStyle newSelectedTabBarStyle = selectedTabBarStyle;
@@ -175,6 +176,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     setState(() {
       toolBarIconColor = newIconColor;
+      print("====/==== /= toolbarIconColor: $toolBarIconColor");
 
       // _selectedTabBarStyle = newSelectedTabBarStyle;
       // _unselectedTabBarStyle = newUnselectedTabBarStyle;
@@ -194,6 +196,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   void onTabDrag(int index) {
     String name = _tabs[index];
 
+    print("====/=====/=== ontabdrag called, name: $name");
     if ("AddTabButton" == name) {
       //stop event execution
       int index = controller.previousIndex;
@@ -217,12 +220,15 @@ class _HomeTabScreenState extends State<HomeTabScreen>
   }
 
   void indexChangeListener() {
-    if (controller.indexIsChanging) {
-      onTabTap();
-    } else if (controller.index != controller.previousIndex) {
-      // Tab Changed swiping to a new tab
-      onTabDrag(controller.index);
-    }
+    print("========/=======/====//=== index change listener called ");
+
+    // if (controller.indexIsChanging) {
+    //   onTabTap();
+    // } else if (controller.index != controller.previousIndex) {
+    //   // Tab Changed swiping to a new tab
+    //   //onTabDrag(controller.index);
+    //   print("====/====/===== index changed via swiper");
+    // }
 
     //set state for index change here
     setState(() {
@@ -250,13 +256,47 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     return color;
   }
 
+  toggleLandingPage() {
+    if (_expanded) {
+      //animate to unexpanded position
+      scrollController
+          .animateTo(scrollController.position.maxScrollExtent,
+              duration: Duration(milliseconds: 250), curve: Curves.decelerate)
+          .then((value) {
+        setState(() {
+          landingPage = !landingPage;
+          scrollController.animateTo(0,
+              duration: Duration(milliseconds: 500), curve: Curves.ease);
+
+          contentLayouts['header'][headerOptions.landingPageMode]
+              [landingPageMode.active] = landingPage;
+        });
+
+        toggleNavBar(visible: !landingPage);
+        customTabScrollUpdate(landingPage);
+      });
+    } else {
+      setState(() {
+        landingPage = !landingPage;
+        scrollController.animateTo(0,
+            duration: Duration(milliseconds: 500), curve: Curves.ease);
+
+        contentLayouts['header'][headerOptions.landingPageMode]
+            [landingPageMode.active] = landingPage;
+      });
+
+      toggleNavBar(visible: !landingPage);
+      customTabScrollUpdate(landingPage);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     //get the configured tab list
 
-    _tabs = isAdmin ? homeAdminTabList : homeTabList;
+    _tabs = homeTabList;
     _currentTabIndex = 0;
     unselectedLabelColor = Colors.black38;
     _selectedTabBarStyle = selectedTabBarStyle;
@@ -276,7 +316,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
 
     updateTabController = () {
       setState(() {
-        _tabs = isAdmin ? homeAdminTabList : homeTabList;
+        _tabs = homeTabList;
         controller = TabController(
           length: _tabs.length,
           vsync: this,
@@ -330,6 +370,7 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         [landingPageMode.active];
 
     toggleTBIconColors = toggleToolBarIconColor;
+    leadingTabButtonAction = toggleLandingPage;
   }
 
   @override
@@ -367,67 +408,85 @@ class _HomeTabScreenState extends State<HomeTabScreen>
         ? maxHomeHeaderHeight
         : homeHeaderHeight;
 
-    print("header height: $homeHeaderHeight");
+    //THESE VALUES ARE STRICTLY FOR THE LANDINGPAGE SWITCH TAB BUTTON
+    runtimeHome[HOMETABRT.heightFactor] = !landingPage ? 1.0 : 0.5;
+    runtimeHome[HOMETABRT.minimumHeight] =
+        !landingPage ? landingPageHeight : 340.0;
+    runtimeHome[HOMETABRT.screenHeight] = screenHeight;
+    runtimeHome[HOMETABRT.headerHeight] = runtimeHome[HOMETABRT.minimumHeight] >
+            screenHeight * runtimeHome[HOMETABRT.heightFactor]
+        ? runtimeHome[HOMETABRT.minimumHeight]
+        : screenHeight * runtimeHome[HOMETABRT.heightFactor];
 
-    return Scaffold(
-      backgroundColor: bodyBackground,
-      extendBodyBehindAppBar: false,
-      body: DefaultTabController(
-        length: _tabs.length, // This is the number of tabs.
-        child: NestedScrollView(
-          controller: scrollController,
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            //store context so it can be used in customFunctions that want it
-            sharedStateManagement['screenHeight'] = screenHeight;
-            // These are the slivers that show up in the "outer" scroll view.
-            return <Widget>[
-              SliverOverlapAbsorber(
-                // This widget takes the overlapping behavior of the SliverAppBar,
-                // and redirects it to the SliverOverlapInjector below. If it is
-                // missing, then it is possible for the nested "inner" scroll view
-                // below to end up under the SliverAppBar even when the inner
-                // scroll view thinks it has not been scrolled.
-                // This is not necessary if the "headerSliverBuilder" only builds
-                // widgets that do not overlap the next sliver.
-                handle:
-                    NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                sliver: SliverAppBar(
-                    pinned: true,
-                    snap: false,
-                    forceElevated: true,
-                    floating: collapsableToolBar,
-                    toolbarHeight: appBarVisible ? 45 : 0,
-                    // collapsedHeight: null,
-                    leading: buildLeadingIconButton(),
-                    automaticallyImplyLeading: false,
-                    stretch: true,
-                    onStretchTrigger: () {
-                      print("stretch event triggered");
-                    },
-                    title: buildAppBarTitle(homeHeaderHeight),
-                    elevation: contentLayouts['header']
-                        [headerOptions.shadowHeight],
-                    shadowColor: accentColor,
-                    expandedHeight: homeHeaderHeight,
-                    backgroundColor: getAppBarColor(),
-                    actionsIconTheme: IconThemeData(opacity: 1.0),
-                    actions: buildAppBarActions(context),
-                    flexibleSpace: buildFlexibleSpace(
-                        screenHeight, screenWidth, homeHeaderHeight, context),
-                    bottom: HomeTabBar(
-                      tabs: _tabs,
-                      controller: controller,
-                      scrollController: scrollController,
-                      tabBarSelectedFontColor: _tabBarSelectedFontColor,
-                      tabBarUnselectedFontColor: _tabBarUnselectedFontColor,
-                      tabControllerCb: tabControllerCb,
-                      selectedTabBarColor: _selectedTabBarColor,
-                      selectedTabBarStyle: _selectedTabBarStyle,
-                    )),
-              ),
-            ];
-          },
-          body: buildTabBarView(),
+    print("header height: $homeHeaderHeight");
+    updateSizeFactor(screenHeight);
+
+    print("......................building again = landing page? $landingPage");
+    print("......................homeHeaderHeight? $homeHeaderHeight");
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: Scaffold(
+        backgroundColor: bodyBackground,
+        extendBodyBehindAppBar: false,
+        body: DefaultTabController(
+          length: _tabs.length, // This is the number of tabs.
+          child: NestedScrollView(
+            controller: scrollController,
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              //store context so it can be used in customFunctions that want it
+              sharedStateManagement['screenHeight'] = screenHeight;
+              // These are the slivers that show up in the "outer" scroll view.
+              return <Widget>[
+                SliverOverlapAbsorber(
+                  // This widget takes the overlapping behavior of the SliverAppBar,
+                  // and redirects it to the SliverOverlapInjector below. If it is
+                  // missing, then it is possible for the nested "inner" scroll view
+                  // below to end up under the SliverAppBar even when the inner
+                  // scroll view thinks it has not been scrolled.
+                  // This is not necessary if the "headerSliverBuilder" only builds
+                  // widgets that do not overlap the next sliver.
+                  handle:
+                      NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                  sliver: SliverAppBar(
+                      pinned: true,
+                      snap: false,
+                      forceElevated: true,
+                      floating: collapsableToolBar,
+                      toolbarHeight: appBarVisible ? 45 : 0,
+                      // collapsedHeight: null,
+                      leading: buildLeadingIconButton(),
+                      automaticallyImplyLeading: false,
+                      stretch: true,
+                      onStretchTrigger: () {
+                        print("stretch event triggered");
+                      },
+                      title: buildAppBarTitle(homeHeaderHeight),
+                      elevation: contentLayouts['header']
+                          [headerOptions.shadowHeight],
+                      shadowColor: accentColor,
+                      expandedHeight: homeHeaderHeight,
+                      backgroundColor: getAppBarColor(),
+                      actionsIconTheme: IconThemeData(opacity: 1.0),
+                      actions: buildAppBarActions(context),
+                      flexibleSpace: buildFlexibleSpace(
+                          screenHeight, screenWidth, homeHeaderHeight, context),
+                      bottom: HomeTabBar(
+                        tabs: _tabs,
+                        controller: controller,
+                        scrollController: scrollController,
+                        tabBarSelectedFontColor: _tabBarSelectedFontColor,
+                        tabBarUnselectedFontColor: _tabBarUnselectedFontColor,
+                        tabControllerCb: tabControllerCb,
+                        selectedTabBarColor: _selectedTabBarColor,
+                        selectedTabBarStyle: _selectedTabBarStyle,
+                      )),
+                ),
+              ];
+            },
+            body: buildTabBarView(),
+          ),
         ),
       ),
     );
@@ -1573,11 +1632,11 @@ class _HomeTabScreenState extends State<HomeTabScreen>
     ];
 
     Widget swiper = Padding(
-        padding: EdgeInsets.only(bottom: 64),
+        padding: EdgeInsets.only(bottom: 60),
         child: new Swiper(
           itemCount: slides.length,
           pagination: new SwiperPagination(
-            alignment: Alignment.bottomCenter,
+            alignment: Alignment(0.0, 0.9),
             builder: new DotSwiperPaginationBuilder(
                 activeSize: 15.0,
                 color: Colors.grey[300].withOpacity(0.3),
@@ -3397,6 +3456,31 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
     });
   }
 
+  void onTabDrag(int index) {
+    String name = _tabs[index];
+
+    print("====/=====/=== HomeTabBar ontabdrag called, name: $name");
+    if ("AddTabButton" == name) {
+      //stop event execution
+      int index = controller.previousIndex;
+      setState(() {
+        controller.index = index;
+      });
+    }
+  }
+
+  void tabIndexChangeListener() {
+    print("========/=======/====//=== index change listener called ");
+
+    if (controller.indexIsChanging) {
+      //--
+    } else if (controller.index != controller.previousIndex) {
+      // Tab Changed swiping to a new tab
+      onTabDrag(controller.index);
+      print("====/====/===== HomeTabBar index changed via swiper");
+    }
+  }
+
   @override
   initState() {
     super.initState();
@@ -3412,6 +3496,9 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
 
     print(
         "##############################Tabs own initstate called, controller length: ${controller.length}");
+
+    //add controller event listeners for swipe event
+    controller.addListener(tabIndexChangeListener);
 
     //create tab list
     // tabList = _tabs.map((String name) {
@@ -3502,8 +3589,6 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("tabbar widget rebuilt");
-
     // if (_flexExpanded) {
     //   return buildTabBar(context);
     // }
@@ -3512,18 +3597,61 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
 
     tabBar = buildToolBarStyle(context: context, toolBarStyle: toolBarStyle);
 
-    return AnimatedCrossFade(
-      firstChild: AnimatedOpacity(
-          opacity: tabBarVisible ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 300),
-          child:
-              buildToolBarStyle(context: context, toolBarStyle: toolBarStyle)),
-      secondChild:
-          buildToolBarStyle(context: context, toolBarStyle: cToolBarStyle),
-      crossFadeState:
-          _flexExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-      duration: Duration(milliseconds: 50),
-    );
+    return Row(children: [
+      leadingTabButton
+          ? Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10.0, right: 10.0),
+                child: GestureDetector(
+                  onTap: () {
+                    leadingTabButtonAction();
+                  },
+                  child: Icon(
+                    leadingTabButtonIcon,
+                    color: _tabBarUnselectedFontColor,
+                  ),
+                ),
+              ),
+            )
+          : Container(),
+      Expanded(
+        flex: 8,
+        child: AnimatedCrossFade(
+          firstChild: AnimatedOpacity(
+              opacity: tabBarVisible ? 1.0 : 0.0,
+              duration: Duration(milliseconds: 300),
+              child: buildToolBarStyle(
+                  context: context, toolBarStyle: toolBarStyle)),
+          secondChild:
+              buildToolBarStyle(context: context, toolBarStyle: cToolBarStyle),
+          crossFadeState: _flexExpanded
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
+          duration: Duration(milliseconds: 50),
+        ),
+      ),
+      isAdmin && !widget._preview
+          ? Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => HomeCustomizeScreen()));
+                  },
+                  child: Icon(
+                    EvaIcons.plusCircle,
+                    color: _tabBarUnselectedFontColor,
+                  ),
+                ),
+              ),
+            )
+          : Container()
+    ]);
   }
 
   Widget buildToolBarStyle({BuildContext context, ToolBarStyle toolBarStyle}) {
@@ -3634,9 +3762,6 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
   }
 
   TabBar buildTabBar(BuildContext context) {
-    print(
-        "--------------------------Tabbar build function controller length: ${controller.length}");
-
     return TabBar(
       physics: BouncingScrollPhysics(),
       labelPadding:
@@ -3681,6 +3806,11 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
         //self executing function (functiondefinedhere)() <-- parentheses invoke it
         if (_tabs.length != controller.length) {
           controller = new TabController(length: _tabs.length, vsync: this);
+          controller.addListener(() {
+            print(
+                "=====/=====/===/====new tab controller event listener called");
+            //_tabControllerCB();
+          });
         }
 
         return controller;
@@ -3696,11 +3826,12 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
         String name = _tabs[index];
 
         if ("AddTabButton" == name) {
+          print("Add tab button detetced");
           //stop event execution
           int index = controller.previousIndex;
-          // setState(() {
-          //   controller.index = index;
-          // });
+          setState(() {
+            controller.index = index;
+          });
 
           _tabControllerCB(index);
 
@@ -3719,7 +3850,6 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
   }
 
   buildSelectedTabStyle({Color color, TabBarStyle tabBarStyle}) {
-    print("selected tabbarstyle: $tabBarStyle");
     var decoration = BoxDecoration(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10), topRight: Radius.circular(10)),
@@ -3782,8 +3912,6 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
     // if (_tabs.length >= unselectedTabBarsBuilt) {
     //   return null;
     // }
-
-    print("selected tabbarstyle: $tabBarStyle");
 
     // unselectedTabBarsBuilt++;
 

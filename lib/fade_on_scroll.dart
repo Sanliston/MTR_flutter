@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 /*Used this to make the fade easier with sliver
 https://gist.github.com/smkhalsa/ec33ec61993f29865a52a40fff4b81a2 */
 
@@ -44,7 +43,6 @@ class _FadeOnScrollState extends State<FadeOnScroll> {
   }
 
   double _calculateOpacity() {
-
     var zero = widget.zeroOpacityOffset;
     var full = widget.fullOpacityOffset;
     if (widget.fullOpacityOffset == widget.zeroOpacityOffset)
@@ -56,18 +54,22 @@ class _FadeOnScrollState extends State<FadeOnScroll> {
       else if (_offset >= widget.fullOpacityOffset)
         return 1;
       else
-        return (_offset - widget.zeroOpacityOffset) / (widget.fullOpacityOffset - widget.zeroOpacityOffset);
+        return (_offset - widget.zeroOpacityOffset) /
+            (widget.fullOpacityOffset - widget.zeroOpacityOffset);
     } else {
       // fading out
-      if (_offset <= widget.fullOpacityOffset){
+      if (_offset <= widget.fullOpacityOffset) {
         return 1;
-      }else if (_offset >= widget.zeroOpacityOffset) {
-        var value = (_offset - widget.fullOpacityOffset) / (widget.zeroOpacityOffset - widget.fullOpacityOffset);
+      } else if (_offset >= widget.zeroOpacityOffset) {
+        var value = (_offset - widget.fullOpacityOffset) /
+            (widget.zeroOpacityOffset - widget.fullOpacityOffset);
         return 0;
-      }else{
-        var opacity = ((_offset - widget.zeroOpacityOffset) / (widget.zeroOpacityOffset - widget.fullOpacityOffset)).abs();
-        //make sure it is between 1 and 0. 
-        var returnValue = opacity <= 1 ? opacity: 1;
+      } else {
+        var opacity = ((_offset - widget.zeroOpacityOffset) /
+                (widget.zeroOpacityOffset - widget.fullOpacityOffset))
+            .abs();
+        //make sure it is between 1 and 0.
+        var returnValue = opacity <= 1 ? opacity : 1;
 
         // return (_offset - widget.fullOpacityOffset) / (widget.zeroOpacityOffset - widget.fullOpacityOffset);
         return returnValue;
@@ -77,8 +79,10 @@ class _FadeOnScrollState extends State<FadeOnScroll> {
 
   @override
   Widget build(BuildContext context) {
+    double calculatedOpacity = _calculateOpacity();
+
     return Opacity(
-      opacity: _calculateOpacity(),
+      opacity: calculatedOpacity,
       child: widget.child,
     );
   }

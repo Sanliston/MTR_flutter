@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -119,14 +121,14 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                             print(
                                 "DEBUG: ------------Adding to tab: ${widget.tab}");
 
-                            if (null != contentLayouts[widget.tab] &&
-                                null != widget.position) {
-                              contentLayouts[widget.tab]
-                                  .insert(widget.position, sections.contactUs);
-                            } else if (null != contentLayouts[widget.tab]) {
-                              contentLayouts[widget.tab]
-                                  .add(sections.contactUs);
-                            }
+                            // if (null != contentLayouts[widget.tab] &&
+                            //     null != widget.position) {
+                            //   contentLayouts[widget.tab]
+                            //       .insert(widget.position, sections.contactUs);
+                            // } else if (null != contentLayouts[widget.tab]) {
+                            //   contentLayouts[widget.tab]
+                            //       .add(sections.contactUs);
+                            // }
 
                             Navigator.pop(context);
                           },
@@ -154,7 +156,13 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                             isScrollable: true,
                             physics: BouncingScrollPhysics(),
                             controller: controller,
-                            indicatorColor: fontColor,
+                            indicatorColor: primaryColor,
+                            labelStyle: TextStyle(
+                                color: primaryColor,
+                                fontWeight: FontWeight.w600),
+                            labelColor: primaryColor,
+                            unselectedLabelColor: fontColor,
+                            unselectedLabelStyle: homeTextStyle,
                             indicatorSize: TabBarIndicatorSize.label,
                             tabs: myTabs.map((Tab name) {
                               //only called at initial build
@@ -177,8 +185,9 @@ class _AddSectionScreenState extends State<AddSectionScreen>
                                       child: Padding(
                                         padding: const EdgeInsets.only(
                                             left: 5.0, right: 5.0),
-                                        child: Text(name.text,
-                                            style: homeTextStyle),
+                                        child: Text(
+                                          name.text,
+                                        ),
                                       ),
                                     ),
                                   ),

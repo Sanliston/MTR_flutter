@@ -2,14 +2,20 @@ import 'dart:async';
 
 import 'dart:io';
 
+import 'package:MTR_flutter/screens/tabs/home/admin/customize_screens/customize_header/customize_header_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPlayerScreen extends StatefulWidget {
   final bool autoPlay;
   final bool loop;
+  final bool mixWithOthers;
 
-  VideoPlayerScreen({Key key, this.autoPlay = false, this.loop = false})
+  VideoPlayerScreen(
+      {Key key,
+      this.autoPlay = false,
+      this.loop = false,
+      this.mixWithOthers = true})
       : super(key: key);
 
   @override
@@ -32,15 +38,17 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // var file = new File("assets/videos/background_video.mp4");
 
     // _controller = VideoPlayerController.file(file);
-    _controller =
-        VideoPlayerController.asset("assets/videos/background_video_3.mp4");
+    _controller = VideoPlayerController.asset(
+        "assets/videos/background_video_2.mp4",
+        videoPlayerOptions:
+            VideoPlayerOptions(mixWithOthers: widget.mixWithOthers));
 
     // Initialize the controller and store the Future for later use.
     _initializeVideoPlayerFuture = _controller.initialize();
 
     // Use the controller to loop the video.
-    _controller.setLooping(widget.loop);
     _controller.setVolume(0.0);
+    _controller.setLooping(widget.loop);
 
     super.initState();
   }

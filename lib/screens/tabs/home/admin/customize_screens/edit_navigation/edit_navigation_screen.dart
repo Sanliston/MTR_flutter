@@ -290,6 +290,22 @@ class _EditNavigationScreen extends State<EditNavigationScreen>
                                                                   Navigator.pop(
                                                                       context);
 
+                                                                  if (!popUpTabEditing) {
+                                                                    Navigator.push(
+                                                                        context,
+                                                                        new MaterialPageRoute(
+                                                                            builder: (context) => ModifyTabScreen(
+                                                                                  tabName: item,
+                                                                                  callback: () {
+                                                                                    setState(() {
+                                                                                      // call set state just to rebuild and update list
+                                                                                      NotificationAlertDrawer(context: context, message: "Successfully updated tab");
+                                                                                    });
+                                                                                  },
+                                                                                )));
+                                                                    return;
+                                                                  }
+
                                                                   CustomNavigationDrawer(
                                                                       context:
                                                                           context,
@@ -414,6 +430,21 @@ class _EditNavigationScreen extends State<EditNavigationScreen>
                         //     context,
                         //     new MaterialPageRoute(
                         //         builder: (context) => CreateTabScreen()));
+
+                        if (!popUpTabEditing) {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) => CreateTabScreen(
+                                        callback: () {
+                                          setState(() {
+                                            // call set state just to rebuild and update list
+                                          });
+                                        },
+                                      )));
+
+                          return;
+                        }
 
                         CustomNavigationDrawer(
                             context: context,

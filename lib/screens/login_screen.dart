@@ -1,3 +1,4 @@
+import 'package:MTR_flutter/components/background_video.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/signup_screen.dart';
@@ -327,11 +328,11 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Stack(
             children: <Widget>[
               SizedBox.expand(
-                child: Image.asset(
-                  "assets/images/home_background.jpg",
-                  fit: BoxFit.cover,
-                ),
-              ),
+                  child: VideoPlayerScreen(
+                autoPlay: true,
+                loop: true,
+                videoSource: "assets/videos/background_video_3.mp4",
+              )),
               Container(
                 padding: new EdgeInsets.all(30.0),
                 color: Colors.transparent,

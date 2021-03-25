@@ -10,12 +10,14 @@ class VideoPlayerScreen extends StatefulWidget {
   final bool autoPlay;
   final bool loop;
   final bool mixWithOthers;
+  final String videoSource;
 
   VideoPlayerScreen(
       {Key key,
       this.autoPlay = false,
       this.loop = false,
-      this.mixWithOthers = true})
+      this.mixWithOthers = true,
+      this.videoSource = "assets/videos/background_video_4.mp4"})
       : super(key: key);
 
   @override
@@ -38,8 +40,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // var file = new File("assets/videos/background_video.mp4");
 
     // _controller = VideoPlayerController.file(file);
-    _controller = VideoPlayerController.asset(
-        "assets/videos/background_video_4.mp4",
+    _controller = VideoPlayerController.asset(widget.videoSource,
         videoPlayerOptions:
             VideoPlayerOptions(mixWithOthers: widget.mixWithOthers));
 

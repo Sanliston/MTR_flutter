@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:MTR_flutter/components/nav_bars.dart';
 import 'package:MTR_flutter/external/hsv_colorpicker.dart';
 import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/screens/templates/basic_screen_template.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
@@ -26,9 +27,9 @@ class _MainScreenState extends State<MainScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeTabScreen(),
-    HomeTabScreen(),
-    HomeTabScreen(),
-    HomeTabScreen(),
+    BasicScreenTemplate(),
+    BasicScreenTemplate(),
+    BasicScreenTemplate(),
   ];
 
   List<BottomNavigationBarItem> bottomNavBarItems = [

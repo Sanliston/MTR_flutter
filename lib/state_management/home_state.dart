@@ -485,8 +485,8 @@ bool darkMode = false;
 // Color secondaryColor = Color(0xFF2ebf91);
 
 //good blue combo
-// Color primaryColor = Color(0xFF0082c8);
-// Color secondaryColor = Color(0xFF667db6);
+Color primaryColor = Color(0xFF0082c8);
+Color secondaryColor = Color(0xFF667db6);
 
 //good orange combo (good for non shadow clean look)
 // Color primaryColor = Color(0xFFff5e62);
@@ -501,8 +501,8 @@ bool darkMode = false;
 // Color secondaryColor = Color(0xFF6E48AA);
 
 //MTR default colors
-Color primaryColor = Color(0xFFCB356B);
-Color secondaryColor = Color(0xFFBD3F32);
+// Color primaryColor = Color(0xFFCB356B);
+// Color secondaryColor = Color(0xFFBD3F32);
 
 Color accentColor = primaryColor;
 Color iconColor = primaryColor;

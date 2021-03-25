@@ -39,7 +39,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
 
     // _controller = VideoPlayerController.file(file);
     _controller = VideoPlayerController.asset(
-        "assets/videos/background_video_2.mp4",
+        "assets/videos/background_video_4.mp4",
         videoPlayerOptions:
             VideoPlayerOptions(mixWithOthers: widget.mixWithOthers));
 

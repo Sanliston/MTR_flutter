@@ -1,5 +1,5 @@
 //controller for the home state
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:flutter/material.dart';
 
 //THIS WHOLE THING IS UNNCESSARY -- JUST WRITE DIRECTLY.

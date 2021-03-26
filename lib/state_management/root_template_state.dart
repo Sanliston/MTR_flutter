@@ -907,7 +907,7 @@ Map contentLayouts = {
     headerOptions.backgroundStyle: backgroundStyles.video,
     headerOptions.backgroundGradient: LinearGradient(
       //selected by function not manually -- code here is placeholder
-      //maybe in future versions you can have an advanced tool for users to create gradients
+      //maybe in future versions you can have an advanced tool for users to create gradients [done]
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
       colors: [
@@ -1118,7 +1118,7 @@ Map<String, Function> headerBuilders = {};
 
 //for toggling main navbar visiblity
 Function toggleNavBar = () {};
-bool persistentNavBar = false; //whether bottom navbar is always visible?
+bool persistentNavBar = true; //whether bottom navbar is always visible?
 bool blurredNavBar = true;
 
 //for toggling appToolBarIconColors

@@ -10,7 +10,7 @@ import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dar
 import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';

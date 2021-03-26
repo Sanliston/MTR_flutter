@@ -2,7 +2,7 @@ import 'package:MTR_flutter/components/advanced_color_picker.dart';
 import 'package:MTR_flutter/components/buttons.dart';
 import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'dart:ui';
 
 import 'package:flutter_swiper/flutter_swiper.dart';

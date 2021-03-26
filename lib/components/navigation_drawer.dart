@@ -1,7 +1,7 @@
 import 'package:MTR_flutter/components/cached_blur.dart';
 import 'package:MTR_flutter/custom_tab_scroll.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'dart:ui';
 
 /*

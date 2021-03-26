@@ -2,7 +2,8 @@ import 'dart:ui';
 
 import 'package:MTR_flutter/components/nav_bars.dart';
 import 'package:MTR_flutter/external/hsv_colorpicker.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/screens/templates/template_config.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:MTR_flutter/screens/templates/basic_screen_template.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/screens/tabs/home_tab_screen.dart';
@@ -27,9 +28,30 @@ class _MainScreenState extends State<MainScreen> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeTabScreen(),
-    BasicScreenTemplate(),
-    BasicScreenTemplate(),
-    BasicScreenTemplate(),
+    BasicScreenTemplate(
+      key: GlobalKey(),
+      basicScreenTemplateConfig: BasicScreenTemplateConfig(),
+    ),
+    BasicScreenTemplate(
+      key: GlobalKey(),
+      basicScreenTemplateConfig: BasicScreenTemplateConfig(
+          headerOptions: HeaderOptions(
+              topLeftBar: false,
+              topRightBar: false,
+              titleText: "Search Page ?",
+              backgroundStyle: backgroundStyles.solid)),
+    ),
+    BasicScreenTemplate(
+      key: GlobalKey(),
+      basicScreenTemplateConfig: BasicScreenTemplateConfig(
+          headerOptions: HeaderOptions(
+              topLeftBar: false,
+              topRightBar: false,
+              blurredAppBar: false,
+              logoRadius: 100,
+              titleText: "Proile Page",
+              backgroundStyle: backgroundStyles.gradient)),
+    ),
   ];
 
   List<BottomNavigationBarItem> bottomNavBarItems = [

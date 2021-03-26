@@ -1,10 +1,12 @@
 import 'dart:ui';
 
+import 'package:MTR_flutter/screens/main_screen.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
+import 'package:MTR_flutter/screens/templates/navigation_systems/navigation_system.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:flutter/rendering.dart';
 
-class HomeTabBar extends StatefulWidget implements PreferredSizeWidget {
+class HomeTabBar extends NavigationSystem {
   const HomeTabBar(
       {Key key,
       @required List<String> tabs,
@@ -278,7 +280,7 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
 
     tabBar = buildToolBarStyle(context: context, toolBarStyle: toolBarStyle);
 
-    return Row(children: [
+    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       leadingTabButton
           ? Flexible(
               flex: 1,
@@ -296,22 +298,29 @@ class _HomeTabBarState extends State<HomeTabBar> with TickerProviderStateMixin {
               ),
             )
           : Container(),
-      Expanded(
-        flex: 8,
-        child: AnimatedCrossFade(
-          firstChild: AnimatedOpacity(
-              opacity: tabBarVisible ? 1.0 : 0.0,
-              duration: Duration(milliseconds: 300),
-              child: buildToolBarStyle(
-                  context: context, toolBarStyle: toolBarStyle)),
-          secondChild:
-              buildToolBarStyle(context: context, toolBarStyle: cToolBarStyle),
-          crossFadeState: _flexExpanded
-              ? CrossFadeState.showSecond
-              : CrossFadeState.showFirst,
-          duration: Duration(milliseconds: 50),
-        ),
-      ),
+      _tabs.length > 1
+          ? Expanded(
+              flex: 8,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedCrossFade(
+                    firstChild: AnimatedOpacity(
+                        opacity: tabBarVisible ? 1.0 : 0.0,
+                        duration: Duration(milliseconds: 300),
+                        child: buildToolBarStyle(
+                            context: context, toolBarStyle: toolBarStyle)),
+                    secondChild: buildToolBarStyle(
+                        context: context, toolBarStyle: cToolBarStyle),
+                    crossFadeState: _flexExpanded
+                        ? CrossFadeState.showSecond
+                        : CrossFadeState.showFirst,
+                    duration: Duration(milliseconds: 50),
+                  ),
+                ],
+              ),
+            )
+          : Container(height: 40),
       isAdmin && !widget._preview
           ? Flexible(
               flex: 1,

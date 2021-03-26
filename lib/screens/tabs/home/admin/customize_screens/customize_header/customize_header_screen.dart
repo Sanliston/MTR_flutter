@@ -7,7 +7,7 @@ import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/components/simple_color_picker.dart';
 import 'package:MTR_flutter/core_overrides/custom_reorderable_list.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:image_picker/image_picker.dart';

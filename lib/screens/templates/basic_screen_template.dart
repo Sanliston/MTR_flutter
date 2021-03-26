@@ -10,7 +10,8 @@ import 'package:MTR_flutter/screens/tabs/home/sections/announcements_section.dar
 import 'package:MTR_flutter/screens/tabs/home/sections/forum_posts_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_preview_section.dart';
 import 'package:MTR_flutter/screens/tabs/home/sections/members_section.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/screens/templates/template_config.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:MTR_flutter/fade_on_scroll.dart';
@@ -47,16 +48,21 @@ import 'navigation_systems/tab_navigation.dart';
   */
 
 class BasicScreenTemplate extends StatefulWidget {
+  Key key;
+  final BasicScreenTemplateConfig basicScreenTemplateConfig;
   final String videoSource;
 
-  BasicScreenTemplate({this.videoSource});
+  BasicScreenTemplate(
+      {@required this.key, this.videoSource, this.basicScreenTemplateConfig});
 
   @override
-  _BasicScreenTemplateState createState() => _BasicScreenTemplateState();
+  _BasicScreenTemplateState createState() => _BasicScreenTemplateState(
+      basicScreenTemplateConfig: this.basicScreenTemplateConfig);
 }
 
 class _BasicScreenTemplateState extends State<BasicScreenTemplate>
     with TickerProviderStateMixin {
+  BasicScreenTemplateConfig basicScreenTemplateConfig;
   TabController controller;
   ScrollController scrollController;
   final List<String> listItems = [];
@@ -80,6 +86,8 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
   double screenHeight;
   double screenWidth;
   bool appBarVisible;
+
+  _BasicScreenTemplateState({this.basicScreenTemplateConfig});
 
   void tabControllerCb(index) {
     print("--.////------///---------tab controller cb called index: $index");
@@ -245,9 +253,9 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
   Color getAppBarColor() {
     Color color = Colors.transparent;
 
-    color = contentLayouts['header'][headerOptions.blurredAppBar]
+    color = basicScreenTemplateConfig.headerOptions.blurredAppBar
         ? Colors.transparent
-        : contentLayouts['header'][headerOptions.appBarColor];
+        : basicScreenTemplateConfig.headerOptions.appBarColor;
 
     switch (appBarStyle) {
       case AppBarStyle.material:
@@ -274,8 +282,8 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
           scrollController.animateTo(0,
               duration: Duration(milliseconds: 500), curve: Curves.ease);
 
-          contentLayouts['header'][headerOptions.landingPageMode]
-              [landingPageMode.active] = landingPage;
+          basicScreenTemplateConfig.headerOptions.landingPageActive =
+              landingPage;
         });
 
         toggleNavBar(visible: !landingPage);
@@ -287,8 +295,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
         scrollController.animateTo(0,
             duration: Duration(milliseconds: 500), curve: Curves.ease);
 
-        contentLayouts['header'][headerOptions.landingPageMode]
-            [landingPageMode.active] = landingPage;
+        basicScreenTemplateConfig.headerOptions.landingPageActive = landingPage;
       });
 
       toggleNavBar(visible: !landingPage);
@@ -302,7 +309,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
 
     //get the configured tab list
 
-    _tabs = homeTabList;
+    _tabs = basicScreenTemplateConfig.subScreenList;
     _currentTabIndex = 0;
     unselectedLabelColor = Colors.black38;
     _selectedTabBarStyle = selectedTabBarStyle;
@@ -322,7 +329,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
 
     updateTabController = () {
       setState(() {
-        _tabs = homeTabList;
+        _tabs = basicScreenTemplateConfig.subScreenList;
         controller = TabController(
           length: _tabs.length,
           vsync: this,
@@ -372,8 +379,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
     headerBuilders['invite_button'] = buildHeaderInviteButton;
     headerBuilders['custom_button'] = buildHeaderCustomButton;
 
-    landingPage = contentLayouts['header'][headerOptions.landingPageMode]
-        [landingPageMode.active];
+    landingPage = basicScreenTemplateConfig.headerOptions.landingPageActive;
 
     toggleTBIconColors = toggleToolBarIconColor;
     leadingTabButtonAction = toggleLandingPage;
@@ -466,8 +472,8 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                       print("stretch event triggered");
                     },
                     title: buildAppBarTitle(homeHeaderHeight),
-                    elevation: contentLayouts['header']
-                        [headerOptions.shadowHeight],
+                    elevation:
+                        basicScreenTemplateConfig.headerOptions.shadowHeight,
                     shadowColor: accentColor,
                     expandedHeight: homeHeaderHeight,
                     backgroundColor: getAppBarColor(),
@@ -713,7 +719,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       double homeHeaderHeight, BuildContext context) {
     Widget coreWidget = Stack(
       children: <Widget>[
-        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarBlurGlow
+        basicScreenTemplateConfig.headerOptions.blurredAppBar && tabBarBlurGlow
             ? Align(
                 alignment: Alignment.topCenter,
                 child: Container(
@@ -732,7 +738,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                     )),
               )
             : Container(),
-        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarLabelGlow
+        basicScreenTemplateConfig.headerOptions.blurredAppBar && tabBarLabelGlow
             ? Align(
                 alignment: Alignment.bottomCenter,
                 child: HomeTabBar(
@@ -745,7 +751,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                   selectedTabBarStyle: selectedTabBarStyle,
                 ))
             : Container(), //so there's a bleeding effect
-        contentLayouts['header'][headerOptions.blurredAppBar] &&
+        basicScreenTemplateConfig.headerOptions.blurredAppBar &&
                 !_expanded //for performance reasons
             ? ClipRect(
                 child: new BackdropFilter(
@@ -757,7 +763,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                         color: tabBarBlurOverlayColor
                             .withOpacity(tabBarBlurOverlayOpacity))))
             : Container(height: 1.0),
-        contentLayouts['header'][headerOptions.blurredAppBar] && tabBarBlurHue
+        basicScreenTemplateConfig.headerOptions.blurredAppBar && tabBarBlurHue
             ? Align(
                 alignment: Alignment.topCenter,
                 child: Container(
@@ -825,7 +831,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                 child: AnimatedContainer(
                     duration: Duration(milliseconds: 300),
                     child: Text(
-                      contentLayouts['header'][headerOptions.titleText],
+                      basicScreenTemplateConfig.headerOptions.titleText,
                       style: GoogleFonts.lobster(
                           textStyle: TextStyle(
                               color: toolBarIconColor,
@@ -850,7 +856,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                 child: AnimatedContainer(
                     duration: Duration(milliseconds: 300),
                     child: Text(
-                      contentLayouts['header'][headerOptions.titleText],
+                      basicScreenTemplateConfig.headerOptions.titleText,
                       style: GoogleFonts.lobster(
                           textStyle: TextStyle(
                               color: toolBarIconColor,
@@ -926,7 +932,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                     Padding(
                       padding: const EdgeInsets.only(top: 0, right: 0),
                       child: Text(
-                        contentLayouts['header'][headerOptions.titleText],
+                        basicScreenTemplateConfig.headerOptions.titleText,
                         style: TextStyle(fontSize: 20.0, color: Colors.white),
                       ),
                     ),
@@ -963,7 +969,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                   padding:
                       const EdgeInsets.only(top: 15, right: sidePadding + 5),
                   child: Text(
-                    contentLayouts['header'][headerOptions.titleText],
+                    basicScreenTemplateConfig.headerOptions.titleText,
                     style: TextStyle(
                         fontSize: appBarTitleFontSize, color: Colors.white),
                   ),
@@ -1027,7 +1033,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                         Padding(
                           padding: const EdgeInsets.only(top: 0, right: 0),
                           child: Text(
-                            contentLayouts['header'][headerOptions.titleText],
+                            basicScreenTemplateConfig.headerOptions.titleText,
                             style:
                                 TextStyle(fontSize: 20.0, color: Colors.white),
                           ),
@@ -1077,7 +1083,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                   padding:
                       const EdgeInsets.only(top: 15, right: sidePadding + 5),
                   child: Text(
-                    contentLayouts['header'][headerOptions.titleText],
+                    basicScreenTemplateConfig.headerOptions.titleText,
                     style: TextStyle(fontSize: 24.0, color: Colors.white),
                   ),
                 )
@@ -1134,7 +1140,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                         Padding(
                           padding: const EdgeInsets.only(top: 0, right: 0),
                           child: Text(
-                            contentLayouts['header'][headerOptions.titleText],
+                            basicScreenTemplateConfig.headerOptions.titleText,
                             style:
                                 TextStyle(fontSize: 20.0, color: Colors.white),
                           ),
@@ -1173,7 +1179,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
                   padding:
                       const EdgeInsets.only(top: 15, right: sidePadding + 5),
                   child: Text(
-                    contentLayouts['header'][headerOptions.titleText],
+                    basicScreenTemplateConfig.headerOptions.titleText,
                     style: TextStyle(fontSize: 24.0, color: Colors.white),
                   ),
                 )
@@ -1801,62 +1807,62 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       Color bottomRightBarColor}) {
     backgroundStyle = null != backgroundStyle
         ? backgroundStyle
-        : contentLayouts["header"][headerOptions.backgroundStyle];
+        : basicScreenTemplateConfig.headerOptions.backgroundStyle;
 
     solidBackgroundColor = null != solidBackgroundColor
         ? solidBackgroundColor
-        : contentLayouts["header"][headerOptions.solidBackgroundColor];
+        : basicScreenTemplateConfig.headerOptions.solidBackgroundColor;
     diagonalBarColor = null != diagonalBarColor
         ? diagonalBarColor
-        : contentLayouts["header"][headerOptions.diagonalBarColor];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarColor;
     double heightFactor = 0.6;
 
     diagonalBarShadow = null != diagonalBarShadow
         ? diagonalBarShadow
-        : contentLayouts["header"][headerOptions.diagonalBarShadow];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadow;
 
     diagonalBarShadowBlurRadius = null != diagonalBarShadowBlurRadius
         ? diagonalBarShadowBlurRadius
-        : contentLayouts["header"][headerOptions.diagonalBarShadowBlurRadius];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadowBlurRadius;
     diagonalBarShadowLift = null != diagonalBarShadowLift
         ? diagonalBarShadowLift
-        : contentLayouts["header"][headerOptions.diagonalBarShadowLift];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadowLift;
 
     diagonalMaxOpacity = null != diagonalMaxOpacity
         ? diagonalMaxOpacity
-        : contentLayouts["header"][headerOptions.diagonalMaxOpacity];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarMaxOpacity;
 
     topLeftBar = null != topLeftBar
         ? topLeftBar
-        : contentLayouts["header"][headerOptions.topLeftBar];
+        : basicScreenTemplateConfig.headerOptions.topLeftBar;
 
     topRightBar = null != topRightBar
         ? topRightBar
-        : contentLayouts["header"][headerOptions.topRightBar];
+        : basicScreenTemplateConfig.headerOptions.topRightBar;
 
     bottomLeftBar = null != bottomLeftBar
         ? bottomLeftBar
-        : contentLayouts["header"][headerOptions.bottomLeftBar];
+        : basicScreenTemplateConfig.headerOptions.bottomLeftBar;
 
     bottomRightBar = null != bottomRightBar
         ? bottomRightBar
-        : contentLayouts["header"][headerOptions.bottomRightBar];
+        : basicScreenTemplateConfig.headerOptions.bottomRightBar;
 
     topLeftBarColor = null != topLeftBarColor
         ? topLeftBarColor
-        : contentLayouts["header"][headerOptions.topLeftBarColor];
+        : basicScreenTemplateConfig.headerOptions.topLeftBarColor;
 
     topRightBarColor = null != topRightBarColor
         ? topRightBarColor
-        : contentLayouts["header"][headerOptions.topRightBarColor];
+        : basicScreenTemplateConfig.headerOptions.topRightBarColor;
 
     bottomLeftBarColor = null != bottomLeftBarColor
         ? bottomLeftBarColor
-        : contentLayouts["header"][headerOptions.bottomLeftBarColor];
+        : basicScreenTemplateConfig.headerOptions.bottomLeftBarColor;
 
     bottomRightBarColor = null != bottomRightBarColor
         ? bottomRightBarColor
-        : contentLayouts["header"][headerOptions.bottomRightBarColor];
+        : basicScreenTemplateConfig.headerOptions.bottomRightBarColor;
 
     //gradient orientation and colors
 
@@ -2301,63 +2307,62 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       Color bottomRightBarColor}) {
     backgroundStyle = null != backgroundStyle
         ? backgroundStyle
-        : contentLayouts["header"][headerOptions.backgroundStyle];
+        : basicScreenTemplateConfig.headerOptions.backgroundStyle;
 
     solidBackgroundColor = null != solidBackgroundColor
         ? solidBackgroundColor
-        : contentLayouts["header"][headerOptions.solidBackgroundColor];
-
+        : basicScreenTemplateConfig.headerOptions.solidBackgroundColor;
     diagonalBarColor = null != diagonalBarColor
         ? diagonalBarColor
-        : contentLayouts["header"][headerOptions.diagonalBarColor];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarColor;
     double heightFactor = 0.6;
 
     diagonalBarShadow = null != diagonalBarShadow
         ? diagonalBarShadow
-        : contentLayouts["header"][headerOptions.diagonalBarShadow];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadow;
 
     diagonalBarShadowBlurRadius = null != diagonalBarShadowBlurRadius
         ? diagonalBarShadowBlurRadius
-        : contentLayouts["header"][headerOptions.diagonalBarShadowBlurRadius];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadowBlurRadius;
     diagonalBarShadowLift = null != diagonalBarShadowLift
         ? diagonalBarShadowLift
-        : contentLayouts["header"][headerOptions.diagonalBarShadowLift];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarShadowLift;
 
     diagonalMaxOpacity = null != diagonalMaxOpacity
         ? diagonalMaxOpacity
-        : contentLayouts["header"][headerOptions.diagonalMaxOpacity];
+        : basicScreenTemplateConfig.headerOptions.diagonalBarMaxOpacity;
 
     topLeftBar = null != topLeftBar
         ? topLeftBar
-        : contentLayouts["header"][headerOptions.topLeftBar];
+        : basicScreenTemplateConfig.headerOptions.topLeftBar;
 
     topRightBar = null != topRightBar
         ? topRightBar
-        : contentLayouts["header"][headerOptions.topRightBar];
+        : basicScreenTemplateConfig.headerOptions.topRightBar;
 
     bottomLeftBar = null != bottomLeftBar
         ? bottomLeftBar
-        : contentLayouts["header"][headerOptions.bottomLeftBar];
+        : basicScreenTemplateConfig.headerOptions.bottomLeftBar;
 
     bottomRightBar = null != bottomRightBar
         ? bottomRightBar
-        : contentLayouts["header"][headerOptions.bottomRightBar];
+        : basicScreenTemplateConfig.headerOptions.bottomRightBar;
 
     topLeftBarColor = null != topLeftBarColor
         ? topLeftBarColor
-        : contentLayouts["header"][headerOptions.topLeftBarColor];
+        : basicScreenTemplateConfig.headerOptions.topLeftBarColor;
 
     topRightBarColor = null != topRightBarColor
         ? topRightBarColor
-        : contentLayouts["header"][headerOptions.topRightBarColor];
+        : basicScreenTemplateConfig.headerOptions.topRightBarColor;
 
     bottomLeftBarColor = null != bottomLeftBarColor
         ? bottomLeftBarColor
-        : contentLayouts["header"][headerOptions.bottomLeftBarColor];
+        : basicScreenTemplateConfig.headerOptions.bottomLeftBarColor;
 
     bottomRightBarColor = null != bottomRightBarColor
         ? bottomRightBarColor
-        : contentLayouts["header"][headerOptions.bottomRightBarColor];
+        : basicScreenTemplateConfig.headerOptions.bottomRightBarColor;
 
     //gradient orientation and colors
 
@@ -2788,55 +2793,55 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       Map placeImage}) {
     placeLogo = null != placeLogo
         ? placeLogo
-        : contentLayouts['header'][headerOptions.placeLogo];
+        : basicScreenTemplateConfig.headerOptions.placeLogo;
 
     tagLine = null != tagLine
         ? tagLine
-        : contentLayouts['header'][headerOptions.tagLine];
+        : basicScreenTemplateConfig.headerOptions.tagLine;
 
     memberPreview = null != memberPreview
         ? memberPreview
-        : contentLayouts['header'][headerOptions.memberPreview];
+        : basicScreenTemplateConfig.headerOptions.memberPreview;
 
     customButton = null != customButton
         ? customButton
-        : contentLayouts['header'][headerOptions.customButton];
+        : basicScreenTemplateConfig.headerOptions.customButton;
 
     inviteButton = null != inviteButton
         ? inviteButton
-        : contentLayouts['header'][headerOptions.inviteButton];
+        : basicScreenTemplateConfig.headerOptions.inviteButton;
 
     customButtonColor = null != customButtonColor
         ? customButtonColor
-        : contentLayouts['header'][headerOptions.customButtonColor];
+        : basicScreenTemplateConfig.headerOptions.customButtonColor;
     customButtonTextColor = null != customButtonTextColor
         ? customButtonTextColor
-        : contentLayouts['header'][headerOptions.customButtonTextColor];
+        : basicScreenTemplateConfig.headerOptions.customButtonTextColor;
 
     customButtonText = null != customButtonText
         ? customButtonText
-        : contentLayouts['header'][headerOptions.customButtonText];
+        : basicScreenTemplateConfig.headerOptions.customButtonText;
 
     inviteButtonColor = null != inviteButtonColor
         ? inviteButtonColor
-        : contentLayouts['header'][headerOptions.inviteButtonColor];
+        : basicScreenTemplateConfig.headerOptions.inviteButtonColor;
     inviteButtonTextColor = null != inviteButtonTextColor
         ? inviteButtonTextColor
-        : contentLayouts['header'][headerOptions.inviteButtonTextColor];
+        : basicScreenTemplateConfig.headerOptions.inviteButtonTextColor;
 
     titleText = null != titleText
         ? titleText
-        : contentLayouts['header'][headerOptions.titleText];
+        : basicScreenTemplateConfig.headerOptions.titleText;
     titleColor = null != titleColor
         ? titleColor
-        : contentLayouts['header'][headerOptions.titleColor];
+        : basicScreenTemplateConfig.headerOptions.titleColor;
 
     tagLineText = null != tagLineText
         ? tagLineText
-        : contentLayouts['header'][headerOptions.tagLineText];
+        : basicScreenTemplateConfig.headerOptions.tagLineText;
     tagLineColor = null != tagLineColor
         ? tagLineColor
-        : contentLayouts['header'][headerOptions.tagLineColor];
+        : basicScreenTemplateConfig.headerOptions.tagLineColor;
 
     double paddingTop = 90.0 * sizeFactor;
     double paddingLeft = 20.0 * sizeFactor;
@@ -2847,7 +2852,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
     double innerPaddingTop = 25.0 * sizeFactor;
 
     double titleFontSize =
-        contentLayouts['header'][headerOptions.titleFontSize] * sizeFactor;
+        basicScreenTemplateConfig.headerOptions.titleFontSize * sizeFactor;
     double titleSpacing = 1.5 * sizeFactor;
 
     if (placeLogo) {
@@ -3025,7 +3030,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       {sizeFactor: 1.0, bool tagLine, Color color, String tagLineText}) {
     tagLine = null != tagLine
         ? tagLine
-        : contentLayouts['header'][headerOptions.tagLine];
+        : basicScreenTemplateConfig.headerOptions.tagLine;
     Widget widget = Container(height: 1.0, width: 2.0);
 
     if (tagLine) {
@@ -3054,7 +3059,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       Color customButtonTextColor}) {
     customButton = null != customButton
         ? customButton
-        : contentLayouts['header'][headerOptions.customButton];
+        : basicScreenTemplateConfig.headerOptions.customButton;
     Widget widget = Container(height: 1.0, width: 1.0);
 
     if (customButton) {
@@ -3113,7 +3118,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       Color inviteButtonTextColor}) {
     inviteButton = null != inviteButton
         ? inviteButton
-        : contentLayouts['header'][headerOptions.inviteButton];
+        : basicScreenTemplateConfig.headerOptions.inviteButton;
 
     Widget widget = Container(height: 1.0, width: 1.0);
 
@@ -3177,7 +3182,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       {sizeFactor: 1.0, bool placeLogo, Map placeImage}) {
     placeLogo = null != placeLogo
         ? placeLogo
-        : contentLayouts['header'][headerOptions.placeLogo];
+        : basicScreenTemplateConfig.headerOptions.placeLogo;
 
     placeImage = null != placeImage ? placeImage : homePlaceImage;
 
@@ -3194,11 +3199,11 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
 
     double radius = 8.0;
 
-    switch (contentLayouts['header'][headerOptions.logoShape]) {
-      case logoShape.square:
+    switch (basicScreenTemplateConfig.headerOptions.logoShape) {
+      case LogoShape.square:
         radius = contentLayouts['header'][headerOptions.logoRadius];
         break;
-      case logoShape.circle:
+      case LogoShape.circle:
         radius = 150;
         break;
       default:
@@ -3239,7 +3244,7 @@ class _BasicScreenTemplateState extends State<BasicScreenTemplate>
       {sizeFactor: 1.0, bool memberPreview, Color color}) {
     memberPreview = null != memberPreview
         ? memberPreview
-        : contentLayouts['header'][headerOptions.memberPreview];
+        : basicScreenTemplateConfig.headerOptions.memberPreview;
     Widget widget = Container(height: 1.0, width: 1.0);
 
     if (memberPreview) {

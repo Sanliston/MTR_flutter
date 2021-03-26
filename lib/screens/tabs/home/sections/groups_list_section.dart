@@ -1,6 +1,6 @@
 import 'package:MTR_flutter/utilities/utility_imports.dart';
 import 'package:MTR_flutter/utilities/utility_imports.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 
 class GroupsListSection extends StatelessWidget {
   const GroupsListSection({

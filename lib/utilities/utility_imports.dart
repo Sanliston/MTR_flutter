@@ -5,7 +5,7 @@ export 'package:google_fonts/google_fonts.dart';
 export 'package:MTR_flutter/state_management/global_state.dart';
 export 'package:eva_icons_flutter/eva_icons_flutter.dart';
 export 'package:unicons/unicons.dart';
-export 'package:MTR_flutter/state_management/home_state.dart';
+export 'package:MTR_flutter/state_management/root_template_state.dart';
 
 //function for rebuilding main screen
 import 'dart:io';
@@ -13,7 +13,7 @@ import 'dart:io';
 import 'package:MTR_flutter/components/buttons.dart';
 import 'package:MTR_flutter/components/navigation_drawer.dart';
 import 'package:MTR_flutter/screens/tabs/home/admin/home_customize_screen.dart';
-import 'package:MTR_flutter/state_management/home_state.dart';
+import 'package:MTR_flutter/state_management/root_template_state.dart';
 import 'package:MTR_flutter/utilities/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
